@@ -20,12 +20,12 @@ const navItems: { id: SidePanel; icon: React.ReactNode; label: string }[] = [
 
 export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, onToggleCollapsed }: SidebarProps) {
   return (
-    <div className={`${collapsed ? 'w-13' : 'w-52'} bg-[#ffffff] flex flex-col border-r border-[#f2f8ff] flex-shrink-0 h-fulltransition-[width] duration-200 ease-in-out overflow-hidden
+    <div className={`${collapsed ? 'w-12' : 'w-52'} bg-[#ffffff] flex flex-col border-r border-[#f2f8ff] flex-shrink-0 h-fulltransition-[width] duration-200 ease-in-out overflow-hidden
   `}
 >
       {/* Brand area */}
       <div className="h-12 flex items-center justify-center lg:justify-start px-1 lg:px-4 border-b border-[#f2f8ff]">
-       <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
     {!collapsed && (
       <span className="text-sm font-semibold text-black truncate">
         NanyangGifts
@@ -82,7 +82,7 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
           >
             <span className="flex-shrink-0">{item.icon}</span>
             <span className="text-xs hidden lg:block">{item.label}</span>
-            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 lg:hidden">
+            <div className="absolute left-full ml-2 px-2 py-2 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 lg:hidden">
               {item.label}
             </div>
           </button>
