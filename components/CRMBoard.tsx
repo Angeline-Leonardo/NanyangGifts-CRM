@@ -19,7 +19,13 @@ export const EditableDate: React.FC = () => {
       inputRef.current.focus();
     }
   }, [isEditing]);
-}
+
+  return (
+    <div>
+      {date.toDateString()}
+    </div>
+  );
+};
 
 export const CLIENT_STATUSES: ClientStatus[] = [
   'New Lead', 'Contacted', 'Quoted', 'Failed', 'Overdue',
