@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
+  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> 
 </p>
 <br/>
 
@@ -20,6 +20,7 @@
   - Proxy
   - Client
   - Server
+  
 - supabase-ssr. A package to configure Supabase Auth to use cookies
 - Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
 - Styling with [Tailwind CSS](https://tailwindcss.com)
