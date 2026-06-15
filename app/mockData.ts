@@ -19,7 +19,7 @@ export const initialClients: Client[] = [
     followUp: '',  status: 'Project Started', channel: 'Forms', importance: 'Medium',
     company: 'Bloomsbury Capital Investment', email: 'meilin@bloomsburypar.com', phone: '+65 96386403',
     requirements: 'We need to customise the books and cups with our logo', qty: '100', nbd: 'Apr 2',
-    totalPrice: '1,720', companyAddress:'', billingAddress: '', dateCreated:'', expanded: true, color: '#845EC2',
+    totalPrice: '1,720', companyAddress:'', billingAddress: '', dateCreated:'', expanded: false, color: '#845EC2',
     subitems: [
       {
         id: 's1', name: 'Book', people: '', status: '', qty: '50', description: 'NB 2498-II except BK no s...', remarks:'', shipper:'', supplier: 'SG Supplier A', cost: '3.9', ls: '', os: '90', tc: '184.935', uc: '3.699', tcSgd: '64.935', price: '445', up: '8.9', cnTracking:'', sgTracking:'',
