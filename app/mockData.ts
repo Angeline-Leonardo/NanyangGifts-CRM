@@ -12,13 +12,14 @@ function makeTimelineRows(): TimelineRow[] {
   ];
 }
 
+
 export const initialClients: Client[] = [
   {
     id: 'c1', name: 'Mei Lin Yeo', people: 'P', replyStatus: 'Waiting...', 
     followUp: '',  status: 'Project Started', channel: 'Forms', importance: 'Medium',
     company: 'Bloomsbury Capital Investment', email: 'meilin@bloomsburypar.com', phone: '+65 96386403',
     requirements: 'We need to customise the books and cups with our logo', qty: '100', nbd: 'Apr 2',
-    totalPrice: '1,720', companyAddress:'', billingAddress: '', expanded: true, color: '#845EC2',
+    totalPrice: '1,720', companyAddress:'', billingAddress: '', dateCreated:'', expanded: true, color: '#845EC2',
     subitems: [
       {
         id: 's1', name: 'Book', people: '', status: '', qty: '50', description: 'NB 2498-II except BK no s...', remarks:'', shipper:'', supplier: 'SG Supplier A', cost: '3.9', ls: '', os: '90', tc: '184.935', uc: '3.699', tcSgd: '64.935', price: '445', up: '8.9', cnTracking:'', sgTracking:'',
@@ -26,9 +27,9 @@ export const initialClients: Client[] = [
         timelineRows: makeTimelineRows(), showTimeline: false, showPayments: false, sampleRows:[], showSample: false, sampleOrderStatus:'', sampleStatus:'', sampleType:''
       },
       {
-        id: 's2', name: 'Cup', people: '', status: 'Verified', qty: '50', description: 'M 1048 - White RM 3.50/pc', supplier: 'SG Supplier B', cost: '3.5', m: '33.34', ls: '', os: '90', tc: '181.615', uc: '3.632', tcSgd: '58.275', price: '400', up: '8', cnTracking:'', sgTracking:'',
+        id: 's2', name: 'Cup', people: '', status: 'Verified', qty: '50', description: 'M 1048 - White RM 3.50/pc', supplier: 'SG Supplier B', cost: '3.5', ls: '', os: '90', tc: '181.615', uc: '3.632', tcSgd: '58.275', price: '400', up: '8', cnTracking:'', sgTracking:'',
         owner: '', shipper: '', paymentStatus: 'Paid', total: '400', manpower: '0', lsRmb: '0', totalC: '400', modeOfPayment: 'AliPay', orderNumber: '31729283810524', quantityProduced: '50', sample: '0', qtyFor: '50', paymentAmount: '400', difference: '0', localOverseas:'Local', numOfCartons:'', paymentRemarks:'',
-        timelineRows: makeTimelineRows(), showTimeline: false, showPayments: false, sampleRows:[], showSample: false, sampleOrderStatus:'', sampleStatus:'', sampleType:'',remarks:'',
+        timelineRows: makeTimelineRows(), showTimeline: false, showPayments: false, sampleRows:[], showSample: false, sampleOrderStatus:'', sampleStatus:'', sampleType:'',remarks:''
       },
       {
         id: 's3', name: 'Book', people: '', status: '', qty: '50', description: '1c x 1 position', supplier: '', cost: '9.8', manpower: '', ls: '', os: '90', tc: '253.17', uc: '5.063', tcSgd: '163.17', price: '475', up: '9.5', cnTracking:'', sgTracking:'',
