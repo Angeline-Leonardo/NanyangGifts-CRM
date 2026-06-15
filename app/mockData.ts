@@ -14,7 +14,7 @@ function makeTimelineRows(): TimelineRow[] {
 
 export const initialClients: Client[] = [
   {
-    id: 'c1', name: 'Mei Lin Yeo', people: 'P', replyStatus: 'Waiting for reply', 
+    id: 'c1', name: 'Mei Lin Yeo', people: 'P', replyStatus: 'Waiting...', 
     followUp: '',  status: 'Project Started', channel: 'Forms', importance: 'Medium',
     company: 'Bloomsbury Capital Investment', email: 'meilin@bloomsburypar.com', phone: '+65 96386403',
     requirements: 'We need to customise the books and cups with our logo', qty: '100', nbd: 'Apr 2',
@@ -43,7 +43,7 @@ export const initialClients: Client[] = [
     ],
   },
   {
-    id: 'c2', name: 'Lara Walsh', people: 'JM KH', replyStatus: 'Waiting for reply', 
+    id: 'c2', name: 'Lara Walsh', people: 'JM KH', replyStatus: 'Waiting...', 
     followUp: '',  status: 'Project Done', channel: 'Email', importance: 'High',
     company: 'Bolt Insight Limited', email: 'lara.walsh@boltinsight.co.uk', phone: '+44 7442 924453',
     requirements: '', qty: '100', nbd: 'Oct 14, 2024', totalPrice: '800', companyAddress:'', billingAddress:'',
@@ -113,7 +113,7 @@ export const initialClients: Client[] = [
     ],
   },
   {
-    id: 'c6', name: 'Sarah Chen', people: '', replyStatus: 'Waiting for reply', 
+    id: 'c6', name: 'Sarah Chen', people: '', replyStatus: 'Waiting...', 
     followUp: '',  status: 'Follow Up', channel: 'E-comm', importance: 'Medium',
     company: 'Chen & Associates', email: 'sarah.chen@chenassoc.com.sg', phone: '+65 87654321',
     requirements: 'Branded merchandise for company event', qty: '', nbd: '', 
