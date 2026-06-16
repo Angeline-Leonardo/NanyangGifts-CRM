@@ -80,9 +80,9 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
             key={item.label}
             className="w-full flex items-center gap-4.5 px-2 py-1.5 rounded-md text-gray-500 hover:bg-[#7BCBD5] hover:text-white transition-colors group relative"
           >
-            <span className="flex-shrink-0">{item.icon}</span>
-            <span className="text-xs hidden lg:block">{item.label}</span>
-            <div className="absolute left-full ml-2 px-2 py-2 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 lg:hidden">
+            <span className="flex-shrink-0 mr-3.5">{item.icon}</span>
+            <span className="text-xs font-semibold hidden lg:block">{item.label}</span>
+            <div className="absolute left-full bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 lg:hidden">
               {item.label}
             </div>
           </button>
