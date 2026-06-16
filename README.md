@@ -15,11 +15,7 @@
 
 ## Features
 
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
+  - to be updated 
   
 - supabase-ssr. A package to configure Supabase Auth to use cookies
 - Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
@@ -31,29 +27,16 @@
 
 ## Clone and run locally
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
-
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
+1. Clone repo 
    ```
 
 3. Use `cd` to change into the app's directory
 
    ```bash
-   cd with-supabase-app
+   cd nanyanggifts-crm
    ```
 
-4. Rename `.env.example` to `.env.local` and update the following:
+4. Add `.env.local` and update the following:
 
   ```env
   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
@@ -75,6 +58,3 @@
    The starter kit should now be running on [localhost:3000](http://localhost:3000/).
 
 6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
-
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
-
