@@ -27,7 +27,9 @@
 
 ## Clone and run locally
 
-1. Clone repo 
+1. Clone this repo  
+   ```
+   gh repo clone Angeline-Leonardo/NanyangGifts-CRM
    ```
 
 3. Use `cd` to change into the app's directory
