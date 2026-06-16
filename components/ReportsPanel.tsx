@@ -285,9 +285,9 @@ export function ReportsPanel({ clients }: ReportsPanelProps) {
             </h3>
             <div className="space-y-3">
               {[
-                { label: 'Paid', count: stats.paidItems, color: '#00C875' },
-                { label: 'To Pay', count: stats.pendingPaymentItems, color: '#FF642E' },
-                { label: 'Unpaid', count: stats.totalItems - stats.paidItems - stats.pendingPaymentItems, color: '#808080' },
+                { label: 'Paid', count: stats.paidItems, color: '#037F4C' },
+                { label: 'To Pay', count: stats.pendingPaymentItems, color: '#b3a8ff' },
+                { label: 'Unpaid', count: stats.totalItems - stats.paidItems - stats.pendingPaymentItems, color: '#ac2865' },
               ].map(d => (
                 <div key={d.label} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-sm" style={{ background: d.color }} />
@@ -303,9 +303,9 @@ export function ReportsPanel({ clients }: ReportsPanelProps) {
               <div className="pt-2 border-t border-gray-100">
                 <div className="flex w-full h-3 rounded-full overflow-hidden gap-0.5">
                   {[
-                    { count: stats.paidItems, color: '#00C875' },
-                    { count: stats.pendingPaymentItems, color: '#FF642E' },
-                    { count: stats.totalItems - stats.paidItems - stats.pendingPaymentItems, color: '#e5e7eb' },
+                    { count: stats.paidItems, color: '#037F4C' },
+                    { count: stats.pendingPaymentItems, color: '#b3a8ff' },
+                    { count: stats.totalItems - stats.paidItems - stats.pendingPaymentItems, color: '#ac2865' },
                   ].filter(d => d.count > 0).map((d, i) => (
                     <div
                       key={i}
