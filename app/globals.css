@@ -61,6 +61,11 @@
   }
 }
 
+.recharts-wrapper:focus, 
+.recharts-wrapper *:focus {
+  outline: none !important;
+}
+
 @layer base {
   * {
     @apply border-border;
