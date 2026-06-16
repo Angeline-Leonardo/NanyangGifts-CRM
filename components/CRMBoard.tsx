@@ -927,7 +927,30 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
 
     return matchesStatus && matchesSearch;
   });
+  const GROUP_ORDER = [
+    "New Lead", 
+    "Contacted",
+    "Quoted",
+    "Failed",
+    "Overdue",
+    "Follow up",
+    "Shortlisted",
+    "Project Started",
+    "Project Done",
+    "Closed"
+  ];
+  const groupedClients = GROUP_ORDER.map((status) => ({
+    status,
+    clients: displayedClients.filter((client) => client.status === status),
+    })).filter((group) => group.clients.length > 0);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
+  const toggleGroup = (groupStatus: string) => {
+    setCollapsedGroups((prev) => ({
+    ...prev,
+    [groupStatus]: !prev[groupStatus],
+  }));
+};
 
   useEffect(() => {
     if (!showFilter) return;
@@ -1143,7 +1166,7 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
       </div>
 
       {/* ── Board (header + rows share one scroll container) ── */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto text-gray-500 font-semibold">
         <div style={{ minWidth: TOTAL_MIN_WIDTH }}>
 
           {/* Sticky column header */}
@@ -1173,29 +1196,42 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
           </div>
 
           {/* Client rows */}
-          {displayedClients.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <Filter size={32} className="mb-3 opacity-30" />
-              <p className="text-sm">No clients match the selected filter</p>
-              <button onClick={() => setFilterStatus('All')} className="mt-2 text-xs text-blue-500 hover:underline">
-                Clear filter
-              </button>
-            </div>
-          ) : (
-            displayedClients.map(client => (
-              <ClientRow
-                key={client.id}
-                client={client}
-                isSelected={selectedIds.has(client.id)}
-                onToggleSelect={() => toggleSelect(client.id)}
-                onUpdate={updates => updateClient(client.id, updates)}
-                onUpdateSubitem={(subitemId, updates) => updateSubitem(client.id, subitemId, updates)}
-                onAddSubitem={() => addSubitem(client.id)}
-                onDeleteSubitem={subitemId => deleteSubitem(client.id, subitemId)}
-                onDelete={() => deleteClient(client.id)}
-              />
-            ))
-          )}
+          {groupedClients.map((group) => (
+          <React.Fragment key={group.status}>
+          <div className="flex items-center gap-2.5 px-2 py-0.4 text-sm bg-gray-50 border-y border-gray-100">
+            <button
+            onClick={() => toggleGroup(group.status)}
+            className="text-sm text-gray-500"
+          >
+            {collapsedGroups[group.status] ? '▷' : '▼'}
+            </button>
+      <div className="h-5 w-1 rounded bg-[#7BCBD5]" />
+      <div>
+        <div className="font-semibold text-slate-700">{group.status}</div>
+        <div className="text-xs italic font-normal text-slate-500">
+          {group.clients.length} Clients
+        </div>
+      </div>
+    </div>
+
+    {!collapsedGroups[group.status] &&
+      group.clients.map((client) => (
+        <ClientRow
+          key={client.id}
+          client={client}
+          isSelected={selectedIds.has(client.id)}
+          onToggleSelect={() => toggleSelect(client.id)}
+          onUpdate={(updates) => updateClient(client.id, updates)}
+          onUpdateSubitem={(subitemId, updates) =>
+            updateSubitem(client.id, subitemId, updates)
+          }
+          onAddSubitem={() => addSubitem(client.id)}
+          onDeleteSubitem={(subitemId) => deleteSubitem(client.id, subitemId)}
+          onDelete={() => deleteClient(client.id)}
+          />
+          ))}
+        </React.Fragment> 
+        ))}
         </div>
       </div>
     </div>

@@ -38,21 +38,21 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     <div className="flex-1 max-w-90 relative">
       <Search
         size={13}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-800"
       />
       <input
         type="text"
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full text-gray text-xs pl-8 pr-3 py-1.5 rounded-md border focus:outline-none focus:border-[#7BCBD5] placeholder-gray-500 bg-[#e7fdff]"
+        className="w-full text-gray text-xs font-semibold pl-8 pr-3 py-1.5 rounded-md border focus:outline-none focus:border-[#7BCBD5] placeholder-gray-500 bg-[#e7fdff]"
       />
     </div>
   );
 };
 
 
-export function TopBar({ value, onChange, placeholder = 'Search clients, items...', notifications, onMarkRead, onMarkAllRead }: TopBarProps) {
+export function TopBar({ value, onChange, placeholder = 'Search clients, items, people...', notifications, onMarkRead, onMarkAllRead }: TopBarProps) {
   const [showNotifs, setShowNotifs] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -79,7 +79,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
     <SearchBar
         value={value}
         onChange={onChange}
-        placeholder="Search clients, items..."
+        placeholder="Search clients, items, people..."
       />
 
       {/* Notifications */}
@@ -157,7 +157,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
             A
           </div>
-          <span className="text-black text-xs hidden lg:block">Admin</span>
+          <span className="text-black font-semibold text-xs hidden lg:block">Admin</span>
           <ChevronDown size={12} className="text-black hidden lg:block" />
         </button>
         {showProfile && (
