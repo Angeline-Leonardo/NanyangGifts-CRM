@@ -35,7 +35,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className="flex-1 max-w-md relative">
+    <div className="flex-1 max-w-90 relative">
       <Search
         size={13}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -73,7 +73,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
   }, []);
 
   return (
-    <div className="h-12 bg-[#ffffff] flex items-center px-4 gap-3 border-b border-[#f2f8ff] flex-shrink-0">
+    <div className="h-16 bg-[#ffffff] flex items-center px-4 gap-3 border-b border-[#f2f8ff] flex-shrink-0">
 
 
     <SearchBar

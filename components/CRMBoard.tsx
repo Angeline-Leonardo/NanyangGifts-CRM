@@ -233,7 +233,7 @@ function StatusBadge({
     <div
       ref={menuRef}
       style={menuStyle}
-      className="bg-white border border-gray-200 rounded-lg shadow-2xl py-1 max-h-72"
+      className="bg-white border font-semibold border-gray-200 rounded-lg shadow-2xl py-1 max-h-72"
     >
       {options.map(opt => (
         <button
