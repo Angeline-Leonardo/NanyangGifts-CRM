@@ -97,7 +97,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
         </button>
 
         {showNotifs && (
-          <div className="absolute right-0 top-full mt-1 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
+          <div className="absolute right-0 top-full mt-1 w-80 bg-white font-semibold rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2.5 bg-gray-50 border-b">
               <span className="text-xs font-semibold text-gray-700">Notifications</span>
               <button onClick={onMarkAllRead} className="text-xs text-blue-500 hover:text-blue-700">Mark all read</button>
@@ -135,7 +135,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
           <Settings size={16} />
         </button>
         {showSettings && (
-          <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
+          <div className="absolute right-0 top-full mt-1 w-56 bg-white font-semibold rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
             <div className="px-4 py-2.5 bg-gray-50 border-b">
               <span className="text-xs font-semibold text-gray-700">Settings</span>
             </div>
@@ -161,7 +161,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
           <ChevronDown size={12} className="text-black hidden lg:block" />
         </button>
         {showProfile && (
-          <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
+          <div className="absolute right-0 top-full mt-1 w-56 bg-white font-semibold rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 border-b">
               <p className="text-xs font-semibold text-gray-800">Admin User</p>
               <p className="text-xs text-gray-500 mt-0.5">admin@procrm.com</p>
@@ -169,7 +169,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items..
             {['My Profile', 'Account Settings', 'My Notifications', 'Keyboard Shortcuts', 'Log Out'].map((item, i) => (
               <button
                 key={item}
-                className={`w-full text-left px-4 py-2 text-xs hover:bg-[#7BCBD5] border-b border-gray-50 ${i === 4 ? 'text-red-500' : 'text-gray-700'}`}
+                className={`w-full text-left px-4 py-2 text-xs hover:bg-[#e7fdff] border-b border-gray-50 ${i === 4 ? 'text-red-500' : 'text-gray-700'}`}
               >
                 {item}
               </button>

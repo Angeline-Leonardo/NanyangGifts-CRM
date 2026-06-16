@@ -11,12 +11,12 @@ const STATUS_COLORS: Record<string, string> = {
   'New Lead': '#abd2fa',
   'Contacted': '#7692ff',
   'Quoted': '#3d518c',
-  'Failed': '#FB3640',
+  'Failed': '#d4102d',
   'Overdue': '#1b2cc1',
   'Follow Up': '#9D4393',
-  'Shortlisted': '#344966',
-  'Project Started': '#BFCC94',
-  'Project Done': '#69DC9E',
+  'Shortlisted': '#a159cf',
+  'Project Started': '#CF6E93',
+  'Project Done': '#dcb0ff',
   'Closed': '#0D1821',
   'Unqualified': '#0C0C0C',
 };
@@ -42,7 +42,7 @@ function KPICard({ title, value, subtitle, icon, color }: {
 export function ReportsPanel({ clients }: ReportsPanelProps) {
   const stats = useMemo(() => {
     const totalClients = clients.length;
-    const activeClients = clients.filter(c => ['Project Started', 'Project Done', 'Shortlisted', 'Quoted', 'Contacted'].includes(c.status)).length;
+    const activeClients = clients.filter(c => ['Project Started', 'Project Done', 'Shortlisted', 'Quoted', 'Contacted', 'New Lead'].includes(c.status)).length;
     const wonClients = clients.filter(c => ['Project Started', 'Project Done', 'Closed'].includes(c.status)).length;
     const lostClients = clients.filter(c => ['Failed', 'Unqualified'].includes(c.status)).length;
     const winRate = totalClients > 0 ? Math.round((wonClients / totalClients) * 100) : 0;
