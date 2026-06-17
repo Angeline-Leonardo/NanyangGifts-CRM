@@ -1009,7 +1009,7 @@ const CLIENT_HEADER_COLS = [
   { label: 'Company Address', width: 115 },
   { label: 'Billing Address', width: 120 },
   { label: 'Date Created', width: 90 },
-  { label: '', width: 36 },            // delete button column
+  { label: '', width: 60 },            // delete button column
 ];
 
 const TOTAL_MIN_WIDTH = CLIENT_HEADER_COLS.reduce((s, c) => s + c.width, 0);
