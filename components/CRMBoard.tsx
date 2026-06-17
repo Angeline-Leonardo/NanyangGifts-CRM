@@ -1045,11 +1045,12 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
     "Quoted",
     "Failed",
     "Overdue",
-    "Follow up",
+    "Follow Up",
     "Shortlisted",
     "Project Started",
     "Project Done",
-    "Closed"
+    "Closed",
+    "Unqualified"
   ];
   const groupedClients = GROUP_ORDER.map((status) => ({
     status,
