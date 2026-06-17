@@ -1,7 +1,8 @@
 import React from 'react';
 import { LayoutGrid, Mail, BarChart2, Users, SquareChartGantt, Calendar, Star, Building2 } from 'lucide-react';
-
 export type SidePanel = 'crm' | 'emails' | 'reports';
+import logo from "./logo.png";
+import Image from 'next/image';
 
 interface SidebarProps {
   activePanel: SidePanel;
@@ -25,13 +26,14 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
 >
       {/* Brand area */}
       <div className="h-12 flex items-center justify-center lg:justify-start px-1 lg:px-4 border-b border-[#f2f8ff]">
-      <div className="flex items-center gap-2 min-w-0">
-    {!collapsed && (
+      <div className="flex items-center gap-2 min-w-0"> 
+        <Image src={logo} alt="Logo" className="h-6 w-auto object-contain" />
+      {!collapsed && (
       <span className="text-sm font-semibold text-black truncate">
         NanyangGifts
       </span>
-    )}
-  </div>
+      )}
+      </div>
 
   <button
     onClick={onToggleCollapsed}
