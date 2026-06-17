@@ -45,7 +45,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full text-gray text-xs font-semibold pl-8 pr-3 py-1.5 rounded-md border focus:outline-none focus:border-[#7BCBD5] placeholder-gray-500 bg-[#e7fdff]"
+        className="w-full text-gray text-xs font-semibold pl-8 pr-3 py-1.5 rounded-md border focus:outline-none focus:border-[#7BCBD5] placeholder-gray-500 bg-[#e7fdff] animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff]"
       />
     </div>
   );
