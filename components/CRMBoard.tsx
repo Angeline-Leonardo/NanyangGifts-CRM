@@ -707,7 +707,7 @@ function ClientRow({
   const subitemCount = client.subitems.length;
 
   return (
-    <div className="mb-3">
+    <div className="mbs-3">
       <div className={`flex items-stretch border-b border-gray-200 hover:bg-gray-50 group transition-colors ${isSelected ? 'bg-blue-50' : ''}`}>
 
         {/* Checkbox + expand */}
@@ -727,7 +727,7 @@ function ClientRow({
         </div>
 
         {/* Client name */}
-        <div className="flex items-center gap-1.5 px-2 py-2 border-r border-gray-200 flex-shrink-0" style={{ minWidth: 180, width: 180 }}>
+        <div className="flex items-center gap-1.5 px-1 py-2 border-r border-gray-200 flex-shrink-0" style={{height:30, minWidth: 180, width: 100 }}>
           
           <EditableCell
             value={client.name}
@@ -1195,7 +1195,7 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
             ))}
           </div>
 
-          {/* Client rows */}
+          {/* Client group headers */}
           {groupedClients.map((group) => (
           <React.Fragment key={group.status}>
           <div className="flex items-center gap-2.5 px-2 py-0.4 text-sm bg-gray-50 border-y border-gray-100">
