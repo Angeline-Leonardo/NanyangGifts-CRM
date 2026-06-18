@@ -3,7 +3,13 @@ import { CreditCard } from "lucide-react";
 import { EditableCell } from "./editablecell";
 import { ClientStatus, Subitem } from "../../app/types";
 import { StatusBadge } from "./statusbadge";
-import { PAYMENT_STATUS_COLORS } from "../CRMBoard";
+const PAYMENT_STATUS_COLORS: Record<string, string> = {
+    'Paid': '#037F4C',
+    'To Pay': '#b3a8ff',
+    'Partial': '#8b81da',
+    'Overdue': '#ac2865',
+    '': 'transparent',
+};
 export function PaymentsSection({ subitem, onUpdate, onUpdateClientStatus }: { subitem: Subitem; onUpdate: (u: Partial<Subitem>) => void; onUpdateClientStatus: (status: ClientStatus) => void }) {
     const paymentOpts = ['', 'Paid', 'To Pay', 'Partial', 'Overdue'];
     const modeOpts = ['', 'AliPay', '1688', 'Bank Transfer', 'PayPal', 'Stripe', 'Cash', 'Cheque', 'Wise'];

@@ -4,10 +4,24 @@ import { Subitem } from "../../app/types";
 import { StatusBadge } from "./statusbadge";
 import { EditableCell } from "./editablecell";
 import { Calendar, CreditCard, Trash2, Package, FileText, Plus } from "lucide-react";
-import { LOCALOVERSEAS_COLORS, SUBITEM_STATUS_COLORS } from '../CRMBoard';
 import { TimelineSection } from './timeline';
 import { PaymentsSection } from './payments';
 import { SamplesSection } from './sample';
+
+const SUBITEM_STATUS_COLORS: Record<string, string> = {
+    'To Quote': '#43ebff',
+    'Verified': '#00C2C7',
+    'Awarded': '#00C875',
+    'Initial Quote': '#8b81da',
+    'Quoted': '#037F4C',
+    'Shortlisted': '#a856a6',
+    'Failed': '#ac2865',
+    '': 'transparent',
+};
+const LOCALOVERSEAS_COLORS: Record<string, string> = {
+    'Local': '#a856a6',
+    'Overseas': '#8b81da',
+}
 
 export function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAddSubitem, onDeleteSubitem }: {
     clientId: string; subitems: Subitem[]; clientColor: string;

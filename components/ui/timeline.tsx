@@ -1,9 +1,16 @@
 'use client';
 import { TimelineRow } from '../../app/types';
 import { EditableCell } from './editablecell';
-import { TIMELINE_PROGRESS_COLORS } from '../CRMBoard';
 import { Calendar } from 'lucide-react';
 import { StatusBadge } from './statusbadge';
+
+const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
+    'Done': '#00C875',
+    'Started': '#00C2C7',
+    'Not Started': '#8b81da',
+    '': '#e5e7eb',
+};
+
 
 export function TimelineSection({ rows, onUpdate }: {
     rows: TimelineRow[]; onUpdate: (rows: TimelineRow[]) => void;

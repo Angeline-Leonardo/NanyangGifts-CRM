@@ -85,62 +85,6 @@ export const STATUS_COLORS: Record<string, string> = {
   'Unqualified': '#561769',
 };
 
-export const SUBITEM_STATUS_COLORS: Record<string, string> = {
-  'To Quote': '#43ebff',
-  'Verified': '#00C2C7',
-  'Awarded': '#00C875',
-  'Initial Quote': '#8b81da',
-  'Quoted': '#037F4C',
-  'Shortlisted': '#a856a6',
-  'Failed': '#ac2865',
-  '': 'transparent',
-};
-export const LOCALOVERSEAS_COLORS: Record<string, string> = {
-  'Local': '#a856a6' ,
-  'Overseas': '#8b81da',
-}
-
-export const PAYMENT_STATUS_COLORS: Record<string, string> = {
-  'Paid': '#037F4C',
-  'To Pay': '#b3a8ff',
-  'Partial': '#8b81da',
-  'Overdue': '#ac2865',
-  '': 'transparent',
-};
-
-export const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
-  'Done': '#00C875',
-  'Started': '#00C2C7',
-  'Not Started': '#8b81da',
-  '': '#e5e7eb',
-};
-export const SAMPLE_ORDER_STATUS_COLORS: Record<string, string> = {
-  'Pending': '#d7c8ff',
-  'To order': '#b3a8ff',
-  'Ordered':'#8f8aff',
-  'Delivered':'#696cff',
-  'Paid':'#00C875',
-  'Shipped':'#3f50e7',
-  'Failed': '#ac2865',
-};
-
-export const SAMPLE_STATUS_COLORS: Record<string, string> = {
-  'Ready to collect':'#ffba90',
-  'Return arranged':'#ffa7b6',
-  'Extended':'#ffa2d8',
-  'Chased':'#f8a181',
-  'Must return':'#ff5975',
-  'Request to not return':'#d55694',
-  'No return needed':'#638aff',
-  'Failed':'#ac2865',
-  'Returned':'#00C875',
-};
-
-export const SAMPLE_TYPE_COLORS: Record<string, string> = {
-  'Product sample': '#99aebb',
-  'Pre-production sample':'#b7a6b4',
-};
-
 export const IMPORTANCE_COLORS: Record<string, string> = {
   'High': '#e03131',
   'Medium': '#ff85a8',

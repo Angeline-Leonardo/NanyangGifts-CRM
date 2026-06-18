@@ -2,8 +2,32 @@
 import { Package } from "lucide-react";
 import { Subitem } from "../../app/types";
 import { StatusBadge } from "./statusbadge";
-import { SAMPLE_ORDER_STATUS_COLORS, SAMPLE_STATUS_COLORS, SAMPLE_TYPE_COLORS } from "../CRMBoard";
+const SAMPLE_ORDER_STATUS_COLORS: Record<string, string> = {
+    'Pending': '#d7c8ff',
+    'To order': '#b3a8ff',
+    'Ordered': '#8f8aff',
+    'Delivered': '#696cff',
+    'Paid': '#00C875',
+    'Shipped': '#3f50e7',
+    'Failed': '#ac2865',
+};
 
+const SAMPLE_STATUS_COLORS: Record<string, string> = {
+    'Ready to collect': '#ffba90',
+    'Return arranged': '#ffa7b6',
+    'Extended': '#ffa2d8',
+    'Chased': '#f8a181',
+    'Must return': '#ff5975',
+    'Request to not return': '#d55694',
+    'No return needed': '#638aff',
+    'Failed': '#ac2865',
+    'Returned': '#00C875',
+};
+
+const SAMPLE_TYPE_COLORS: Record<string, string> = {
+    'Product sample': '#99aebb',
+    'Pre-production sample': '#b7a6b4',
+};
 export function SamplesSection({ subitem, onUpdate }: { subitem: Subitem; onUpdate: (u: Partial<Subitem>) => void }) {
     const sampleOrderStatusOpts = ['Pending', 'To order', 'Ordered', 'Delivered', 'Paid', 'Shipped', 'Failed']
     const sampleStatusOpts = ['Ready to collect', 'Return arranged', 'Extended', 'Chased', 'Must return', 'Request to not return', 'No return needed', 'Failed', 'Returned'];
