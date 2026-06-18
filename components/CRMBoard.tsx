@@ -747,7 +747,7 @@ function ClientRow({
             className="font-semibold text-gray-800"
           />
           {subitemCount > 0 && (
-            <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-1.5 py-0.5 flex-shrink-0">{subitemCount}</span>
+            <span className="text-xs text-[#7BCBD5] bg-[#e7fdff] rounded-full px-1.5 py-0.5 flex-shrink-0">{subitemCount}</span>
           )}
         </div>
 
