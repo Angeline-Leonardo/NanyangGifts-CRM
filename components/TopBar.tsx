@@ -170,7 +170,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items, 
             {['My Profile', 'Account Settings', 'My Notifications', 'Log Out'].map((item, i) => (
               item == 'Log Out' ? (
                 <div key={item} className="text-left">
-                <LogoutButton className= "w-full text-left px-4 py-2 text-xs bg-white hover:bg-[#e7fdff] text-red-500" /> 
+                <LogoutButton className= "w-full justify-start px-4 py-2 text-xs bg-white hover:bg-[#e7fdff] text-red-500" /> 
                 </div>
               ) : (
               <button
