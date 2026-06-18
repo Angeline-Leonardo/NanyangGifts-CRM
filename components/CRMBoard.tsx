@@ -518,7 +518,7 @@ function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAdd
     { key: 'numOfCartons', label: 'No. of Cartons', w: 50 },
     { key: 'cnTracking', label: 'CN Tracking #', w: 120 },
     { key: 'sgTracking', label: 'SG Tracking #', w: 120 },
-    { key: 'actions', label: '', w: 190 },
+    { key: 'actions', label: '', w: 190 }, // delete button
   ];
 
   return (
@@ -544,11 +544,21 @@ function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAdd
                   <td className="px-2 py-1 border-r border-gray-200 text-center">
                     <input type="checkbox" className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]" />
                   </td>
-                  {/* Name + action buttons */}
+                  {/* Name + timeline, payment, sample buttons */}
                   <td className="px-2 py-1 border-r border-gray-200" style={{ minWidth: 300 }}>
                     <div className="flex items-center gap-1">
                       <FileText size={11} className="text-gray-400 flex-shrink-0" />
                       <EditableCell value={sub.name} onChange={v => onUpdateSubitem(sub.id, { name: v })} placeholder="Subitem name" />
+                         {/* Delete subitem */}
+                      <td className="px-2 py-1" style={{ minWidth: 40 }}>
+                        <button
+                          onClick={() => onDeleteSubitem(sub.id)}
+                        className="p-1 text-gray-300 hover:text-red-400 transition-colors opacity-100 group-hover:opacity-100"
+                          title="Delete subitem"
+                      >
+                      <Trash2 size={15} />
+                    </button>
+                  </td>
                       <button
                         onClick={() => onUpdateSubitem(sub.id, { showTimeline: !sub.showTimeline, showPayments: false, showSample: false })}
                         className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
@@ -636,16 +646,7 @@ function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAdd
                   <td className="px-2 py-1 border-r border-gray-200" style={{ minWidth: 55 }}>
                     <EditableCell value={sub.sgTracking} onChange={v => onUpdateSubitem(sub.id, { sgTracking: v })} />
                   </td>
-                  {/* Delete subitem */}
-                  <td className="px-2 py-1" style={{ minWidth: 190 }}>
-                    <button
-                      onClick={() => onDeleteSubitem(sub.id)}
-                      className="p-1 text-gray-300 hover:text-red-400 transition-colors opacity-100 group-hover:opacity-100"
-                      title="Delete subitem"
-                    >
-                      <Trash2 size={12} />
-                    </button>
-                  </td>
+          
                 </tr>
 
                 {sub.showTimeline && (
