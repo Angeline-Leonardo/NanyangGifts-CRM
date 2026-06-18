@@ -102,6 +102,16 @@ export interface Subitem {
   sampleType: SampleType | string;
 }
 
+export type ActivityEntry = {
+  id: string,
+  action: string,
+  fieldName?: string,
+  oldValue?: unknown,
+  newValue?: unknown;
+  actorName: string;
+  createdAt: string;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -124,6 +134,7 @@ export interface Client {
   expanded: boolean;
   color: string;
   subitems: Subitem[];
+  activityLog?: ActivityEntry[];
 }
 
 export interface Email {

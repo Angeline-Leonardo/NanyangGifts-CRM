@@ -3,17 +3,36 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ChevronDown, ChevronRight, Plus, Calendar, CreditCard, Trash2,
-  Filter, ChevronsDown, ChevronsUp, FileText, X, Package, Upload
+  Filter, ChevronsDown, ChevronsUp, FileText, X, Package, Activity
 } from 'lucide-react';
-  import { Client, Subitem, TimelineRow, ClientStatus, ReplyStatus, SampleRow, SubitemStatus } from '../app/types';
+  import { Client, Subitem, TimelineRow, ClientStatus, ReplyStatus, SampleRow } from '../app/types';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogPortal, AlertDialogOverlay, AlertDialogTrigger } from './ui/alert-dialog';
-import { Button } from './ui/button';
+import { createClient } from '@/lib/supabase/client';
 
+async function getCurrentActorName() {
+  const supabase = createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
+  if (!user) return "Unknown user";
+
+  return (
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email ||
+    "Unknown user"
+  );
+}
 
 
 // ─── Constants ────────────────────────────────────────────────────────────────
+
+const supabase = createClient();
+const {
+  data: { user },
+} = await supabase.auth.getUser();
 
 export const EditableDate: React.FC = () => {
   const [date, setDate]= useState<Date>(new Date());
@@ -699,7 +718,7 @@ function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAdd
 
 function ClientRow({
   client, isSelected, onToggleSelect, onUpdate, onUpdateSubitem,
-  onAddSubitem, onDeleteSubitem, onDelete,
+  onAddSubitem, onDeleteSubitem, onDelete, 
 }: {
   client: Client;
   isSelected: boolean;
@@ -717,6 +736,35 @@ function ClientRow({
   const [pendingStatus, setPendingStatus] = useState<ClientStatus | null>(null);
   const [closeFiles, setCloseFiles] = useState<File[]>([]);
   const [closeConfirmed, setCloseConfirmed] = useState(false);
+
+  const [showActivityLog, setShowActivityLog] = useState(false);
+
+  function renderActivityText(entry: ActivityEntry) {
+  if (entry.action === "field_changed") {
+    return (
+      <>
+        changed <span className="font-medium">{entry.fieldName}</span> from{" "}
+        <span className="text-gray-600">
+          {String(entry.oldValue ?? "empty")}
+        </span>{" "}
+        to{" "}
+        <span className="text-gray-600">
+          {String(entry.newValue ?? "empty")}
+        </span>
+      </>
+    );
+  }
+
+  if (entry.action === "subitem_added") {
+    return <>added a subitem</>;
+  }
+
+  if (entry.action === "subitem_deleted") {
+    return <>deleted a subitem</>;
+  }
+
+  return <>{entry.action}</>;
+}
 
   return (
     <div className="mbs-3">
@@ -750,6 +798,68 @@ function ClientRow({
           {subitemCount > 0 && (
             <span className="text-xs text-[#7BCBD5] bg-[#e7fdff] rounded-full px-1.5 py-0.5 flex-shrink-0">{subitemCount}</span>
           )}
+          <button 
+          type="button"
+          onClick={() => setShowActivityLog(true)}
+          className= "px-2 py-1 text-[10px] font-medium text-cyan-500 hover:bg-gray-50 hover:text-cyan-600 transition transform active:scale-95 duration-150"
+          > <Activity size={10} /> </button>
+          {showActivityLog && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="w-full max-w-2xl rounded-xl bg-white p-4 shadow-xl">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-semibold text-gray-900">
+                      Activity Log
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      {client.name}
+                    </p>
+                  </div>
+
+        <button
+          type="button"
+          onClick={() => setShowActivityLog(false)}
+          className="text-xs text-gray-500 hover:text-gray-700"
+        >
+          Close
+        </button>
+      </div>
+
+      <div className="max-h-[420px] space-y-3 overflow-y-auto">
+        {(client.activityLog?.length ?? 0) === 0 ? (
+          <div className="rounded-lg border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+            No activity yet.
+          </div>
+        ) : (
+          [...(client.activityLog ?? [])]
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )
+            .map((entry) => (
+              <div
+                key={entry.id}
+                className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-gray-800">
+                      <span className="font-medium">{entry.actorName}</span>{" "}
+                      {renderActivityText(entry)}
+                    </p>
+
+                    <p className="mt-1 text-xs text-gray-500">
+                      {new Date(entry.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+        )}
+      </div>
+    </div>
+  </div>
+)}
         </div>
 
         {/* People */}
@@ -1119,9 +1229,34 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
   };
 
   // ── client/subitem updates ──
-  const updateClient = useCallback((clientId: string, updates: Partial<Client>) => {
-    onUpdateClients(clients.map(c => c.id === clientId ? { ...c, ...updates } : c));
-  }, [clients, onUpdateClients]);
+  const updateClient = useCallback(async (clientId: string, updates: Partial<Client>) => {
+    
+    const actorName = await getCurrentActorName();
+
+    onUpdateClients( 
+    clients.map((client) => {
+      if (client.id !== clientId) return client;
+
+      const newEntries = Object.entries(updates)
+        .filter(([field, newValue]) => client[field as keyof Client] !== newValue)
+        .map(([field, newValue]) => ({
+          id: crypto.randomUUID(),
+          action: "field_changed",
+          fieldName: field,
+          oldValue: client[field as keyof Client],
+          newValue,
+          actorName,
+          createdAt: new Date().toISOString(),
+        }));
+
+      return {
+        ...client,
+        ...updates,
+        activityLog: [...(client.activityLog ?? []), ...newEntries],
+      };
+    })
+  );
+}, [clients, onUpdateClients]);
 
   const updateSubitem = useCallback((clientId: string, subitemId: string, updates: Partial<Subitem>) => {
     onUpdateClients(clients.map(c =>

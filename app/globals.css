@@ -103,15 +103,15 @@
 .animated-background {
   background-image: linear-gradient(
     90deg,
-    #e7fdff 0%,
+    #e7fff7 0%,
     #c9f2ff 35%,
-    #c6eaff 50%,
+    #cbeafc 50%,
     #ecfbff 65%,
-    #e7fdff 100%
+    #d5fbfe 100%
   );
   background-size: 400% 400%;
   background-repeat: no-repeat;
-  animation: gradientFlow 9s ease infinite;
+  animation: gradientFlow 7s ease infinite;
 }
 
 @keyframes gradientFlow {
