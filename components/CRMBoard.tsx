@@ -3,11 +3,12 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   ChevronDown, ChevronRight, Plus, Calendar, CreditCard, Trash2,
-  Filter, ChevronsDown, ChevronsUp, FileText, X, Package
+  Filter, ChevronsDown, ChevronsUp, FileText, X, Package, Upload
 } from 'lucide-react';
   import { Client, Subitem, TimelineRow, ClientStatus, ReplyStatus, SampleRow, SubitemStatus } from '../app/types';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogPortal, AlertDialogOverlay, AlertDialogTrigger } from './ui/alert-dialog';
 import { Button } from './ui/button';
+
 
 
 
@@ -770,7 +771,7 @@ function ClientRow({
         </div>
 
         {/* Reply Status */}
-        <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 90, width: 90 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150" style={{ minWidth: 90, width: 90 }}>
           <StatusBadge
             value={client.replyStatus}
             onChange={v => onUpdate({ replyStatus: v as ReplyStatus })}
@@ -780,13 +781,13 @@ function ClientRow({
         </div>
 
         {/* Follow Up */}
-        <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 100, width: 100 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150" style={{ minWidth: 100, width: 100 }}>
           <input type="date" value={client.followUp} onChange={e => onUpdate({ followUp: e.target.value })}
             className="text-xs border-none outline-none bg-transparent cursor-pointer w-full" />
         </div>
 
         {/* Status */}
-        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0" style={{ minWidth: 115, width: 115 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150" style={{ minWidth: 115, width: 115 }}>
           <StatusBadge
             value={client.status}
             onChange={(v) => {
@@ -855,7 +856,7 @@ function ClientRow({
         )}
       </div>
 
-      <label className="flex items-center gap-2 text-sm font-semibold">
+      <label className="flex items-center gap-2 text-sm font-semibold transition transform active:scale-95 duration-150">
         <input
           type="checkbox"
           checked={closeConfirmed}
@@ -872,7 +873,7 @@ function ClientRow({
           setCloseFiles([]);
           setCloseConfirmed(false);
         }}
-      >
+      > 
         Cancel
       </AlertDialogCancel>
 
@@ -904,12 +905,12 @@ function ClientRow({
         </div>
 
         {/* Channel */}
-        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0" style={{ minWidth: 90, width: 90 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150" style={{ minWidth: 90, width: 90 }}>
           <StatusBadge value={client.channel} onChange={v => onUpdate({ channel: v })} options={channelOpts} colorMap={CHANNEL_COLORS} small />
         </div>
 
         {/* Importance */}
-        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0" style={{ minWidth: 80, width: 80 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150" style={{ minWidth: 80, width: 80 }}>
           <StatusBadge value={client.importance} onChange={v => onUpdate({ importance: v })} options={importanceOpts} colorMap={IMPORTANCE_COLORS} small />
         </div>
 
@@ -939,7 +940,7 @@ function ClientRow({
         </div>
 
         {/* NBD */}
-        <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 100, width: 100 }}>
+        <div className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150" style={{ minWidth: 100, width: 100 }}>
             <input type="date" value={client.followUp} onChange={e => onUpdate({ followUp: e.target.value })}
             className="text-xs border-none outline-none bg-transparent cursor-pointer w-full" />
         </div>
