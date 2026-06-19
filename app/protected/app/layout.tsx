@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 
-export default async function ProtectedAppLayout({
+export default async function RootAppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
