@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import { Subitem } from "../../app/types";
+import { useState, useMemo } from 'react';
 import { StatusBadge } from "./statusbadge";
 import { EditableCell } from "./editablecell";
 import { Calendar, CreditCard, Trash2, Package, FileText, Plus } from "lucide-react";
@@ -22,6 +23,7 @@ const LOCALOVERSEAS_COLORS: Record<string, string> = {
     'Local': '#a856a6',
     'Overseas': '#8b81da',
 }
+
 
 export function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem, onAddSubitem, onDeleteSubitem }: {
     clientId: string; subitems: Subitem[]; clientColor: string;
@@ -58,6 +60,60 @@ export function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem
         { key: 'sgTracking', label: 'SG Tracking #', w: 120 },
         { key: 'actions', label: '', w: 190 }, // delete button
     ];
+    const [selectedSubitemIds, setSelectedSubitemIds] = useState<string[]>([]);
+    const [selectionBox, setSelectionBox] = useState({ x: 0, y: 0, visible: false });
+    const toggleSubitemSelection = (subitemId: string, x: number, y: number) => {
+        setSelectedSubitemIds((prev) =>
+            prev.includes(subitemId)
+                ? prev.filter((id) => id !== subitemId)
+                : [...prev, subitemId]
+        );
+
+        setSelectionBox({
+            x: x + 16,
+            y: y + 16,
+            visible: true,
+        });
+    };
+    
+    const parseNumber = (value: string | number | undefined) => {
+        if (typeof value === "number") return value;
+        if (!value) return 0;
+
+        const cleaned = String(value).replace(/,/g, "").trim();
+        const num = Number(cleaned);
+        return Number.isFinite(num) ? num : 0;
+    };
+
+    const selectedSubitems = useMemo(
+        () => subitems.filter((sub) => selectedSubitemIds.includes(sub.id)),
+        [subitems, selectedSubitemIds]
+    );
+
+    const selectionTotals = useMemo(() => {
+        return selectedSubitems.reduce(
+            (acc, sub) => {
+                const qty = parseNumber(sub.qty);
+
+                const totalCost =
+                    parseNumber(sub.cost) +
+                    parseNumber(sub.manpower) +
+                    parseNumber(sub.ls) +
+                    parseNumber(sub.os) +
+                    parseNumber(sub.tcSgd);
+
+                const totalPrice = parseNumber(sub.up) * qty;
+                const markup = totalPrice - totalCost;
+
+                acc.totalCost += totalCost;
+                acc.totalPrice += totalPrice;
+                acc.totalMarkup += markup;
+
+                return acc;
+            },
+            { totalCost: 0, totalPrice: 0, totalMarkup: 0 }
+        );
+    }, [selectedSubitems]);
 
     return (
         <div className="mb-1" style={{ borderLeft: `3px solid ${clientColor}` }}>
@@ -76,11 +132,57 @@ export function SubitemsTable({ clientId, subitems, clientColor, onUpdateSubitem
                         </tr>
                     </thead>
                     <tbody>
+                        {selectedSubitemIds.length > 0 && selectionBox.visible && (
+                            <div
+                                className="fixed z-50 rounded-xl border border-gray-200 bg-white/95 backdrop-blur-sm shadow-xl px-4 py-3 text-xs text-gray-700"
+                                style={{
+                                    left: selectionBox.x,
+                                    top: selectionBox.y,
+                                }}
+                            >
+                                <div className="font-semibold text-gray-900 mb-2">
+                                    {selectedSubitemIds.length} subitem{selectedSubitemIds.length > 1 ? "s" : ""} selected
+                                </div>
+
+                                <div className="space-y-1 whitespace-nowrap">
+                                    <div>
+                                        Total price: <span className="font-medium">{selectionTotals.totalPrice.toFixed(2)}</span>
+                                    </div>
+                                    <div>
+                                        Total cost: <span className="font-medium">{selectionTotals.totalCost.toFixed(2)}</span>
+                                    </div>
+                                    <div>
+                                        Total markup: <span className={`font-medium ${selectionTotals.totalMarkup >= 0 ? "text-green-600" : "text-red-500"}`}>
+                                            {selectionTotals.totalMarkup.toFixed(2)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        setSelectedSubitemIds([]);
+                                        setSelectionBox((prev) => ({ ...prev, visible: false }));
+                                    }}
+                                    className="mt-2 text-[11px] text-gray-400 hover:text-gray-600"
+                                >
+                                    Clear selection
+                                </button>
+                            </div>
+                        )}
                         {subitems.map(sub => (
                             <React.Fragment key={sub.id}>
                                 <tr className="border-b border-gray-100 hover:bg-blue-50/30 group">
                                     <td className="px-2 py-1 border-r border-gray-200 text-center">
-                                        <input type="checkbox" className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]" />
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedSubitemIds.includes(sub.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleSubitemSelection(sub.id, e.clientX, e.clientY);
+                                            }}
+                                            onChange={() => { }}
+                                            className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]"
+                                        />
                                     </td>
                                     {/* Name + timeline, payment, sample buttons */}
                                     <td className="px-2 py-1 border-r border-gray-200" style={{ minWidth: 300 }}>
