@@ -16,7 +16,7 @@ export function LoginButton({
 
     const login = async () => {
     const supabase = createClient();
-    router.replace("/public/auth/login");
+    router.replace("/auth/login");
     router.refresh();
     };
 

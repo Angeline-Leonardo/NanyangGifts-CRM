@@ -3,6 +3,7 @@ import "../../globals.css";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -22,7 +23,7 @@ export default async function RootAppLayout({
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user){
-    redirect("/public/auth/login");
+    redirect("/auth/login");
   }
   return (
     <html lang="en" suppressHydrationWarning>
