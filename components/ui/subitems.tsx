@@ -9,12 +9,12 @@ import { PaymentsSection } from './payments';
 import { SamplesSection } from './sample';
 
 const SUBITEM_STATUS_COLORS: Record<string, string> = {
-    'To Quote': '#43ebff',
+    'To Quote': '#5cc9d5',
     'Verified': '#00C2C7',
     'Awarded': '#00C875',
     'Initial Quote': '#8b81da',
-    'Quoted': '#037F4C',
-    'Shortlisted': '#a856a6',
+    'Quoted': '#5fe0cf',
+    'Shortlisted': '#ad7de7',
     'Failed': '#ac2865',
     '': 'transparent',
 };
