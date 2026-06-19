@@ -1,12 +1,12 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { TopBar } from '../components/TopBar';
-import { Sidebar, SidePanel } from '../components/Sidebar';
-import { CRMBoard } from '../components/CRMBoard';
-import { EmailPanel } from '../components/EmailPanel';
-import { ReportsPanel } from '../components/ReportsPanel';
-import { Client, Email, Notification } from './types';
-import { initialClients, initialEmails, initialNotifications } from './mockData';
+import { TopBar } from '../../../components/TopBar';
+import { Sidebar, SidePanel } from '../../../components/Sidebar';
+import { CRMBoard } from '../../../components/CRMBoard';
+import { EmailPanel } from '../../../components/EmailPanel';
+import { ReportsPanel } from '../../../components/ReportsPanel';
+import { Client, Email, Notification } from '../../types';
+import { initialClients, initialEmails, initialNotifications } from '../../mockData';
 
 const STORAGE_KEYS = {
   clients: 'procrm_clients_v2',
