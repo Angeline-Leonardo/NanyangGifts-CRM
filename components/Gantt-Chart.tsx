@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
-import { Gantt, Willow } from "@svar-ui/react-gantt";
+import { useMemo, useState, useEffect } from "react";
+import { Gantt, Willow, Editor } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 import type { Client, Subitem, TimelineRow } from "../app/types";
+import { IApi } from "@svar-ui/react-gantt";
 
 type Props = {
     clients: Client[];
@@ -137,8 +138,26 @@ const SCALES = [
 ];
 
 export default function GanttChart({ clients }: Props) {
+    const [mounted, setMounted] = useState(false);
+    const [api, setApi] = useState<IApi | null>(null);
     const tasks = useMemo(() =>  { const built = buildTasks(clients); console.log("final tasks", built); return built;}, [clients]);
+    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
+    if(!mounted){
+        return <div style={{ height:"100%", width:"100%" }}>
+            <Willow>
+                <Gantt
+                    tasks={tasks}
+                    links={[]}
+                    scales={SCALES}
+                    start={new Date(2026, 0, 1)}
+                    end={new Date(2027, 11, 31)} />
+            </Willow>
+        </div>
+    }
     return (
         <div className="flex flex-col"style={{ height: "600px", width: "100%", minHeight: 600}}>
             <Willow>
@@ -148,7 +167,8 @@ export default function GanttChart({ clients }: Props) {
                     scales={SCALES}
                     start={new Date(2026, 0, 1)}
                     end={new Date(2027, 11, 31)}
-                />
+                    init={setApi}
+                />{api && <Editor api={api}/>}
             </Willow>
         </div>
     );
