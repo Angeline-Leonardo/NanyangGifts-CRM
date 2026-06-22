@@ -7,7 +7,11 @@ import { EmailPanel } from '../../../components/EmailPanel';
 import { ReportsPanel } from '../../../components/ReportsPanel';
 import { Client, Email, Notification } from '../../types';
 import { initialClients, initialEmails, initialNotifications } from '../../mockData';
+import dynamic from "next/dynamic";
 
+const GanttChart = dynamic(() => import("../../../components/Gantt-Chart"),{
+    ssr:false,
+});
 
 const STORAGE_KEYS = {
   clients: 'procrm_clients_v2',
@@ -88,7 +92,7 @@ export default function App() {
           onChange={setSearch} 
         />
 
-        <main className="flex-1 overflow-hidden">
+        <main className="flex flex-col h-screen overflow-hidden">
           {activePanel === 'crm' && (
             <CRMBoard
               clients={clients}
@@ -105,6 +109,9 @@ export default function App() {
           )}
           {activePanel === 'reports' && (
             <ReportsPanel clients={clients} />
+          )}
+          {activePanel === 'ganttchart' && (
+            <GanttChart clients={clients} />
           )}
         </main>
       </div>

@@ -7,8 +7,7 @@ import { StatusBadge } from './statusbadge';
 const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
     'Done': '#00C875',
     'Started': '#00C2C7',
-    'Not Started': '#8b81da',
-    '': '#e5e7eb',
+    'Not Started': '#8b81da'
 };
 
 
@@ -60,7 +59,7 @@ export function TimelineSection({ rows, onUpdate }: {
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
                                         <StatusBadge
-                                            value={row.subProgress}
+                                            value={row.subProgress || 'Not Started'}
                                             onChange={v => updateRow(row.id, 'subProgress', v)}
                                             options={progressOpts}
                                             colorMap={TIMELINE_PROGRESS_COLORS}
