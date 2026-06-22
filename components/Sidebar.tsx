@@ -1,9 +1,8 @@
 import React from 'react';
 import { LayoutGrid, Mail, BarChart2, Users, SquareChartGantt, Star, Building2 } from 'lucide-react';
-export type SidePanel = 'crm' | 'emails' | 'reports';
+export type SidePanel = 'crm' | 'emails' | 'reports' | 'ganttchart';
 import logo from "./logo.png";
 import Image from 'next/image';
-import { ThemeSwitcher } from './theme-switcher';
 
 interface SidebarProps {
   activePanel: SidePanel;
@@ -15,9 +14,10 @@ interface SidebarProps {
 }
 
 const navItems: { id: SidePanel; icon: React.ReactNode; label: string }[] = [
-  { id: 'crm', icon: <LayoutGrid size={18} />, label: 'CRM Board' },
-  { id: 'emails', icon: <Mail size={18} />, label: 'Emails' },
-  { id: 'reports', icon: <BarChart2 size={18} />, label: 'Reports & KPI' },
+  { id: 'crm', icon: <LayoutGrid size={17.5} />, label: 'CRM Board' },
+  { id: 'emails', icon: <Mail size={17.5} />, label: 'Emails' },
+  { id: 'reports', icon: <BarChart2 size={17.5} />, label: 'Reports & KPI' },
+  { id: 'ganttchart', icon: <SquareChartGantt size={17.5} />, label: 'Gantt Chart'},
 ];
 
 export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, onToggleCollapsed }: SidebarProps) {
@@ -76,13 +76,11 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
         {[
           { icon: <Users size={17.5} />, label: 'Teams' },
           { icon: <Building2 size={17.5} />, label: 'Companies' },
-          { icon: <SquareChartGantt size={17.5} />, label: 'Gantt Chart' },
           { icon: <Star size={17.5} />, label: 'Starred' },
         ].map(item => (
           <button
             key={item.label}
-            className="w-full flex items-center gap-4.5 px-2 py-1.5 rounded-md text-gray-500 hover:bg-[#7BCBD5] hover:text-white transition-colors group relative transition transform active:scale-95 duration-150"
-          >
+            className="w-full flex items-center gap-4.5 px-2 py-1.5 rounded-md text-gray-500 hover:bg-[#7BCBD5] hover:text-white transition-colors group relative transition transform active:scale-95 duration-150">
             <span className="flex-shrink-0 mr-3.5">{item.icon}</span>
             <span className="text-xs font-semibold hidden lg:block">{item.label}</span>
             <div className="absolute left-full bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 lg:hidden">
