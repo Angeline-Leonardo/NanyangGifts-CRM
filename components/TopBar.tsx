@@ -87,7 +87,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items, 
       <div ref={notifsRef} className="relative">
         <button
           onClick={() => { setShowNotifs(!showNotifs); setShowProfile(false); setShowSettings(false); }}
-          className="relative p-2 rounded-md hover:bg-[#7BCBD5] text-black-300 hover:text-white transition-colors"
+          className="relative p-2 rounded-md hover:bg-[#7BCBD5] text-black-300 hover:text-white transition-colors transition transform active:scale-95 duration-150"
         >
           <Bell size={16} />
           {unreadCount > 0 && (
@@ -131,7 +131,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items, 
       <div className="relative">
         <button
           onClick={() => { setShowSettings(!showSettings); setShowNotifs(false); setShowProfile(false); }}
-          className="p-2 rounded-md hover:bg-[#7BCBD5] text-black-300 hover:text-white transition-colors"
+          className="p-2 rounded-md hover:bg-[#7BCBD5] text-black-300 hover:text-white transition-colors transition transform active:scale-95 duration-150"
         >
           <Settings size={16} />
         </button>
@@ -153,7 +153,7 @@ export function TopBar({ value, onChange, placeholder = 'Search clients, items, 
       <div ref={profileRef} className="relative ml-auto">
         <button
           onClick={() => { setShowProfile(!showProfile); setShowNotifs(false); setShowSettings(false); }}
-          className="flex items-center gap-1.5 px-2 py-1.5 rounded-md hover:bg-[#7BCBD5] transition-colors"
+          className="flex items-center gap-1.5 px-2 py-1.5 rounded-md hover:bg-[#7BCBD5] transition-colors transition transform active:scale-95 duration-150"
         >
           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-semibold">
             A

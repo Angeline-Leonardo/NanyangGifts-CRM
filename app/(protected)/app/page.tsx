@@ -8,6 +8,7 @@ import { ReportsPanel } from '../../../components/ReportsPanel';
 import { Client, Email, Notification } from '../../types';
 import { initialClients, initialEmails, initialNotifications } from '../../mockData';
 
+
 const STORAGE_KEYS = {
   clients: 'procrm_clients_v2',
   emails: 'procrm_emails_v1',

@@ -8,7 +8,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
     metadataBase: new URL(defaultUrl),
     title: "NanyangGifts CRM",
-    description: "aaaaaaaaaa",
+    description: "Custom CRM that I made",
 };
 
 export default function RootLayout({

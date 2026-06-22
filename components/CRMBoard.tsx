@@ -438,7 +438,7 @@ const updateSubitem = useCallback(
                 className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 transition-opacity transition transform active:scale-95 duration-150"
                 style={{
                   background: STATUS_COLORS[st],
-                  color: ['#FFCB00', '#BFCC94', '#abd2fa'].includes(STATUS_COLORS[st]) ? '#ffffff' : '#fff',
+                  color: '#ffffff',
                   opacity: filterStatus !== 'All' && filterStatus !== st ? 0.35 : 1,
                 }}>
                 {st}<span className="bg-white/30 rounded-full px-1">{count}</span>

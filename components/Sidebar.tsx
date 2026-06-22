@@ -1,8 +1,9 @@
 import React from 'react';
-import { LayoutGrid, Mail, BarChart2, Users, SquareChartGantt, Calendar, Star, Building2 } from 'lucide-react';
+import { LayoutGrid, Mail, BarChart2, Users, SquareChartGantt, Star, Building2 } from 'lucide-react';
 export type SidePanel = 'crm' | 'emails' | 'reports';
 import logo from "./logo.png";
 import Image from 'next/image';
+import { ThemeSwitcher } from './theme-switcher';
 
 interface SidebarProps {
   activePanel: SidePanel;
@@ -51,7 +52,7 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
             key={item.id}
             onClick={() => onChangePanel(item.id)}
             className={`
-              w-full flex items-center gap-3 px-2 py-2 rounded-md text-left transition-all group relative
+              w-full flex items-center gap-3 px-2 py-2 rounded-md text-left transition-all group relative transition transform active:scale-95 duration-150
               ${activePanel === item.id
                 ? 'bg-[#7BCBD5] text-white'
                 : 'text-gray-500 hover:bg-[#7BCBD5] hover:text-white'
@@ -80,7 +81,7 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
         ].map(item => (
           <button
             key={item.label}
-            className="w-full flex items-center gap-4.5 px-2 py-1.5 rounded-md text-gray-500 hover:bg-[#7BCBD5] hover:text-white transition-colors group relative"
+            className="w-full flex items-center gap-4.5 px-2 py-1.5 rounded-md text-gray-500 hover:bg-[#7BCBD5] hover:text-white transition-colors group relative transition transform active:scale-95 duration-150"
           >
             <span className="flex-shrink-0 mr-3.5">{item.icon}</span>
             <span className="text-xs font-semibold hidden lg:block">{item.label}</span>
@@ -95,7 +96,7 @@ export function Sidebar({ activePanel, onChangePanel, emailUnread, collapsed, on
       <div className="p-2 border-t border-[#f2f8ff]">
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-            A
+            A 
           </div>
           <div className="hidden lg:block min-w-0">
             <p className="text-xs text-black truncate">Admin User</p>
