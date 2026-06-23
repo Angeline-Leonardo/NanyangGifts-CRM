@@ -107,7 +107,7 @@ export function CRMBoard({ clients, onUpdateClients, search='' }: CRMBoardProps)
     return matchesStatus && matchesSearch;
   });
   const GROUP_ORDER = [
-    "New Lead", 
+    "New Lead",
     "Contacted",
     "Quoted",
     "Failed",
@@ -268,10 +268,10 @@ const updateSubitem = useCallback(
 
     const timelineRows: TimelineRow[] = [
       { id: `tl-${now}-1`, name: "Sample", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "", status: "" },
-      { id: `tl-${now}-2`, name: "Production", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Sample", status: "" },
+      { id: `tl-${now}-2`, name: "Production 📦", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Sample", status: "" },
       { id: `tl-${now}-3`, name: "Check Production Status (+3 from production start)", person: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "", status: "", remarks: "" },
-      { id: `tl-${now}-4`, name: "Local Shipping", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Production FS-1", status: "" },
-      { id: `tl-${now}-5`, name: "Sea/Air Freight", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Local Shipping", status: "" },
+      { id: `tl-${now}-4`, name: "Local Shipping 🚚", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Production FS-1", status: "" },
+      { id: `tl-${now}-5`, name: "Sea/Air Freight ⛵✈️", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "Local Shipping", status: "" },
       { id: `tl-${now}-6`, name: "Check Shipment Status (+3 from shipment start)", person: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "", remarks: "", status: "" },
       { id: `tl-${now}-7`, name: "NBD", person: "", remarks: "", subProgress: "", timelineStart: "", timelineEnd: "", duration: "", dependency: "", status: "" },
     ];
@@ -537,7 +537,7 @@ const updateSubitem = useCallback(
           onDelete={() => deleteClient(client.id)}
           />
           ))}
-        </React.Fragment> 
+        </React.Fragment>
         ))}
         </div>
       </div>

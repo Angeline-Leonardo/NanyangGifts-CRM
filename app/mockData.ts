@@ -3,10 +3,10 @@ import { Client, Email, Notification, TimelineRow } from './types';
 function makeTimelineRows(): TimelineRow[] {
   return [
     { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Sample', person: '',  remarks: '', subProgress: 'Not Started', timelineStart: '', timelineEnd: '', duration: '', dependency: '',   status: '' },
-    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Production', person: '',  remarks: '', subProgress: 'Done', timelineStart: '2026-06-04', timelineEnd: '2026-06-07', duration: '4', dependency: 'Sample',  status: '' },
+    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Production 📦', person: '',  remarks: '', subProgress: 'Done', timelineStart: '2026-06-04', timelineEnd: '2026-06-07', duration: '4', dependency: 'Sample',  status: '' },
     { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Check Production Status (+3 from production start)', person: '',  remarks: '', subProgress: '', timelineStart: '', timelineEnd: '', duration: '', dependency: '', status: '' },
-    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Local Shipping', person: '',  remarks: '', subProgress: 'Started', timelineStart: '2026-06-07', timelineEnd: '2026-06-10', duration: '4', dependency: 'Production FS-1',  status: '' },
-    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Sea/Air Freight', person: '',  remarks: '', subProgress: 'Not Started', timelineStart: '', timelineEnd: '', duration: '', dependency: 'Local Shipping',  status: '' },
+    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Local Shipping 🚚', person: '',  remarks: '', subProgress: 'Started', timelineStart: '2026-06-07', timelineEnd: '2026-06-10', duration: '4', dependency: 'Production FS-1',  status: '' },
+    { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Sea/Air Freight ⛵✈️', person: '',  remarks: '', subProgress: 'Not Started', timelineStart: '', timelineEnd: '', duration: '', dependency: 'Local Shipping',  status: '' },
     { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'Check Shipment Status (+3 from shipment start)', person: '', remarks: '', subProgress: 'Not Started', timelineStart: '', timelineEnd: '', duration: '', dependency: '',   status: '' },
     { id: `tl-${Math.random().toString(36).slice(2)}`, name: 'NBD', person: '',  remarks: '', subProgress: 'Not Started', timelineStart: '', timelineEnd: '', duration: '', dependency: '',   status: '' },
   ];

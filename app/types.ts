@@ -11,7 +11,7 @@ export type ClientStatus =
   | 'Closed'
   | 'Unqualified';
 
-export type ReplyStatus = 
+export type ReplyStatus =
   | 'Waiting...'
   | 'Replied'
 
@@ -89,7 +89,7 @@ export interface Subitem {
   qtyFor: string;
   paymentAmount: string;
   difference: string;
-  paymentRemarks: string; 
+  paymentRemarks: string;
   // Timeline
   timelineRows: TimelineRow[];
   showTimeline: boolean;
