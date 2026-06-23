@@ -88,8 +88,8 @@ export default function App() {
           notifications={notifications}
           onMarkRead={markNotifRead}
           onMarkAllRead={markAllNotifsRead}
-          value={search} 
-          onChange={setSearch} 
+          value={search}
+          onChange={setSearch}
         />
 
         <main className="flex flex-col h-screen overflow-hidden">

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { Gantt, Willow, Editor } from "@svar-ui/react-gantt";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
+import { Gantt, Willow, Editor, ContextMenu } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
 import type { Client, Subitem, TimelineRow } from "../app/types";
 import { IApi } from "@svar-ui/react-gantt";
@@ -137,38 +137,58 @@ const SCALES = [
     { unit: "day", step: 1, format: "%d" },
 ];
 
+const options = [
+    {
+        id: "add-task",
+        text: "Add",
+        icon: "wxi-plus",
+        data: [{ id: "add-task:child", text: "Child task" }],
+    },
+    { comp: "separator" },
+    {
+        id: "edit-task",
+        text: "Edit",
+        icon: "wxi-edit",
+    },
+    { id: "cut-task", text: "Cut", icon: "wxi-content-cut" },
+];
+
+
+
 export default function GanttChart({ clients }: Props) {
     const [mounted, setMounted] = useState(false);
     const [api, setApi] = useState<IApi | null>(null);
+    const apiRef = useRef<IApi | null>(null);
+    
     const tasks = useMemo(() =>  { const built = buildTasks(clients); console.log("final tasks", built); return built;}, [clients]);
     
     useEffect(() => {
         setMounted(true);
     }, []);
 
+    const handleInit = useCallback((instance: IApi) => {
+        apiRef.current = instance;
+        setApi((prev) => prev === instance ? prev : instance);
+    }, []);
+
     if(!mounted){
-        return <div style={{ height:"100%", width:"100%" }}>
-            <Willow>
-                <Gantt
-                    tasks={tasks}
-                    links={[]}
-                    scales={SCALES}
-                    start={new Date(2026, 0, 1)}
-                    end={new Date(2027, 11, 31)} />
-            </Willow>
-        </div>
+        return null;
     }
     return (
         <div className="min-h-[700px] overflow-auto"style={{ height: "600px", minWidth: "50%"}}>
             <Willow>
                 <div className="willow-modified">
-                <Gantt
-                    tasks={tasks}
-                    links={[]}
-                    scales={SCALES}
-                    start={new Date(2026, 0, 1)}
-                    end={new Date(2027, 11, 31)}
-                />
+                    <ContextMenu api={api} options={options}>
+                        <Gantt
+                            tasks={tasks}
+                            links={[]}
+                            scales={SCALES}
+                            start={new Date(2026, 0, 1)}
+                            end={new Date(2027, 11, 31)}
+                            init={handleInit}
+                        />
+                    </ContextMenu>
+                    {api && <Editor api={api} />}
                 </div>
             </Willow>
         </div>
