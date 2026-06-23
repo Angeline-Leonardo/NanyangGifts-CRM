@@ -167,8 +167,7 @@ export default function GanttChart({ clients }: Props) {
                     scales={SCALES}
                     start={new Date(2026, 0, 1)}
                     end={new Date(2027, 11, 31)}
-                    init={setApi}
-                />{api && <Editor api={api}/>}
+                />
             </Willow>
         </div>
     );
