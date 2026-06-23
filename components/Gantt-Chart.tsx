@@ -25,7 +25,7 @@ type SchedulerResource = {
     label: {
         title: string;
         subtitle?: string;
-        icon?: string;
+        icon: string;
     };
     data: SchedulerItem[];
 };
@@ -106,6 +106,7 @@ function buildSchedulerData(clients: Client[]): SchedulerResource[] {
             label: {
                 title: client.name || "Unnamed Client",
                 subtitle: client.company || client.people || "",
+                icon:"",
             },
             data: items.sort(
                 (a, b) => a.startDate.getTime() - b.startDate.getTime()
