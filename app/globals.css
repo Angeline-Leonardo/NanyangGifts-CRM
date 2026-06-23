@@ -131,13 +131,13 @@
 
         /* bars */
         --wx-gantt-bar-font: sans-serif;
-        --wx-gantt-bar-border-radius: 3px;
+        --wx-gantt-bar-border-radius: 15px;
         --wx-gantt-milestone-border-radius: 3px;
 
-        --wx-gantt-task-color: #d081f8;
+        --wx-gantt-task-color: #81f8e8;
         --wx-gantt-task-font-color: #fff;
-        --wx-gantt-task-fill-color: #de70ff;
-        --wx-gantt-task-border-color: #c15bfc;
+        --wx-gantt-task-fill-color: #81f8e8;
+        --wx-gantt-task-border-color: transparent;
         --wx-gantt-task-border: 1px solid transparent;
 
         --wx-gantt-project-color-force: #3dffd8;
@@ -145,6 +145,7 @@
         --wx-gantt-project-fill-color: #44ffda;
         --wx-gantt-project-border-color: #70ffe2;
         --wx-gantt-project-border: 1px solid transparent;
+        --wx-gantt-summary-color: #7cb7ff;
 
         --wx-gantt-milestone-color: #ad44ab;
 
