@@ -140,6 +140,7 @@ export default function GanttChart({ clients }: Props) {
                         maxRecordsPerPage: 20,
                         filterButtonState: 0,
                         showThemeToggle: true,
+                        showTooltip:false
                     }}
                 />
             </div>
