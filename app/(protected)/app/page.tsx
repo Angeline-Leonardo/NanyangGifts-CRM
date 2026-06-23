@@ -7,12 +7,7 @@ import { EmailPanel } from '../../../components/EmailPanel';
 import { ReportsPanel } from '../../../components/ReportsPanel';
 import { Client, Email, Notification } from '../../types';
 import { initialClients, initialEmails, initialNotifications } from '../../mockData';
-import dynamic from "next/dynamic";
-
-const GanttChart = dynamic(() => import("../../../components/Gantt-Chart"),{
-    ssr:false,
-});
-
+import GanttChart  from '../../../components/Gantt-Chart';
 const STORAGE_KEYS = {
   clients: 'procrm_clients_v2',
   emails: 'procrm_emails_v1',
@@ -111,7 +106,7 @@ export default function App() {
             <ReportsPanel clients={clients} />
           )}
           {activePanel === 'ganttchart' && (
-            <div className="flex-1 min-h-[700px]overflow-auto willow-modified">
+            <div className="flex-1 min-h-[700px] width-[400px] overflow-auto">
             <GanttChart clients={clients} />
             </div>
           )}

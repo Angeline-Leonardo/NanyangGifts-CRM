@@ -1,184 +1,145 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback, useRef } from "react";
-import { Gantt, Willow, Editor, ContextMenu } from "@svar-ui/react-gantt";
-import "@svar-ui/react-gantt/all.css";
+import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import "@bitnoi.se/react-scheduler/dist/style.css";
 import type { Client, Subitem, TimelineRow } from "../app/types";
-import { IApi } from "@svar-ui/react-gantt";
 
 type Props = {
     clients: Client[];
 };
 
-type GanttTask = {
-    id: number;
-    parent: number;
-    text: string;
-    start: Date;
-    duration: number;
-    progress: number;
-    type: "task" | "summary";
-    open?: boolean;
+type SchedulerItem = {
+    id: string;
+    startDate: Date;
+    endDate: Date;
+    occupancy: number;
+    title: string;
+    subtitle?: string;
+    description?: string;
+    bgColor?: string;
+};
+
+type SchedulerResource = {
+    id: string;
+    label: {
+        title: string;
+        subtitle?: string;
+        icon?: string;
+    };
+    data: SchedulerItem[];
 };
 
 function parseDate(value?: string): Date | null {
     if (!value || !value.trim()) return null;
-    const d = new Date(value);
-    return Number.isNaN(d.getTime()) ? null : d;
+
+    const direct = new Date(value);
+    if (!Number.isNaN(direct.getTime())) return direct;
+
+    const normalized = value.replace(/(\d{1,2})\/(\d{1,2})\/(\d{4})/, "$3-$2-$1");
+    const retried = new Date(normalized);
+
+    return Number.isNaN(retried.getTime()) ? null : retried;
 }
 
-function daysBetween(start: Date, end: Date) {
-    const ms = end.getTime() - start.getTime();
-    return Math.max(1, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+function addOneDay(date: Date) {
+    const copy = new Date(date);
+    copy.setDate(copy.getDate() + 1);
+    return copy;
 }
 
-function progressToNumber(value?: string) {
-    if (value === "Done") return 100;
-    if (value === "Started") return 50;
-    if (value === "Not Started") return 0;
-    return 0;
+function getColor(progress?: string) {
+    if (progress === "Done") return "#76ffc8";
+    if (progress === "Started") return "#b30bf5";
+    return "#60a5fa";
 }
 
-function buildTasks(clients: Client[]): GanttTask[] {
-    const tasks: GanttTask[] = [];
-    let nextId = 1;
-
+function buildSchedulerData(clients: Client[]): SchedulerResource[] {
     const safeClients = Array.isArray(clients)
         ? clients.filter((client): client is Client => !!client && typeof client === "object")
         : [];
 
-    safeClients.forEach((client) => {
-        const clientId = nextId++;
-
-        tasks.push({
-            id: clientId,
-            parent: 0,
-            text: client.name || "Unnamed Client",
-            start: new Date(2026, 0, 1),
-            duration: 1,
-            progress: 0,
-            type: "summary",
-            open: true,
-        });
-
-        const subitems: Subitem[] = Array.isArray(client.subitems)
+    return safeClients.map((client) => {
+        const subitems = Array.isArray(client.subitems)
             ? client.subitems.filter(
                 (subitem): subitem is Subitem => !!subitem && typeof subitem === "object"
             )
             : [];
 
-        subitems.forEach((subitem) => {
-            const subitemId = nextId++;
+        const items: SchedulerItem[] = [];
 
-            const timelineRows: TimelineRow[] = Array.isArray(subitem.timelineRows)
+        subitems.forEach((subitem) => {
+            const timelineRows = Array.isArray(subitem.timelineRows)
                 ? subitem.timelineRows.filter(
                     (row): row is TimelineRow => !!row && typeof row === "object"
                 )
                 : [];
 
-            const validRows = timelineRows
-                .map((row) => {
-                    const start = parseDate(row.timelineStart);
-                    if (!start) return null;
+            timelineRows.forEach((row) => {
+                const start = parseDate(row.timelineStart);
+                if (!start) return;
 
-                    const end = parseDate(row.timelineEnd) ?? start;
+                const end = parseDate(row.timelineEnd) ?? addOneDay(start);
 
-                    return {
-                        row,
-                        start,
-                        end,
-                    };
-                })
-                .filter(
-                    (item): item is { row: TimelineRow; start: Date; end: Date } => item !== null
-                );
-
-            const subitemStart =
-                validRows.length > 0
-                    ? new Date(Math.min(...validRows.map((r) => r.start.getTime())))
-                    : new Date(2026, 0, 1);
-
-            const subitemEnd =
-                validRows.length > 0
-                    ? new Date(Math.max(...validRows.map((r) => r.end.getTime())))
-                    : subitemStart;
-
-            tasks.push({
-                id: subitemId,
-                parent: clientId,
-                text: subitem.name || "Unnamed Subitem",
-                start: subitemStart,
-                duration: daysBetween(subitemStart, subitemEnd),
-                progress: 0,
-                type: "summary",
-                open: true,
-            });
-
-            validRows.forEach(({ row, start, end }) => {
-                tasks.push({
-                    id: nextId++,
-                    parent: subitemId,
-                    text: row.name || "Untitled Step",
-                    start,
-                    duration: daysBetween(start, end),
-                    progress: progressToNumber(row.subProgress),
-                    type: "task",
+                items.push({
+                    id: `${client.id}-${subitem.id}-${row.id}`,
+                    startDate: start,
+                    endDate: end,
+                    occupancy: row.subProgress === "Done" ? 100 : row.subProgress === "Started" ? 60 : 20,
+                    title: row.name || "Untitled Step",
+                    subtitle: subitem.name || "Unnamed Subitem",
+                    description:
+                        [
+                            row.person ? `Owner: ${row.person}` : "",
+                            row.remarks ? `Remarks: ${row.remarks}` : "",
+                            subitem.status ? `Subitem status: ${subitem.status}` : "",
+                        ]
+                            .filter(Boolean)
+                            .join(" • ") || "No details",
+                    bgColor: getColor(row.subProgress),
                 });
             });
         });
-    });
 
-    return tasks;
+        return {
+            id: client.id,
+            label: {
+                title: client.name || "Unnamed Client",
+                subtitle: client.company || client.people || "",
+            },
+            data: items.sort(
+                (a, b) => a.startDate.getTime() - b.startDate.getTime()
+            ),
+        };
+    });
 }
 
-
-const SCALES = [
-    { unit: "month", step: 1, format: "%M %Y" },
-    { unit: "day", step: 1, format: "%d" },
-];
-
-const options = [
-    {
-        id: "add-task",
-        text: "Add",
-        icon: "wxi-plus",
-        data: [{ id: "add-task:child", text: "Child task" }],
-    },
-    { comp: "separator" },
-    {
-        id: "edit-task",
-        text: "Edit",
-        icon: "wxi-edit",
-    },
-    { id: "cut-task", text: "Cut", icon: "wxi-content-cut" },
-];
-
-
-
 export default function GanttChart({ clients }: Props) {
-    const [mounted, setMounted] = useState(false);
-    const [api, setApi] = useState<IApi | null>(null);
+    const Scheduler = dynamic(() => import("@bitnoi.se/react-scheduler").then((mod) => mod.Scheduler), {
+        ssr: false
+    });
+    const [isLoading] = useState(false);
 
-    const tasks = useMemo(() =>  { const built = buildTasks(clients); console.log("final tasks", built); return built;}, [clients]);
-    
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const data = useMemo(() => buildSchedulerData(clients), [clients]);
+
     return (
-        <div className="min-h-[700px] overflow-auto"style={{ height: "700px", minWidth: "50%"}}>
-            <Willow>
-                <div className="willow-modified">
-                        <Gantt
-                            tasks={tasks}
-                            links={[]}
-                            scales={SCALES}
-                            start={new Date(2026, 0, 1)}
-                            end={new Date(2027, 0, 31)}
-                            init={setApi}
-                        />
-                    {api && <Editor api={api} />}
-                </div>
-            </Willow>
+        <div className="h-full min-h-[700px] w-full overflow-auto bg-white">
+            <Scheduler
+                data={data}
+                isLoading={isLoading}
+                onItemClick={(item) => {
+                    console.log("Clicked timeline item:", item);
+                }}
+                onFilterData={() => { }}
+                onClearFilterData={() => { }}
+                config={{
+                    zoom: 1,
+                    lang: "en",
+                    maxRecordsPerPage: 20,
+                    filterButtonState: 0,
+                    showThemeToggle:true,
+                }}
+            />
         </div>
     );
 }
