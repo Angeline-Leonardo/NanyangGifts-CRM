@@ -109,15 +109,13 @@ export function AssigneeMultiSelect({ profiles, selectedIds, onChange }: Props) 
                                     className={`flex w-full items-center justify-between rounded-md px-2 py-2 text-left text-xs ${checked ? 'bg-[#e7fdff]' : 'hover:bg-gray-50'
                                         }`}
                                 >
-                                    <div className="min-w-0">
-                                        <div className="truncate font-medium text-gray-800">
-                                            {p.full_name || 'Unnamed user'}
-                                        </div>
+                                    <input type="checkbox" checked={checked} readOnly className="h-3.5 w-3.5" />
+                                    <div className="min-w-0 px-2 flex-1">
                                         <div className="truncate text-gray-500">
                                             {p.email || ''}
                                         </div>
                                     </div>
-                                    <input type="checkbox" checked={checked} readOnly className="h-3.5 w-3.5" />
+                                    
                                 </button>
                             );
                         })}
