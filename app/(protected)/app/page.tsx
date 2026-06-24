@@ -1,5 +1,8 @@
 'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import { TopBar } from '../../../components/TopBar';
 import { Sidebar, SidePanel } from '../../../components/Sidebar';
 import { CRMBoard } from '../../../components/CRMBoard';
@@ -7,7 +10,8 @@ import { EmailPanel } from '../../../components/EmailPanel';
 import { ReportsPanel } from '../../../components/ReportsPanel';
 import { Client, Email, Notification } from '../../types';
 import { initialClients, initialEmails, initialNotifications } from '../../mockData';
-import GanttChart  from '../../../components/Gantt-Chart';
+import GanttChart from '../../../components/Gantt-Chart';
+
 const STORAGE_KEYS = {
   clients: 'procrm_clients_v2',
   emails: 'procrm_emails_v1',
@@ -23,6 +27,9 @@ function loadFromStorage<T>(key: string, fallback: T): T {
 }
 
 export default function App() {
+  const supabase = createClient();
+
+  const [user, setUser] = useState<User | null>(null);
   const [activePanel, setActivePanel] = useState<SidePanel>('crm');
   const [clients, setClients] = useState<Client[]>(() =>
     loadFromStorage(STORAGE_KEYS.clients, initialClients)
@@ -33,8 +40,31 @@ export default function App() {
   const [notifications, setNotifications] = useState<Notification[]>(() =>
     loadFromStorage(STORAGE_KEYS.notifications, initialNotifications)
   );
+  const [search, setSearch] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Persist to localStorage on every change
+  useEffect(() => {
+    const loadUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.clients, JSON.stringify(clients));
   }, [clients]);
@@ -64,13 +94,11 @@ export default function App() {
   }, []);
 
   const emailUnread = emails.filter(e => !e.read).length;
-  const [search, setSearch] = useState('');
-
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div className="h-screen flex overflow-hidden" style={{ background: '#f5f6f8' }}>
       <Sidebar
+        user={user}
         activePanel={activePanel}
         onChangePanel={setActivePanel}
         emailUnread={emailUnread}
@@ -80,6 +108,7 @@ export default function App() {
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <TopBar
+          user={user}
           notifications={notifications}
           onMarkRead={markNotifRead}
           onMarkAllRead={markAllNotifsRead}
@@ -107,7 +136,7 @@ export default function App() {
           )}
           {activePanel === 'ganttchart' && (
             <div className="flex-1 min-h-[700px] width-[400px] overflow-auto">
-            <GanttChart clients={clients} />
+              <GanttChart clients={clients} />
             </div>
           )}
         </main>

@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Sidebar } from "@/components/Sidebar";
+import { TopBar } from "@/components/TopBar";
 
 export default async function AuthGate({
     children,
@@ -7,11 +9,16 @@ export default async function AuthGate({
     children: React.ReactNode;
 }) {
     const supabase = await createClient();
-    const { data, error } = await supabase.auth.getUser();
+    const {
+        data: { user },
+        error,
+    } = await supabase.auth.getUser();
 
-    if (error || !data.user) {
+    if (error || !user) {
         redirect("/auth/login");
     }
 
-    return <>{children}</>;
+    return (
+            <>{children}</>
+    );
 }
