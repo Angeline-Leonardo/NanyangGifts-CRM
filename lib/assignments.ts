@@ -22,21 +22,21 @@ export async function fetchProfiles() {
 export async function fetchClientAssigneeIds(clientId: string) {
     const { data, error } = await supabase
         .from('client_assignees')
-        .select('profile_id')
+        .select('user_id')
         .eq('client_id', clientId);
 
     if (error) throw error;
-    return (data ?? []).map((row) => row.profile_id as string);
+    return (data ?? []).map((row) => row.user_id as string);
 }
 
 export async function fetchSubitemAssigneeIds(subitemId: string) {
     const { data, error } = await supabase
         .from('subitem_assignees')
-        .select('profile_id')
+        .select('user_id')
         .eq('subitem_id', subitemId);
 
     if (error) throw error;
-    return (data ?? []).map((row) => row.profile_id as string);
+    return (data ?? []).map((row) => row.user_id as string);
 }
 
 export async function saveClientAssignees(
