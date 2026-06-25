@@ -10,7 +10,85 @@ const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
     'Not Started': '#8b81da'
 };
 
-
+export const DEFAULT_TIMELINE_ROWS = [
+    {
+        id: 'sample',
+        name: 'Sample',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: '',
+    },
+    {
+        id: 'production',
+        name: 'Production 📦',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: 'Sample',
+    },
+    {
+        id: 'productionstatus',
+        name: 'Check Production Status  (+3 from production start)',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: '',
+    },
+    {
+        id: 'localshipping',
+        name: 'Local Shipping 🚚',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: 'Production 📦',
+    },
+    {
+        id: 'seaairfreight',
+        name: 'Sea/Air Freight ⛵✈️',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: 'Local Shipping 🚚',
+    },
+    {
+        id: 'shipmentstatus',
+        name: 'Check Shipment Status (+3 from shipment start)',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: '',
+    },
+    {
+        id: 'nbd',
+        name: 'NBD',
+        person: '',
+        remarks: '',
+        subProgress: 'Not Started',
+        timelineStart: '',
+        timelineEnd: '',
+        duration: '',
+        dependency: '',
+    },
+];
 export function TimelineSection({ rows, onUpdate }: {
     rows: TimelineRow[]; onUpdate: (rows: TimelineRow[]) => void;
 }) {
@@ -67,22 +145,20 @@ export function TimelineSection({ rows, onUpdate }: {
                                         />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
-                                        {row.timelineStart && row.timelineEnd ? (
-                                            <span className="text-xs text-gray-600 whitespace-nowrap">
-                                                {new Date(row.timelineStart).toLocaleDateString('en-SG', { month: 'short', day: 'numeric' })}
-                                                {' – '}
-                                                {new Date(row.timelineEnd).toLocaleDateString('en-SG', { month: 'short', day: 'numeric' })}
-                                            </span>
-                                        ) : (
-                                            <div className="flex gap-1">
-                                                <input type="date" value={row.timelineStart}
-                                                    onChange={e => updateRow(row.id, 'timelineStart', e.target.value)}
-                                                    className="text-xs border-none outline-none bg-transparent w-20 cursor-pointer" />
-                                                <input type="date" value={row.timelineEnd}
-                                                    onChange={e => updateRow(row.id, 'timelineEnd', e.target.value)}
-                                                    className="text-xs border-none outline-none bg-transparent w-20 cursor-pointer" />
-                                            </div>
-                                        )}
+                                        <div className="flex gap-1">
+                                            <input
+                                                type="date"
+                                                value={row.timelineStart || ''}
+                                                onChange={e => updateRow(row.id, 'timelineStart', e.target.value)}
+                                                className="text-xs border border-gray-200 rounded px-1 py-1 bg-white w-32 cursor-pointer"
+                                            />
+                                            <input
+                                                type="date"
+                                                value={row.timelineEnd || ''}
+                                                onChange={e => updateRow(row.id, 'timelineEnd', e.target.value)}
+                                                className="text-xs border border-gray-200 rounded px-1 py-1 bg-white w-32 cursor-pointer"
+                                            />
+                                        </div>
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
                                         <EditableCell value={row.duration} onChange={v => updateRow(row.id, 'duration', v)} />

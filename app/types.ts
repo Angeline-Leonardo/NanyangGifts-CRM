@@ -58,7 +58,6 @@ export interface TimelineRow {
   timelineEnd: string;
   duration: string;
   dependency: string;
-  status: string;
 }
 
 export interface Subitem {
@@ -146,7 +145,7 @@ export interface Client {
   color: string;
   subitems: Subitem[];
   activityLog?: ActivityEntry[];
-  assignedProfileIds?: string;
+  assignedProfileIds?: string[];
 }
 export type ClientAssigneeMap = Record<string, string[]>;
 

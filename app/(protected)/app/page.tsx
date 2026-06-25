@@ -1,144 +1,113 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import React, { useCallback, useEffect, useState } from 'react';
+import type { Client } from '../../types';
+import { fetchClientsWithSubitems } from '@/lib/crm';
+import { CRMBoard } from '@/components/CRMBoard';
+import Sidebar, { type SidePanel } from '../../../components/Sidebar';
+import Topbar from '../../../components/TopBar';
 import type { User } from '@supabase/supabase-js';
-import { TopBar } from '../../../components/TopBar';
-import { Sidebar, SidePanel } from '../../../components/Sidebar';
-import { CRMBoard } from '../../../components/CRMBoard';
-import { EmailPanel } from '../../../components/EmailPanel';
-import { ReportsPanel } from '../../../components/ReportsPanel';
-import { Client, Email, Notification } from '../../types';
-import { initialClients, initialEmails, initialNotifications } from '../../mockData';
-import GanttChart from '../../../components/Gantt-Chart';
+import { createClient as createSupabaseClient } from '@/lib/supabase/client';
+import { ReportsPanel } from '@/components/ReportsPanel';
+import { EmailPanel } from '@/components/EmailPanel';
+import GanttChart from '@/components/Gantt-Chart';
 
-const STORAGE_KEYS = {
-  clients: 'procrm_clients_v2',
-  emails: 'procrm_emails_v1',
-  notifications: 'procrm_notifications_v1',
-};
-
-function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored) return JSON.parse(stored) as T;
-  } catch {}
-  return fallback;
-}
-
-export default function App() {
-  const supabase = createClient();
-
+export default function Page() {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [search, setSearch] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [activePanel, setActivePanel] = useState<SidePanel>('crm');
-  const [clients, setClients] = useState<Client[]>(() =>
-    loadFromStorage(STORAGE_KEYS.clients, initialClients)
-  );
-  const [emails, setEmails] = useState<Email[]>(() =>
-    loadFromStorage(STORAGE_KEYS.emails, initialEmails)
-  );
-  const [notifications, setNotifications] = useState<Notification[]>(() =>
-    loadFromStorage(STORAGE_KEYS.notifications, initialNotifications)
-  );
-  const [search, setSearch] = useState('');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const reloadClients = useCallback(async () => {
+    try {
+      const rows = await fetchClientsWithSubitems();
+      console.log('Fetched clients:', rows);
+      setClients(rows);
+    } catch (error) {
+      console.error('Failed to load clients', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    void reloadClients();
+  }, [reloadClients]);
 
   useEffect(() => {
     const loadUser = async () => {
+      const supabase = createSupabaseClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user);
+      setUser(user ?? null);
     };
 
-    loadUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.clients, JSON.stringify(clients));
-  }, [clients]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.emails, JSON.stringify(emails));
-  }, [emails]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(notifications));
-  }, [notifications]);
-
-  const markNotifRead = useCallback((id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    void loadUser();
   }, []);
 
-  const markAllNotifsRead = useCallback(() => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  }, []);
+  const renderPanel = () => {
+    switch (activePanel) {
+      case 'crm':
+        return (
+          <CRMBoard
+            clients={clients}
+            reloadClients={reloadClients}
+            search={search}
+          />
+        );
 
-  const markEmailRead = useCallback((id: string) => {
-    setEmails(prev => prev.map(e => e.id === id ? { ...e, read: true } : e));
-  }, []);
+      case 'ganttchart':
+        return (
+          <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            {
+              <div className="flex-1 min-h-[700px] width-[400px] overflow-auto">
+                <GanttChart clients={clients} />
+              </div>
+            }
+          </div>
+        );
 
-  const deleteEmail = useCallback((id: string) => {
-    setEmails(prev => prev.filter(e => e.id !== id));
-  }, []);
+      case 'emails':
+        return (
+          <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            Outlook goes here
+          </div>
+        );
 
-  const emailUnread = emails.filter(e => !e.read).length;
+      case 'reports':
+        return (
+          <div className="flex h-full items-center justify-center text-sm text-gray-500">
+              <ReportsPanel clients={clients} />
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="h-screen flex overflow-hidden" style={{ background: '#f5f6f8' }}>
+    <div className="flex h-screen bg-[#f8fafc]">
       <Sidebar
-        user={user}
         activePanel={activePanel}
         onChangePanel={setActivePanel}
-        emailUnread={emailUnread}
+        emailUnread={0}
         collapsed={sidebarCollapsed}
-        onToggleCollapsed={() => setSidebarCollapsed(prev => !prev)}
+        onToggleCollapsed={() => setSidebarCollapsed((v) => !v)}
+        user={user}
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <TopBar
-          user={user}
-          notifications={notifications}
-          onMarkRead={markNotifRead}
-          onMarkAllRead={markAllNotifsRead}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <Topbar
           value={search}
           onChange={setSearch}
+          onMarkAllRead={() => { }}
+          notifications={[]}
+          user={user}
         />
 
-        <main className="flex flex-col h-screen overflow-hidden">
-          {activePanel === 'crm' && (
-            <CRMBoard
-              clients={clients}
-              onUpdateClients={setClients}
-              search={search}
-            />
-          )}
-          {activePanel === 'emails' && (
-            <EmailPanel
-              emails={emails}
-              onMarkRead={markEmailRead}
-              onDeleteEmail={deleteEmail}
-            />
-          )}
-          {activePanel === 'reports' && (
-            <ReportsPanel clients={clients} />
-          )}
-          {activePanel === 'ganttchart' && (
-            <div className="flex-1 min-h-[700px] width-[400px] overflow-auto">
-              <GanttChart clients={clients} />
-            </div>
-          )}
+        <main className="min-h-0 flex-1">
+          {renderPanel()}
         </main>
       </div>
     </div>

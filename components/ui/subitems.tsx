@@ -5,11 +5,11 @@ import { useState, useMemo } from 'react';
 import { StatusBadge } from "./statusbadge";
 import { EditableCell } from "./editablecell";
 import { Calendar, CreditCard, Trash2, Package, FileText, Plus } from "lucide-react";
-import { TimelineSection } from './timeline';
 import { PaymentsSection } from './payments';
 import { SamplesSection } from './sample';
 import type { Profile } from "../../app/types";
 import { AssigneeMultiSelect } from "./assignee-multiselect";
+import { TimelineSection, DEFAULT_TIMELINE_ROWS } from './timeline';
 
 const SUBITEM_STATUS_COLORS: Record<string, string> = {
     'To Quote': '#5cc9d5',
@@ -50,7 +50,24 @@ export function SubitemsTable({
 }) {
     const statusOpts = ['', 'To Quote', 'Verified', 'Awarded', 'Initial Quote', 'Quoted', 'Shortlisted', 'Failed'];
     const localOverseasOpts = ['Local', 'Overseas'];
+    const newSubitem = {
+        id: crypto.randomUUID(),
+        name: '',
+        timelineRows: [
+            {
+                id: crypto.randomUUID(),
+                name: 'Sample',
+                person: '',
+                remarks: '',
+                subProgress: 'Not Started',
+                timelineStart: '',
+                timelineEnd: '',
+                duration: '',
+                dependency: ''
 
+            }
+        ]
+    }
 
 
     const cols = [
@@ -92,7 +109,7 @@ export function SubitemsTable({
             visible: true,
         });
     };
-    
+
     const parseNumber = (value: string | number | undefined) => {
         if (typeof value === "number") return value;
         if (!value) return 0;
@@ -224,7 +241,14 @@ export function SubitemsTable({
                                                 <Calendar size={9} />Timeline
                                             </button>
                                             <button
-                                                onClick={() => onUpdateSubitem(sub.id, { showPayments: !sub.showPayments, showTimeline: false, showSample: false })}
+                                                onClick={() =>
+                                                    onUpdateSubitem(sub.id, {
+                                                        timelineRows: sub.timelineRows?.length ? sub.timelineRows : DEFAULT_TIMELINE_ROWS,
+                                                        showTimeline: !sub.showTimeline,
+                                                        showPayments: false,
+                                                        showSample: false,
+                                                    })
+                                                }
                                                 className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 transition transform active:scale-95 duration-2  ${sub.showPayments ? 'bg-[#f291b6] text-white' : 'bg-transparent text-[#e87da6] hover:bg-pink-100 border border-pink-200'
                                                     }`}
                                             >
@@ -312,8 +336,8 @@ export function SubitemsTable({
                                     <tr>
                                         <td colSpan={18} className="p-0 bg-blue-50/20">
                                             <TimelineSection
-                                                rows={sub.timelineRows}
-                                                onUpdate={rows => onUpdateSubitem(sub.id, { timelineRows: rows })}
+                                                rows={sub.timelineRows?.length ? sub.timelineRows : DEFAULT_TIMELINE_ROWS}
+                                                onUpdate={(rows) => onUpdateSubitem(sub.id, { timelineRows: rows })}
                                             />
                                         </td>
                                     </tr>

@@ -66,7 +66,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   );
 };
 
-export function TopBar({
+export default function TopBar({
   value='',
   onChange= () => {},
   placeholder = 'Search clients, items, people...',

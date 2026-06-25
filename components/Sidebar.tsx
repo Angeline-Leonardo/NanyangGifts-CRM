@@ -23,7 +23,7 @@ const navItems: { id: SidePanel; icon: React.ReactNode; label: string }[] = [
   { id: 'ganttchart', icon: <SquareChartGantt size={17.5} />, label: 'Gantt Chart' },
 ];
 
-export function Sidebar({
+export default function Sidebar({
   activePanel,
   onChangePanel,
   emailUnread,
