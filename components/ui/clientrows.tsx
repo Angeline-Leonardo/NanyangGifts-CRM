@@ -112,7 +112,7 @@ export function ClientRow({
     const [closeFiles, setCloseFiles] = useState<File[]>([]);
     const [closeConfirmed, setCloseConfirmed] = useState(false);
     const [showActivityLog, setShowActivityLog] = useState(false);
-     
+
     function displayLogValue(value: unknown){
         if (value == null || value === '') return 'empty';
 

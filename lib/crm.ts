@@ -2,8 +2,9 @@
 // map db rows to client
 // map client/subitem updates back into db column names
 // expose crud functions
+
 import { createClient } from '@/lib/supabase/client';
-import type { Client, Subitem, ActivityEntry } from '@/app/types';
+import type { Client, Subitem, ActivityEntry, ClientAssigneeMap } from '@/app/types';
 
 const supabase = createClient();
 
@@ -220,7 +221,9 @@ async function insertActivityLog(params: {
 
     const actorEmail = user?.email ?? 'Unknown user';
 
-    const { error } = await supabase.from('activity_log').insert({
+    const { data, error } = await supabase
+        .from('activity_log')
+        .insert({
         client_id: params.clientId,
         subitem_id: params.subitemId ?? null,
         actor_name: actorEmail,
@@ -230,11 +233,15 @@ async function insertActivityLog(params: {
         new_value: params.newValue ?? null,
         subitem_name: params.subitemName ?? null,
         created_at: new Date().toISOString(),
-    });
+    })
+    .select('*')
+    .single();
 
     if (error) {
         console.error('insertActivityLog error:', error);
+        throw error;
     }
+    return data;
 }
 export async function fetchClientsWithSubitems() {
     const { data: clientsData, error: clientsError } = await supabase
