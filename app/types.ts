@@ -1,5 +1,3 @@
-import { Stringifier } from "postcss";
-
 export type ClientStatus =
   | 'New Lead'
   | 'Contacted'
@@ -147,6 +145,7 @@ export interface Client {
   subitems: Subitem[];
   activityLog?: ActivityEntry[];
   assignedProfileIds?: string[];
+  client_assignees?: ClientAssigneeRow[];
 }
 export type ClientAssigneeMap = Record<string, string[]>;
 

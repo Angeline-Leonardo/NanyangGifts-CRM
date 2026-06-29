@@ -9,21 +9,44 @@ export type ProfileOption = {
     avatar_url?: string | null;
 };
 
+export async function fetchClientAssigneeMap() {
+    const { data, error } = await supabase
+        .from('client_assignees')
+        .select('client_id, user_id');
 
+    if (error) throw error;
+
+    const map: Record<string, string[]> = {};
+
+    for (const row of data ?? []) {
+        if (!map[row.client_id]) {
+            map[row.client_id] = [];
+        }
+        map[row.client_id].push(row.user_id);
+    }
+
+    return map;
+}
 export async function addClientAssignee(
     clientId: string,
     userId: string,
     currentUserId?: string | null
 ) {
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('client_assignees')
         .insert({
             client_id: clientId,
             user_id: userId,
             assigned_by: currentUserId ?? null,
-        });
+        })
+        .select('*');
+
+    console.log('addClientAssignee data', data);
+    console.log('addClientAssignee error', error);
 
     if (error) throw error;
+
+    return data;
 }
 
 export async function fetchProfiles() {

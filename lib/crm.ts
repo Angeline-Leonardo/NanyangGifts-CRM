@@ -193,7 +193,7 @@ async function logTimelineRowDiffs(params: {
                 subitemId: params.subitemId,
                 subitemName: params.subitemName,
                 action: 'subitem_field_changed',
-                fieldName: 'timeline row ${newRow.name ?? rowId} added',
+                fieldName: `timeline row ${newRow.name ?? rowId} added`,
                 oldValue: null,
                 newValue: newRow,
             });
@@ -362,8 +362,20 @@ export async function fetchClientsWithSubitems() {
     const { data: clientsData, error: clientsError } = await supabase
         .from('clients')
         .select(`
-      *,
-        subitems (*)
+    *,
+    subitems (*),
+    client_assignees (
+        client_id,
+        user_id,
+        assigned_by,
+        assigned_at,
+        profiles!client_assignees_user_id_fkey (
+        id,
+        full_name,
+        email,
+        avatar_url
+        )
+    )
     `)
         .order('date_created', { ascending: false });
 

@@ -7,6 +7,7 @@ import { createClient as createSupabaseClient } from '@/lib/supabase/client';
 import { ClientRow, CLIENT_STATUSES, STATUS_COLORS } from './ui/clientrows';
 import { fetchProfiles, saveClientAssignees, saveSubitemAssignees } from '@/lib/assignments';
 import { createClientRow, updateClientRow, deleteClientRow, createSubitemRow, updateSubitemRow, deleteSubitemRow } from '@/lib/crm';
+import { fetchClientAssigneeMap } from '@/lib/assignments';
 
 const CLIENT_HEADER_COLS = [
   { label: '', width: 60 },
@@ -52,16 +53,6 @@ interface CRMBoardProps {
   search?: string;
 }
 
-export async function fetchAllClientAssignees(): Promise<ClientAssigneeMap> {
-  const supabase = createSupabaseClient()
-  const { data } = await supabase
-    .from('client_assignees')
-    .select('client_id, user_id')
-  return (data ?? []).reduce((acc, row) => {
-    acc[row.client_id] = [...(acc[row.client_id] ?? []), row.user_id]
-    return acc
-  }, {} as ClientAssigneeMap)
-}
 
 export async function fetchAllSubitemAssignees(): Promise<SubitemAssigneeMap> {
   const supabase = createSupabaseClient()
@@ -97,7 +88,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const filterRef = useRef<HTMLDivElement>(null);
-
+// edit here
   useEffect(() => {
     const loadAssignments = async () => {
       try {
@@ -111,7 +102,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
         ] = await Promise.all([
           fetchProfiles(),
           supabase.auth.getUser(),
-          fetchAllClientAssignees(),
+          fetchClientAssigneeMap(),
           fetchAllSubitemAssignees(),
         ]);
 
@@ -273,11 +264,16 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
   const addClient = useCallback(async () => {
     try {
       await createClientRow(currentUserId ?? null);
+      const [assigneeMap] = await Promise.all([
+        fetchClientAssigneeMap(),
+        reloadClients(),
+      ]);
+      setClientAssignees(assigneeMap);
       await reloadClients();
     } catch (error: any) {
       console.error('Failed to add client', error);
     }
-  }, [reloadClients]);
+  }, [currentUserId, reloadClients]);
 
   const deleteClient = useCallback(
     async (clientId: string) => {
