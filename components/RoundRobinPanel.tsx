@@ -56,7 +56,7 @@ export function RoundRobinAdminPanel() {
             <div className="mb-4">
                 <h2 className="text-sm font-semibold text-gray-900">Sales round robin</h2>
                 <p className="text-xs text-gray-500">
-                    Current order and assignment pool.
+                    Current order and assignment pool:
                 </p>
             </div>
 
