@@ -88,7 +88,8 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const filterRef = useRef<HTMLDivElement>(null);
-// edit here
+
+
   useEffect(() => {
     const loadAssignments = async () => {
       try {
@@ -341,7 +342,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
       <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 bg-white flex-shrink-0">
         <button
           onClick={addClient}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
         >
           <Plus size={13} />
           Add Client
@@ -349,7 +350,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
 
         <button
           onClick={toggleExpandAll}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
         >
           {allExpanded ? <ChevronsUp size={14} /> : <ChevronsDown size={14} />}
           {allExpanded ? 'Collapse All' : 'Expand All'}
@@ -358,7 +359,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
         <div ref={filterRef} className="relative">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
           >
             <Filter size={13} />
             {filterStatus === 'All' ? 'Filter by Status' : filterStatus}
@@ -369,7 +370,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
             <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 min-w-44 py-1 max-h-80 overflow-y-auto">
               <button
                 onClick={() => { setFilterStatus('All'); setShowFilter(false); }}
-                className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
+                className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
               >
                 <span className="w-2.5 h-2.5 rounded-sm bg-gray-300" />
                 All Clients
@@ -382,7 +383,7 @@ export function CRMBoard({ clients, reloadClients, search = '' }: CRMBoardProps)
                 <button
                   key={st}
                   onClick={() => { setFilterStatus(st); setShowFilter(false); }}
-                  className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
+                  className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
                 >
                   <span className="w-2.5 h-2.5 rounded-sm" style={{ background: STATUS_COLORS[st] }} />
                   <span className="flex-1">{st}</span>

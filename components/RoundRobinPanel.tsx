@@ -48,7 +48,7 @@ export function RoundRobinAdminPanel() {
     }
 
     if (loading) {
-        return <div className="text-sm text-gray-500">Loading round robin queue...</div>;
+        return <div className="text-m text-gray-500">Loading round robin queue...</div>;
     }
 
     return (
@@ -82,10 +82,6 @@ export function RoundRobinAdminPanel() {
                                     </span>
                                 )}
                             </div>
-
-                            <p className="text-xs text-gray-500">
-                                Position {row.position} · {row.email}
-                            </p>
                         </div>
 
                         <div className="flex items-center gap-2">
