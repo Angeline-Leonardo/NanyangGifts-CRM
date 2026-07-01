@@ -182,13 +182,13 @@ export default function TopBar({
         </button>
         {showSettings && (
           <div className="absolute right-0 top-full mt-1 w-56 bg-white font-semibold rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden">
-            <div className="px-4 py-2.5 bg-gray-50 border-b">
+            <div className="px-4 py-2 bg-gray-50 border-b">
               <span className="text-xs font-semibold text-gray-700">Settings</span>
             </div>
-            {['General', 'Team Members', 'Permissions', 'Integrations', 'Billing', 'Notifications'].map(item => (
+            {['General', 'Permissions', 'Notifications'].map(item => (
               <button
                 key={item}
-                className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-50 border-b border-gray-50"
+                className="w-full text-left px-4 py-3 text-xs text-gray-700 hover:bg-gray-50 border-b border-gray-50"
               >
                 {item}
               </button>
