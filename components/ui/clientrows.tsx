@@ -3,13 +3,13 @@
 
 import { Client, Subitem, ClientStatus, ReplyStatus, ActivityEntry, Profile } from "../../app/types";
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Activity, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Activity, Trash2, ReceiptText } from "lucide-react";
 import { EditableCell } from "./editablecell";
 import { StatusBadge } from "./statusbadge";
 import { SubitemsTable } from "./subitems";
 import { AssigneeMultiSelect } from "./assignee-multiselect";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "../ui/alert-dialog";
-
+import { useGenerateEstimate } from '../hooks/use-generate-estimate-button';
 export const CLIENT_STATUSES: ClientStatus[] = [
     "New Lead",
     "Contacted",
@@ -60,7 +60,7 @@ export const CHANNEL_COLORS: Record<string, string> = {
     "E-comm": "#1cdcbc",
 };
 
-type ClientRowProps = {
+export type ClientRowProps = {
     client: Client;
     isSelected: boolean;
     isExpanded: boolean;
@@ -103,6 +103,12 @@ export function ClientRow({
     const [closeFiles, setCloseFiles] = useState<File[]>([]);
     const [closeConfirmed, setCloseConfirmed] = useState(false);
     const [showActivityLog, setShowActivityLog] = useState(false);
+    const{
+        handleGenerateEstimate,
+        isGeneratingEstimate,
+        estimateError,
+    } = useGenerateEstimate();
+
 // for activity log text
     function displayLogValue(value: unknown){
         if (value == null || value === '') return 'empty';
@@ -273,6 +279,17 @@ export function ClientRow({
                             </div>
                         </div>
                     )}
+                        <button
+                            onClick={() => handleGenerateEstimate(client.id)}
+                            disabled={isGeneratingEstimate}
+                            className="px-2 py-1 text-[10px] font-medium text-cyan-500 hover:bg-gray-50 hover:text-cyan-600 transition transform active:scale-95 duration-150"
+                        >
+                            {isGeneratingEstimate ? 'Generating...' : ''}<ReceiptText size={15} />
+                        </button>
+                        {estimateError && (
+                            <div className="mt-1 text-[11px] text-red-600">{estimateError}</div>
+                        )}
+                    
                 </div>
 
                 <div
