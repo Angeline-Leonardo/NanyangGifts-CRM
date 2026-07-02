@@ -104,6 +104,11 @@ export async function POST(req: NextRequest) {
             const qty = Number(subitem.qty || 1);
             const unitPrice = Number(subitem.price || subitem.up || 0);
             const amount = (Number.isFinite(qty) ? qty : 1) * (Number.isFinite(unitPrice) ? unitPrice : 0);
+            const localOverseas = (subitem.local_overseas ?? '').trim().toLowerCase();
+            const taxCodeValue =
+                localOverseas === 'overseas'
+                ? '21'
+                : '59';
 
             lines.push({
                 LineNum: i + 1,
@@ -118,7 +123,7 @@ export async function POST(req: NextRequest) {
                     Qty: Number.isFinite(qty) ? qty : 1,
                     UnitPrice: Number.isFinite(unitPrice) ? unitPrice : 0,
                     TaxCodeRef: {
-                        value: '59',
+                        value: taxCodeValue,
                     }
                 },
             });
