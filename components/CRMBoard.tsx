@@ -8,7 +8,7 @@ import { ClientRow, CLIENT_STATUSES, STATUS_COLORS } from './ui/clientrows';
 import { fetchProfiles, saveClientAssignees, saveSubitemAssignees } from '@/lib/assignments';
 import { createClientRow, updateClientRow, deleteClientRow, createSubitemRow, updateSubitemRow, deleteSubitemRow } from '@/lib/crm';
 import { fetchClientAssigneeMap } from '@/lib/assignments';
-
+import { GenerateOcfModal } from './Generate-OCF-Modal';
 const CLIENT_HEADER_COLS = [
   { label: '', width: 60 },
   { label: 'Client', width: 180 },
@@ -83,6 +83,18 @@ export function CRMBoard({ clients, setClients, reloadClients, search = '' }: CR
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const filterRef = useRef<HTMLDivElement>(null);
+  const [ocfClient, setOcfClient] = useState<Client | null>(null);
+  const [isOcfModalOpen, setIsOcfModalOpen] = useState(false);
+
+  function handleOpenOcfModal(client: Client) {
+    setOcfClient(client);
+    setIsOcfModalOpen(true);
+  }
+
+  function handleCloseOcfModal() {
+    setIsOcfModalOpen(false);
+    setOcfClient(null);
+  }
 
 
   useEffect(() => {
@@ -522,6 +534,7 @@ const addClient = useCallback(async () => {
                         return next;
                       })
                     }
+                    onOpenOcfModal={handleOpenOcfModal}
                     isSelected={selectedIds.has(client.id)}
                     onToggleSelect={() => toggleSelect(client.id)}
                     onUpdate={(updates) => updateClient(client.id, updates)}
@@ -540,6 +553,13 @@ const addClient = useCallback(async () => {
                     onChangeSubitemAssignees={handleSubitemAssigneesChange}
                   />
                 ))}
+              <GenerateOcfModal
+                open={isOcfModalOpen}
+                client={ocfClient}
+                onClose={handleCloseOcfModal}
+                onCreated={({ internalUrl }) => {
+                  window.location.href = internalUrl;
+                }}/>
             </React.Fragment>
           ))}
         </div>

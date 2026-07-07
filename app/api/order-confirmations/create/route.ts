@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { type CookieOptions, createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 type CreateOcfBody = {
     clientId: string;
@@ -13,29 +12,8 @@ type CreateOcfBody = {
 };
 
 export async function POST(req: NextRequest) {
-    const cookieStore = await cookies();
-
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) {
-                    return cookieStore.get(name)?.value;
-                },
-                set() { },
-                remove() { },
-            },
-        }
-    );
-
     try {
-        const body = (await req.json()) as CreateOcfBody;
-        const { clientId, estimatedDeliveryDate, importantNotes, itemUploads } = body;
-
-        if (!clientId) {
-            return NextResponse.json({ error: 'Missing clientId' }, { status: 400 });
-        }
+        const supabase = await createClient();
 
         const {
             data: { user },
@@ -43,11 +21,22 @@ export async function POST(req: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (authError || !user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const body = (await req.json()) as CreateOcfBody;
+        const { clientId, estimatedDeliveryDate, importantNotes, itemUploads } = body;
+
+        if (!clientId) {
+            return NextResponse.json({ error: "Missing clientId" }, { status: 400 });
+        }
+
+        if (!Array.isArray(itemUploads)) {
+            return NextResponse.json({ error: "itemUploads must be an array" }, { status: 400 });
         }
 
         const { data: client, error: clientError } = await supabase
-            .from('clients')
+            .from("clients")
             .select(`
         id,
         name,
@@ -59,24 +48,24 @@ export async function POST(req: NextRequest) {
             assigned_by,
             profiles (
             id,
-            full_name,
             email,
+            full_name,
             contact_number
             )
         )
     `)
-            .eq('id', clientId)
+            .eq("id", clientId)
             .single();
 
         if (clientError || !client) {
-            return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+            return NextResponse.json({ error: "Client not found" }, { status: 404 });
         }
 
         const { data: awardedSubitems, error: subitemsError } = await supabase
-            .from('subitems')
-            .select('id, client_id, name, qty, description, status')
-            .eq('client_id', clientId)
-            .eq('status', 'Awarded');
+            .from("subitems")
+            .select("id, client_id, name, qty, description, status")
+            .eq("client_id", clientId)
+            .eq("status", "Awarded");
 
         if (subitemsError) {
             return NextResponse.json({ error: subitemsError.message }, { status: 500 });
@@ -84,7 +73,7 @@ export async function POST(req: NextRequest) {
 
         if (!awardedSubitems || awardedSubitems.length === 0) {
             return NextResponse.json(
-                { error: 'No awarded subitems found for this client' },
+                { error: "No awarded subitems found for this client" },
                 { status: 400 }
             );
         }
@@ -103,7 +92,7 @@ export async function POST(req: NextRequest) {
         for (const subitem of awardedSubitems) {
             if (!uploadMap.has(subitem.id)) {
                 return NextResponse.json(
-                    { error: `Missing uploaded image for awarded subitem ${subitem.name}` },
+                    { error: `Missing uploaded image for awarded subitem "${subitem.name}"` },
                     { status: 400 }
                 );
             }
@@ -112,33 +101,33 @@ export async function POST(req: NextRequest) {
         for (const upload of itemUploads) {
             if (!awardedIds.has(upload.subitemId)) {
                 return NextResponse.json(
-                    { error: 'itemUploads contains a subitem that is not awarded for this client' },
+                    { error: "itemUploads contains an invalid subitemId" },
                     { status: 400 }
                 );
             }
         }
 
         const { data: ocf, error: ocfError } = await supabase
-            .from('order_confirmations')
+            .from("order_confirmations")
             .insert({
                 client_id: client.id,
                 generated_by: user.id,
                 client_name_snapshot: client.name,
                 company_snapshot: client.company,
                 salesperson_ids: assignees.map((a: any) => a.id),
-                salesperson_name: defaultSalesperson?.full_name ?? '',
-                salesperson_email: defaultSalesperson?.email ?? '',
-                salesperson_contact_number: defaultSalesperson?.contact_number ?? '',
+                salesperson_name: defaultSalesperson?.full_name ?? "",
+                salesperson_email: defaultSalesperson?.email ?? "",
+                salesperson_contact_number: defaultSalesperson?.contact_number ?? "",
                 estimated_delivery_date: estimatedDeliveryDate ?? null,
-                important_notes: importantNotes ?? '',
-                status: 'draft',
+                important_notes: importantNotes ?? "",
+                status: "draft",
             })
             .select()
             .single();
 
         if (ocfError || !ocf) {
             return NextResponse.json(
-                { error: ocfError?.message ?? 'Failed to create OCF' },
+                { error: ocfError?.message ?? "Failed to create OCF" },
                 { status: 500 }
             );
         }
@@ -153,14 +142,14 @@ export async function POST(req: NextRequest) {
         }));
 
         const { error: itemsError } = await supabase
-            .from('order_confirmation_items')
+            .from("order_confirmation_items")
             .insert(itemRows);
 
         if (itemsError) {
-            await supabase.from('order_confirmations').delete().eq('id', ocf.id);
+            await supabase.from("order_confirmations").delete().eq("id", ocf.id);
 
             return NextResponse.json(
-                { error: itemsError.message ?? 'Failed to create OCF items' },
+                { error: itemsError.message ?? "Failed to create OCF items" },
                 { status: 500 }
             );
         }
@@ -173,7 +162,7 @@ export async function POST(req: NextRequest) {
         });
     } catch (error: any) {
         return NextResponse.json(
-            { error: error?.message ?? 'Unexpected server error' },
+            { error: error?.message ?? "Unexpected server error" },
             { status: 500 }
         );
     }
