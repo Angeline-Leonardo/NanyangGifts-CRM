@@ -3,7 +3,7 @@
 
 import { Client, Subitem, ClientStatus, ReplyStatus, ActivityEntry, Profile } from "../../app/types";
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Activity, Trash2, ReceiptText } from "lucide-react";
+import { ChevronDown, ChevronRight, Activity, Trash2, ReceiptText, FileBox } from "lucide-react";
 import { EditableCell } from "./editablecell";
 import { StatusBadge } from "./statusbadge";
 import { SubitemsTable } from "./subitems";
@@ -11,6 +11,7 @@ import { AssigneeMultiSelect } from "./assignee-multiselect";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "../ui/alert-dialog";
 import { useGenerateEstimate } from '../hooks/use-generate-estimate-button';
 import { Tooltip  } from "radix-ui";
+import { TooltipArrow } from "@radix-ui/react-tooltip";
 
 export const CLIENT_STATUSES: ClientStatus[] = [
     "New Lead",
@@ -318,6 +319,20 @@ export function ClientRow({
                         {estimateSuccess && (
                             <div className="mt-1 text-[11px] text-teal-600">Successfully generated</div>
                         )}
+
+                    <Tooltip.Provider>
+                        <Tooltip.Root>
+                            <Tooltip.Trigger asChild>
+                                <button
+                                className="px-2 py-2 text-[10px] font-medium text-teal-500"
+                                > <FileBox size={15} color="#7BCBD5" /></button>
+                            </Tooltip.Trigger>
+                            <Tooltip.Portal>
+                                <Tooltip.Content className="TooltipContent">Generate Order Confirmation Form<Tooltip.Arrow className="TooltipArrow" /></Tooltip.Content>
+                            </Tooltip.Portal>
+                        </Tooltip.Root>
+
+                    </Tooltip.Provider>
                     
                 </div>
 
