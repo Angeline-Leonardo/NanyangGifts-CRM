@@ -5,6 +5,7 @@ type CreateOcfBody = {
     clientId: string;
     estimatedDeliveryDate?: string | null;
     importantNotes?: string | null;
+    estimatedDeliveryNotes?: string | null;
     itemUploads: Array<{
         subitemId: string;
         imagePath: string | null;
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = (await req.json()) as CreateOcfBody;
-        const { clientId, estimatedDeliveryDate, importantNotes, itemUploads } = body;
+        const { clientId, estimatedDeliveryDate, importantNotes, estimatedDeliveryNotes, itemUploads } = body;
 
         if (!clientId) {
             return NextResponse.json({ error: "Missing clientId" }, { status: 400 });
@@ -119,6 +120,7 @@ export async function POST(req: NextRequest) {
                 salesperson_email: defaultSalesperson?.email ?? "",
                 salesperson_contact_number: defaultSalesperson?.contact_number ?? "",
                 estimated_delivery_date: estimatedDeliveryDate ?? null,
+                estimated_delivery_notes: estimatedDeliveryNotes ?? null,
                 important_notes: importantNotes ?? "",
                 status: "draft",
             })
@@ -140,7 +142,32 @@ export async function POST(req: NextRequest) {
             remarks: item.description,
             image_path: uploadMap.get(item.id) ?? null,
         }));
+        const internalUrl = `/app/order-confirmations/${ocf.id}`;
+        const clientUrl = `/ocf/${ocf.client_token}`;
 
+        const { error: activityLogError } = await supabase
+            .from("activity_logs")
+            .insert({
+                client_id: client.id,
+                action: "ocf_created",
+                title: "Order Confirmation Form created",
+                description: `OCF generated for ${client.name ?? "client"}`,
+                link: internalUrl,
+                meta: {
+                    ocfId: ocf.id,
+                    clientUrl,
+                    generatedBy: user.id,
+                },
+            });
+
+        if (activityLogError) {
+            console.error("Activity log insert failed:", activityLogError);
+
+            return NextResponse.json(
+                { error: `Failed to create activity log: ${activityLogError.message}` },
+                { status: 500 }
+            );
+        }
         const { error: itemsError } = await supabase
             .from("order_confirmation_items")
             .insert(itemRows);
@@ -157,7 +184,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             ok: true,
             ocfId: ocf.id,
-            internalUrl: `/order-confirmations/${ocf.id}`,
+            internalUrl: `/app/order-confirmations/${ocf.id}`,
             clientUrl: `/ocf/${ocf.client_token}`,
         });
     } catch (error: any) {

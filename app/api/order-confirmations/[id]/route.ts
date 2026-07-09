@@ -32,6 +32,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         salesperson_phone,
         salesperson_email,
         estimated_delivery_date,
+        estimated_delivery_notes,
         important_notes,
         status,
         client_token,
@@ -40,7 +41,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         client_signature_path,
         client_submitted_at,
         locked_at
-      `)
+        `)
             .eq("id", id)
             .single();
 
@@ -109,6 +110,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             salesperson_phone,
             salesperson_email,
             estimated_delivery_date,
+            estimated_delivery_notes,
             important_notes,
         } = body ?? {};
 
@@ -161,6 +163,10 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             updates.important_notes = important_notes;
         }
 
+        if (typeof estimated_delivery_notes === "string") {
+            updates.estimated_delivery_notes = estimated_delivery_notes;
+        }
+
         if (Object.keys(updates).length === 0) {
             return NextResponse.json(
                 { error: "No valid fields to update" },
@@ -184,6 +190,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         salesperson_email,
         estimated_delivery_date,
         important_notes,
+        estimated_delivery_notes,
         status,
         client_token,
         client_signed_at,

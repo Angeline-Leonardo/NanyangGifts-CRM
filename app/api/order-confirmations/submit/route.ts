@@ -27,11 +27,52 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        const { ocfId, clientToken, signatureDataUrl } = body ?? {};
+        const {
+            ocfId,
+            clientToken,
+            signatureDataUrl,
+            company,
+            recipientName,
+            deliveryAddress,
+            contactNumber,
+            remarksForDelivery,
+            restrictedArea,
+            sameAddressForAllItems,
+        } = body ?? {};
 
         if (!ocfId || !clientToken || !signatureDataUrl) {
             return NextResponse.json(
                 { error: "ocfId, clientToken, and signatureDataUrl are required" },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof company !== "string" ||
+            typeof recipientName !== "string" ||
+            typeof deliveryAddress !== "string" ||
+            typeof contactNumber !== "string" ||
+            typeof remarksForDelivery !== "string" ||
+            typeof restrictedArea !== "string" ||
+            typeof sameAddressForAllItems !== "boolean"
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "company, recipientName, deliveryAddress, contactNumber, remarksForDelivery, restrictedArea, and sameAddressForAllItems are required",
+                },
+                { status: 400 }
+            );
+        }
+
+        const allowedRestrictedAreaValues = [
+            "No",
+            "Yes, additional fees apply. Please check with salesperson.",
+        ];
+
+        if (!allowedRestrictedAreaValues.includes(restrictedArea)) {
+            return NextResponse.json(
+                { error: "Invalid restrictedArea value" },
                 { status: 400 }
             );
         }
@@ -84,6 +125,13 @@ export async function POST(request: NextRequest) {
         const { data: updated, error: updateError } = await supabase
             .from("order_confirmations")
             .update({
+                company_snapshot: company.trim() || null,
+                recipient_name: recipientName.trim() || null,
+                delivery_address: deliveryAddress.trim() || null,
+                client_contact_number: contactNumber.trim() || null,
+                remarks_for_delivery: remarksForDelivery.trim() || null,
+                restricted_area: restrictedArea,
+                same_address_for_all_items: sameAddressForAllItems,
                 client_signature_path: filePath,
                 client_signed_at: now,
                 client_submitted_at: now,
@@ -96,6 +144,13 @@ export async function POST(request: NextRequest) {
             .select(`
         id,
         status,
+        company_snapshot,
+        recipient_name,
+        delivery_address,
+        client_contact_number,
+        remarks_for_delivery,
+        restricted_area,
+        same_address_for_all_items,
         client_signed_at,
         client_submitted_at,
         client_ip,

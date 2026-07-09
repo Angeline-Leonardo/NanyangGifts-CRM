@@ -34,6 +34,7 @@ export function GenerateOcfModal({
     const [rows, setRows] = useState<UploadRow[]>([]);
     const [importantNotes, setImportantNotes] = useState("");
     const [estimatedDeliveryDate, setEstimatedDeliveryDate] = useState("");
+    const [estimatedDeliveryNotes, setEstimatedDeliveryNotes] = useState("");
     const [loadingItems, setLoadingItems] = useState(false);
     const [creating, setCreating] = useState(false);
     const [formError, setFormError] = useState<string | null>(null);
@@ -159,6 +160,7 @@ export function GenerateOcfModal({
                 clientId,
                 estimatedDeliveryDate: estimatedDeliveryDate || null,
                 importantNotes: importantNotes || "",
+                estimatedDeliveryNotes: estimatedDeliveryNotes || "",
                 itemUploads: rows.map((row) => ({
                     subitemId: row.subitemId,
                     imagePath: row.uploadedPath,
@@ -246,7 +248,18 @@ export function GenerateOcfModal({
                                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
                                         placeholder="Terms and conditions"
                                     />
+                                    <label className="mb-1 block text-xs font-medium text-gray-700">
+                                        Delivery notes
+                                    </label>
+                                    <textarea
+                                        value={estimatedDeliveryNotes}
+                                        onChange={(e) => setEstimatedDeliveryNotes(e.target.value)}
+                                        rows={4}
+                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
+                                        placeholder="E.g. Estimated 21 days delivery upon confirmation via air freight"
+                                    />
                                 </div>
+                                
                             </div>
 
                             <div className="space-y-3">

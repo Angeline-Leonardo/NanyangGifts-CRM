@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         const path = `ocf-items/${clientId}/${subitemId}/${randomUUID()}.${ext}`;
 
         const { error: uploadError } = await supabase.storage
-            .from("ocf-files")
+            .from("order-confirmation-files")
             .upload(path, buffer, {
                 contentType: file.type,
                 upsert: false,

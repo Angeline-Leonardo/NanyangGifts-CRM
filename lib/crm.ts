@@ -45,7 +45,7 @@ export async function getNextSalesAssignee() {
     const { data, error } = await supabase.rpc('get_next_sales_assignee');
 
     if (error) throw error;
-    return (data?.[0] ?? null) as { user_id: string; position: number} | null;
+    return (data?.[0] ?? null) as { user_id: string; position: number } | null;
 }
 
 export async function swapSalesRoundRobinFunctions(firstUserId: string, secondUserId: string) {
@@ -58,12 +58,12 @@ export async function swapSalesRoundRobinFunctions(firstUserId: string, secondUs
     if (error) throw error;
 }
 
-export async function setSalesRoundRobinActive(userId: string, isActive: boolean){
+export async function setSalesRoundRobinActive(userId: string, isActive: boolean) {
     const supabase = createClient();
     const { error } = await supabase
-    .from('sales_round_robin_pool')
-    .update({ is_active: isActive })
-    .eq('user_id', userId);
+        .from('sales_round_robin_pool')
+        .update({ is_active: isActive })
+        .eq('user_id', userId);
 
     if (error) throw error;
 }
@@ -161,14 +161,14 @@ const TIMELINE_LOG_FIELDS: Array<keyof TimelineRow> = [
     'duration',
     'dependency'
 ]
-function isEqualForLog(a: unknown, b: unknown){
+function isEqualForLog(a: unknown, b: unknown) {
     return JSON.stringify(a) === JSON.stringify(b);
 }
 
 function formatValueForLog(value: unknown): unknown {
     if (value == null) return null;
 
-    if (Array.isArray(value)){
+    if (Array.isArray(value)) {
         return value;
     }
 
@@ -184,10 +184,10 @@ async function logTimelineRowDiffs(params: {
     const oldMap = new Map(params.oldRows.map((row) => [row.id, row]));
     const newMap = new Map(params.newRows.map((row) => [row.id, row]));
 
-    for (const [rowId, newRow] of newMap.entries()){
+    for (const [rowId, newRow] of newMap.entries()) {
         const oldRow = oldMap.get(rowId);
 
-        if (!oldRow){
+        if (!oldRow) {
             await insertActivityLog({
                 clientId: params.clientId,
                 subitemId: params.subitemId,
@@ -200,7 +200,7 @@ async function logTimelineRowDiffs(params: {
             continue;
         }
 
-        for (const field of TIMELINE_LOG_FIELDS){
+        for (const field of TIMELINE_LOG_FIELDS) {
             const oldValue = oldRow[field] ?? '';
             const newValue = newRow[field] ?? '';
 
@@ -339,18 +339,18 @@ async function insertActivityLog(params: {
     const { data, error } = await supabase
         .from('activity_log')
         .insert({
-        client_id: params.clientId,
-        subitem_id: params.subitemId ?? null,
-        actor_name: actorEmail,
-        action: params.action,
-        field_name: params.fieldName ?? null,
-        old_value: params.oldValue ?? null,
-        new_value: params.newValue ?? null,
-        subitem_name: params.subitemName ?? null,
-        created_at: new Date().toISOString(),
-    })
-    .select('*')
-    .single();
+            client_id: params.clientId,
+            subitem_id: params.subitemId ?? null,
+            actor_name: actorEmail,
+            action: params.action,
+            field_name: params.fieldName ?? null,
+            old_value: params.oldValue ?? null,
+            new_value: params.newValue ?? null,
+            subitem_name: params.subitemName ?? null,
+            created_at: new Date().toISOString(),
+        })
+        .select('*')
+        .single();
 
     if (error) {
         console.error('insertActivityLog error:', error);
@@ -441,7 +441,7 @@ export async function createClientRow(currentUserId?: string | null) {
     if (error) throw error;
 
     const nextAssignee = await getNextSalesAssignee();
-    
+
     if (nextAssignee?.user_id) {
         await addClientAssignee(data.id, nextAssignee.user_id, currentUserId);
     }
@@ -489,17 +489,17 @@ export async function updateClientRow(clientId: string, updates: Partial<Client>
 
     for (const [key, value] of Object.entries(updates) as [keyof Client, unknown][]) {
         if (CLIENT_LOG_IGNORE_FIELDS.has(key)) continue;
-        
-        
+
+
         const oldValue =
             existing[
             key === 'replyStatus' ? 'reply_status' :
-            key === 'followUp' ? 'follow_up' :
-            key === 'totalPrice' ? 'total_price' :
-            key === 'companyAddress' ? 'company_address' :
-            key === 'billingAddress' ? 'billing_address' :
-            key === 'dateCreated' ? 'date_created' :
-            key
+                key === 'followUp' ? 'follow_up' :
+                    key === 'totalPrice' ? 'total_price' :
+                        key === 'companyAddress' ? 'company_address' :
+                            key === 'billingAddress' ? 'billing_address' :
+                                key === 'dateCreated' ? 'date_created' :
+                                    key
             ];
 
         if (isEqualForLog(oldValue, value)) continue;
@@ -605,8 +605,8 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         .single();
 
     if (fetchError) throw fetchError;
-    
-    if (updates.timelineRows !== undefined){
+
+    if (updates.timelineRows !== undefined) {
         await logTimelineRowDiffs({
             clientId: existing.client_id,
             subitemId,
@@ -673,31 +673,31 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         const oldValue =
             existing[
             key === 'localOverseas' ? 'local_overseas' :
-            key === 'tcSgd' ? 'tc_sgd' :
-            key === 'numOfCartons' ? 'num_of_cartons' :
-            key === 'cnTracking' ? 'cn_tracking' :
-            key === 'sgTracking' ? 'sg_tracking' :
-            key === 'paymentStatus' ? 'payment_status' :
-            key === 'lsRmb' ? 'ls_rmb' :
-            key === 'totalC' ? 'total_c' :
-            key === 'modeOfPayment' ? 'mode_of_payment' :
-            key === 'orderNumber' ? 'order_number' :
-            key === 'quantityProduced' ? 'quantity_produced' :
-            key === 'qtyFor' ? 'qty_for' :
-            key === 'paymentAmount' ? 'payment_amount' :
-            key === 'paymentRemarks' ? 'payment_remarks' :
-            key === 'timelineRows' ? 'timeline_rows' :
-            key === 'showTimeline' ? 'show_timeline' :
-            key === 'showPayments' ? 'show_payments' :
-            key === 'showSample' ? 'show_sample' :
-            key === 'sampleRows' ? 'sample_rows' :
-            key === 'sampleOrderStatus' ? 'sample_order_status' :
-            key === 'sampleStatus' ? 'sample_status' :
-            key === 'sampleType' ? 'sample_type' :
-            key
+                key === 'tcSgd' ? 'tc_sgd' :
+                    key === 'numOfCartons' ? 'num_of_cartons' :
+                        key === 'cnTracking' ? 'cn_tracking' :
+                            key === 'sgTracking' ? 'sg_tracking' :
+                                key === 'paymentStatus' ? 'payment_status' :
+                                    key === 'lsRmb' ? 'ls_rmb' :
+                                        key === 'totalC' ? 'total_c' :
+                                            key === 'modeOfPayment' ? 'mode_of_payment' :
+                                                key === 'orderNumber' ? 'order_number' :
+                                                    key === 'quantityProduced' ? 'quantity_produced' :
+                                                        key === 'qtyFor' ? 'qty_for' :
+                                                            key === 'paymentAmount' ? 'payment_amount' :
+                                                                key === 'paymentRemarks' ? 'payment_remarks' :
+                                                                    key === 'timelineRows' ? 'timeline_rows' :
+                                                                        key === 'showTimeline' ? 'show_timeline' :
+                                                                            key === 'showPayments' ? 'show_payments' :
+                                                                                key === 'showSample' ? 'show_sample' :
+                                                                                    key === 'sampleRows' ? 'sample_rows' :
+                                                                                        key === 'sampleOrderStatus' ? 'sample_order_status' :
+                                                                                            key === 'sampleStatus' ? 'sample_status' :
+                                                                                                key === 'sampleType' ? 'sample_type' :
+                                                                                                    key
             ];
         if (isEqualForLog(oldValue, value)) continue;
-        
+
         await insertActivityLog({
             clientId: existing.client_id,
             subitemId,
@@ -708,7 +708,7 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
             newValue: formatValueForLog(value),
         });
 
-        
+
     }
 }
 
@@ -721,17 +721,33 @@ export async function deleteSubitemRow(subitemId: string) {
 
     if (fetchError) throw fetchError;
 
+    try {
+        await insertActivityLog({
+            clientId: existing.client_id,
+            subitemId: null,
+            subitemName: existing.name,
+            action: 'subitem_deleted',
+            oldValue: {
+                id: existing.id,
+                name: existing.name,
+                qty: existing.qty,
+                remarks: existing.remarks ?? null,
+            },
+        });
+    } catch (logError: any) {
+        console.error('Failed to insert delete activity log', {
+            error: logError,
+            message: logError?.message,
+            details: logError?.details,
+            hint: logError?.hint,
+            code: logError?.code,
+        });
+    }
+
     const { error } = await supabase
         .from('subitems')
         .delete()
         .eq('id', subitemId);
 
     if (error) throw error;
-
-    await insertActivityLog({
-        clientId: existing.client_id,
-        subitemId,
-        subitemName: existing.name,
-        action: 'subitem_deleted',
-    });
 }
