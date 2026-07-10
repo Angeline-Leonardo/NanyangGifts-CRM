@@ -10,7 +10,7 @@ import { SubitemsTable } from "./subitems";
 import { AssigneeMultiSelect } from "./assignee-multiselect";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "../ui/alert-dialog";
 import { useGenerateEstimate } from '../hooks/use-generate-estimate-button';
-import { Tooltip  } from "radix-ui";
+import { Tooltip } from "radix-ui";
 
 export const CLIENT_STATUSES: ClientStatus[] = [
     "New Lead",
@@ -107,7 +107,7 @@ export function ClientRow({
     const [closeFiles, setCloseFiles] = useState<File[]>([]);
     const [closeConfirmed, setCloseConfirmed] = useState(false);
     const [showActivityLog, setShowActivityLog] = useState(false);
-    const{
+    const {
         handleGenerateEstimate,
         isGeneratingEstimate,
         estimateError,
@@ -140,8 +140,8 @@ export function ClientRow({
         };
     }, [estimateSuccess])
 
-// for activity log text
-    function displayLogValue(value: unknown){
+    // for activity log text
+    function displayLogValue(value: unknown) {
         if (value == null || value === '') return 'empty';
 
         if (Array.isArray(value)) {
@@ -159,6 +159,20 @@ export function ClientRow({
         return String(value);
     }
     function renderActivityText(entry: ActivityEntry) {
+        if (entry.title || entry.description) {
+            return (
+                <>
+                    {entry.title ? <span className="font-medium">{entry.title}</span> : null}
+                    {entry.description ? (
+                        <>
+                            {entry.title ? "  " : ""}
+                            <span className="text-gray-700">{entry.description}</span>
+                        </>
+                    ) : null}
+                </>
+            );
+        }
+
         if (entry.action === "field_changed") {
             return (
                 <>
@@ -204,7 +218,7 @@ export function ClientRow({
             );
         }
 
-        return <>{entry.action}</>;
+        return <>{entry.action ?? "activity recorded"}</>;
     }
 
     return (
@@ -262,14 +276,14 @@ export function ClientRow({
                                 </button>
                             </Tooltip.Trigger>
                             <Tooltip.Portal>
-                            <Tooltip.Content className="TooltipContent">
-                                View activity log<Tooltip.Arrow className="TooltipArrow" />
-                            </Tooltip.Content>
+                                <Tooltip.Content className="TooltipContent">
+                                    View activity log<Tooltip.Arrow className="TooltipArrow" />
+                                </Tooltip.Content>
                             </Tooltip.Portal>
                         </Tooltip.Root>
                     </Tooltip.Provider>
-                    
-                    
+
+
 
                     {showActivityLog && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -308,9 +322,27 @@ export function ClientRow({
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div>
                                                             <p className="text-sm text-gray-800">
-                                                                <span className="font-medium">{entry.actorName}</span>{" "}
+                                                                {entry.actorName ? (
+                                                                    <>
+                                                                        <span className="font-medium">{entry.actorName}</span>{" "}
+                                                                    </>
+                                                                ) : null}
                                                                 {renderActivityText(entry)}
+                                                            {entry.link ? (
+                                                                <a
+                                                                    href={entry.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="ml-4 inline-flex items-center rounded-md bg-teal-100 px-2 py-1 text-xs font-medium text-teal-500 hover:bg-teal-200"
+                                                                >
+                                                                    Open OCF
+                                                                </a>
+                                                                ) : null}
                                                             </p>
+
+                                                            
+        
+
                                                             <p className="mt-1 text-xs text-gray-500">
                                                                 {new Date(entry.createdAt).toLocaleString()}
                                                             </p>
@@ -336,23 +368,23 @@ export function ClientRow({
                             </Tooltip.Trigger>
                             <Tooltip.Portal>
                                 <Tooltip.Content className="TooltipContent">Generate estimate<Tooltip.Arrow className="TooltipArrow" /></Tooltip.Content>
-                                    
+
                             </Tooltip.Portal>
                         </Tooltip.Root>
                     </Tooltip.Provider>
-                        {estimateError && (
-                            <div className="mt-1 text-[11px] text-red-600">{estimateError}</div>
-                        )}
-                        {showEstimateSuccess && (
-                            <div className={`mt-1 text-[11px] text-teal-500 transition-opacity duration-500 $ fadeEstimateSuccess ? "opacity-0" : "opacity-100"}`}>Successfully generated!</div>
-                        )}
+                    {estimateError && (
+                        <div className="mt-1 text-[11px] text-red-600">{estimateError}</div>
+                    )}
+                    {showEstimateSuccess && (
+                        <div className={`mt-1 text-[11px] text-teal-500 transition-opacity duration-500 ${fadeEstimateSuccess ? "opacity-0" : "opacity-100"}`}>Successfully generated!</div>
+                    )}
 
                     <Tooltip.Provider>
                         <Tooltip.Root>
                             <Tooltip.Trigger asChild>
                                 <button
-                                onClick={() => onOpenOcfModal(client)}
-                                className="px-2 py-2 text-[10px] font-medium text-teal-500"
+                                    onClick={() => onOpenOcfModal(client)}
+                                    className="px-2 py-2 text-[10px] font-medium text-teal-500"
                                 > <FileBox size={15} color="#7BCBD5" className="transition transform active:scale-150 duration-200" /></button>
                             </Tooltip.Trigger>
                             <Tooltip.Portal>
@@ -361,7 +393,7 @@ export function ClientRow({
                         </Tooltip.Root>
 
                     </Tooltip.Provider>
-                    
+
                 </div>
 
                 <div

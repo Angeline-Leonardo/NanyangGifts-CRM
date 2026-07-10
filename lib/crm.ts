@@ -1,6 +1,7 @@
 // fetches clients with nested subitems
 // map db rows to client
 // map client/subitem updates back into db column names
+// maps & fetches activity log
 // expose crud functions
 
 import { createClient } from '@/lib/supabase/client';
@@ -150,6 +151,10 @@ type ActivityLogRow = {
     new_value: string | null;
     subitem_name: string | null;
     created_at: string;
+    link: string | null;
+    title: string | null;
+    description: string | null;
+    meta: Record<string, any> | null;
 };
 
 const TIMELINE_LOG_FIELDS: Array<keyof TimelineRow> = [
@@ -233,7 +238,7 @@ async function logTimelineRowDiffs(params: {
 }
 
 
-function mapActivityEntry(row: ActivityLogRow) {
+function mapActivityEntry(row: ActivityLogRow): ActivityEntry {
     return {
         id: row.id,
         actorName: row.actor_name ?? 'Unknown user',
@@ -241,11 +246,15 @@ function mapActivityEntry(row: ActivityLogRow) {
         fieldName: row.field_name ?? '',
         oldValue: row.old_value ?? '',
         newValue: row.new_value ?? '',
+        subitemId: row.subitem_id ?? undefined,
         subitemName: row.subitem_name ?? '',
         createdAt: row.created_at,
+        link: row.link ?? null,
+        title: row.title ?? null,
+        description: row.description ?? null,
+        meta: row.meta ?? null,
     };
 }
-
 function mapSubitems(row: Subitems): Subitem {
     return {
         id: row.id,
@@ -324,11 +333,15 @@ function mapClients(row: Clients): Client {
 async function insertActivityLog(params: {
     clientId: string;
     subitemId?: string | null;
-    action: 'field_changed' | 'subitem_added' | 'subitem_deleted' | 'subitem_field_changed';
+    action: 'field_changed' | 'subitem_added' | 'subitem_deleted' | 'subitem_field_changed' | 'ocf_created';
     fieldName?: string | null;
     oldValue?: unknown;
     newValue?: unknown;
     subitemName?: string | null;
+    link?: string | null;
+    title?: string | null;
+    description?: string | null;
+    meta?: Record<string, any> | null;
 }) {
     const {
         data: { user },
@@ -347,6 +360,10 @@ async function insertActivityLog(params: {
             old_value: params.oldValue ?? null,
             new_value: params.newValue ?? null,
             subitem_name: params.subitemName ?? null,
+            link: params.link ?? null,
+            title: params.title ?? null,
+            description: params.description ?? null,
+            meta: params.meta ?? null,
             created_at: new Date().toISOString(),
         })
         .select('*')
@@ -358,6 +375,24 @@ async function insertActivityLog(params: {
     }
     return data;
 }
+
+export async function logOcfCreated(params: {
+    clientId: string;
+    ocfId: string;
+    title?: string;
+    description?: string;
+}) {
+    return insertActivityLog({
+        clientId: params.clientId,
+        action: 'ocf_created',
+        title: params.title ?? 'generated an Order Confirmation Form',
+        description: params.description ?? '',
+        link: `/order-confirmations/${params.ocfId}`,
+        meta: { ocfId: params.ocfId },
+    });
+}
+
+
 export async function fetchClientsWithSubitems() {
     const { data: clientsData, error: clientsError } = await supabase
         .from('clients')
