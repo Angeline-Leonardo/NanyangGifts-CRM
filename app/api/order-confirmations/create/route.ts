@@ -146,9 +146,10 @@ export async function POST(req: NextRequest) {
         const clientUrl = `/ocf/${ocf.client_token}`;
 
         const { error: activityLogError } = await supabase
-            .from("activity_logs")
+            .from("activity_log")
             .insert({
                 client_id: client.id,
+                actor_name: defaultSalesperson.email,
                 action: "ocf_created",
                 title: "Order Confirmation Form created",
                 description: `OCF generated for ${client.name ?? "client"}`,
