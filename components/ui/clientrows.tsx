@@ -250,14 +250,14 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center gap-1.5 px-1 py-2 border-r border-gray-500 flex-shrink-0"
+                    className="flex items-center gap-1 px-3 py-2 border-r border-gray-500 flex-shrink-0"
                     style={{ height: 30, minWidth: 260, width: 260 }}
                 >
                     <EditableCell
                         value={client.name}
                         onChange={(v) => onUpdate({ name: v })}
                         placeholder="Client name"
-                        className="font-semibold text-gray-800 px-5"
+                        className="font-semibold text-gray-800 px-5 !text-left"
                     />
                     {subitemCount > 0 && (
                         <span className="text-xs text-[#7BCBD5] bg-[#e7fdff] rounded-full px-1.5 py-0.5 flex-shrink-0">
