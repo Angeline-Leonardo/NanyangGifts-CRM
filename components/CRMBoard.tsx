@@ -27,7 +27,7 @@ const CLIENT_HEADER_COLS = [
   { label: 'Company Address', width: 115 },
   { label: 'Billing Address', width: 115 },
   { label: 'Date Created', width: 90 },
-  { label: '', width: 650 },
+  { label: '', width: 560 },
 ];
 
 const TOTAL_MIN_WIDTH = CLIENT_HEADER_COLS.reduce((s, c) => s + c.width, 0);
@@ -210,7 +210,7 @@ export function CRMBoard({ clients, setClients, reloadClients, search = '' }: CR
   // --- Assignees ---
   const handleClientAssigneesChange = useCallback(
     async (clientId: string, ids: string[]) => {
-      setClientAssignees((prev) => ({ ...prev, [clientId]: ids })); // optimistic
+      setClientAssignees((prev) => ({ ...prev, [clientId]: ids }));
       try {
         await saveClientAssignees(clientId, ids, currentUserId);
       } catch (error: any) {

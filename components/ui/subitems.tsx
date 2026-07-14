@@ -133,7 +133,6 @@ export function SubitemsTable({
         { key: 'tcSgd', label: 'TC-SGD', w: 54 },
         { key: 'price', label: 'Price', w: 60 },
         { key: 'up', label: 'U.P', w: 50 },
-        { key: 'numOfCartons', label: 'No. of Cartons', w: 89 },
         { key: 'cnTracking', label: 'CN Tracking #', w: 120 },
         { key: 'sgTracking', label: 'SG Tracking #', w: 120 },
         { key: 'pl', label: 'PL', w: 50 },
@@ -199,7 +198,7 @@ export function SubitemsTable({
             <div className="max-h-[500px]">
                 <table className="border-collapse table-fixed w-full">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-500">
+                        <tr className="bg-gray-50 border-b border-r border-gray-500">
                             <th className="w-8 px-2 py-1 border-r border-gray-200" />
                             {cols.map(col => (
                                 <th key={col.key}
@@ -397,9 +396,6 @@ export function SubitemsTable({
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 55 }}>
                                         <EditableCell value={sub.up} onChange={v => onUpdateSubitem(sub.id, { up: v })} type="number" />
-                                    </td>
-                                    <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 75 }}>
-                                        <EditableCell value={sub.numOfCartons} onChange={v => onUpdateSubitem(sub.id, { numOfCartons: v })} type="number" />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 55 }}>
                                         <EditableCell value={sub.cnTracking} onChange={v => onUpdateSubitem(sub.id, { cnTracking: v })} />

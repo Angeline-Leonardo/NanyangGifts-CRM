@@ -16,6 +16,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Sample',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -27,6 +28,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Production 📦',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -38,6 +40,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Check Production Status  (+3 from production start)',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -49,6 +52,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Local Shipping 🚚',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -60,6 +64,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Sea/Air Freight ⛵✈️',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -71,6 +76,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'Check Shipment Status (+3 from shipment start)',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -82,6 +88,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         name: 'NBD',
         person: '',
         remarks: '',
+        numOfCartons: '',
         subProgress: 'Not Started',
         timelineStart: '',
         timelineEnd: '',
@@ -98,20 +105,20 @@ export function TimelineSection({ rows, onUpdate }: {
     const progressOpts = ['Not Started', 'Started', 'Done'];
 
     return (
-        <div className="ml-8 mr-2 mb-2 border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+        <div className="ml-8 mr-2 mb-2 w-fit max-w-[1500px] overflow-hidden border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
             <div className="bg-gradient-to-r from-[#9bd9e0] to-[#7BCBD5] px-3 py-1.5 flex items-center gap-2">
                 <Calendar size={12} className="text-white" />
                 <span className="text-white text-xs font-semibold">Project Timeline</span>
             </div>
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse" style={{ minWidth: 500 }}>
+            <div className="max-w-full overflow-x-auto">
+                <table className="table-fixed border-collapse" style={{ minWidth: 200, maxWidth:500 }}>
                     <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
                             {[
-                                { label: 'Subitem', w: 60 }, { label: 'Person', w: 30 },
-                                { label: 'Remarks', w: 160 }, { label: 'Sub-Progress', w: 100 },
-                                { label: 'Timeline', w: 160 }, { label: 'Duration', w: 70 },
-                                { label: 'Dependency', w: 120 }
+                                { label: 'Subitem', w: 300 }, { label: 'Person', w: 30 },
+                                { label: 'Remarks', w: 200 },{ label: 'No. of Cartons', w: 30 }, { label: 'Sub-Progress', w: 100 },
+                                { label: 'Timeline', w: 100 }, { label: 'Duration', w: 70 },
+                                { label: 'Dependency', w: 100 }
                             ].map(col => (
                                 <th key={col.label} style={{ minWidth: col.w }}
                                     className="text-left px-2 py-1 text-xs font-semibold text-gray-500 whitespace-nowrap border-r border-gray-100 last:border-r-0">
@@ -134,6 +141,9 @@ export function TimelineSection({ rows, onUpdate }: {
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
                                         <EditableCell value={row.remarks} onChange={v => updateRow(row.id, 'remarks', v)} />
+                                    </td>
+                                    <td className="px-2 py-1 border-r border-gray-100">
+                                        <EditableCell value={row.numOfCartons ?? ''} onChange={v => updateRow(row.id, 'numOfCartons', v)} type='Number' />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
                                         <StatusBadge
