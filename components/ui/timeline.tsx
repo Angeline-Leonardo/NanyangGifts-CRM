@@ -6,8 +6,9 @@ import { StatusBadge } from './statusbadge';
 
 const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
     'Done': '#00C875',
-    'Started': '#00C2C7',
-    'Not Started': '#8b81da'
+    'Started': '#24e2e8',
+    'Pending': '#bcbcf7',
+    'Overdue':'#d44858',
 };
 
 export const DEFAULT_TIMELINE_ROWS = [
@@ -102,7 +103,7 @@ export function TimelineSection({ rows, onUpdate }: {
     const updateRow = (id: string, field: keyof TimelineRow, val: string) =>
         onUpdate(rows.map(r => r.id === id ? { ...r, [field]: val } : r));
 
-    const progressOpts = ['Not Started', 'Started', 'Done'];
+    const progressOpts = ['Pending', 'Started', 'Done', 'Overdue'];
 
     return (
         <div className="ml-8 mr-2 mb-2 w-fit max-w-[1500px] overflow-hidden border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">

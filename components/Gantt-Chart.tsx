@@ -49,9 +49,10 @@ function addOneDay(date: Date) {
 }
 
 function getColor(progress?: string) {
-    if (progress === "Done") return "#57ce9e";
-    if (progress === "Started") return "#44c7d0";
-    if (progress === "Not Started") return "#ab84ea";
+    if (progress === "Done") return "#00C875";
+    if (progress === "Started") return "#24e2e8";
+    if (progress === "Pending") return "#bcbcf7";
+    if (progress === "Overdue") return "#d44858";
     return "#60a5fa";
 }
 

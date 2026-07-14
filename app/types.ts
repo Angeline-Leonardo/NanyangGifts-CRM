@@ -26,7 +26,7 @@ export type SubitemStatus =
   | '';
 
 export type PaymentStatus = 'Paid' | 'To Pay' | 'Partial' | 'Overdue';
-export type TimelineProgress = 'Not Started' | 'Started' | 'Done';
+export type TimelineProgress = 'Pending' | 'Started' | 'Done' | 'Overdue';
 export type SampleStatus = 'Ready to collect' | 'Return arranged' | "Extended" | 'Chased'| 'Must return' | 'Request to not return' | 'No return needed'|'Failed'| 'Overdue';
 export type SampleType = 'Product sample' | 'Pre-production sample';
 export type SampleOrderStatus = 'Pending'| 'To order'| 'Ordered'| 'Delivered'| 'Paid'| 'Shipped'| 'Failed';
