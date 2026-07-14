@@ -28,29 +28,29 @@ const LOCALOVERSEAS_COLORS: Record<string, string> = {
 }
 
 const SHIPPER_COLORS: Record<string, string> = {
-    '小李 - AIR': '#fff123',
-    '小李 - SEA': '#fff123',
-    'Tiger - Sea': '#fff123',
-    'Tiger - AIR': '#fff123',
-    '东莞 - SEA': '#fff123',
-    'WORLD ASIA': '#fff123',
-    'A5 汇荣': '#fff123',
-    'Kalinda - AIR': '#fff123',
-    'David - DPS': '#fff123',
-    'Kalinda - SEA': '#fff123',
-    'Local Singapore': '#fff123',
-    'Local China': '#fff123',
-    '霸王车': '#fff123',
-    '义乌': '#fff123',
-    'SF': '#fff123',
-    'DHL': '#fff123',
-    '恒瀚': '#fff123',
-    'Easy Parcel': '#fff123',
-    'Local Destination': '#fff123',
-    'UPS': '#fff123',
-    'FedEx': '#fff123',
-    '宇涵 - Air': '#fff123',
-    '宇涵 - Sea': '#fff123',
+    '小李 - AIR': '#f88fc1',
+    '小李 - SEA': '#ff97ab',
+    'Tiger - Sea': '#ffa791',
+    'Tiger - AIR': '#ffbf7a',
+    '东莞 - SEA': '#c28adc',
+    'WORLD ASIA': '#628ce8',
+    'A5 汇荣': '#008bd8',
+    'Kalinda - AIR': '#0083aa',
+    'Kalinda - SEA': '#007467',
+    'David - DPS': '#a58eae',
+    'Local Singapore': '#775785',
+    'Local China': '#3b313e',
+    '霸王车': '#801f55',
+    '义乌': '#99005c',
+    'SF': '#84429b',
+    'DHL': '#426bc6',
+    '恒瀚': '#008bd3',
+    'Easy Parcel': '#00a4c7',
+    'Local Destination': '#00b8ad',
+    'UPS': '#a8a3ff',
+    'FedEx': '#95e8ff',
+    '宇涵 - Air': '#43adcb',
+    '宇涵 - Sea': '#2f9179',
 }
 
 export function SubitemsTable({
@@ -76,7 +76,7 @@ export function SubitemsTable({
 }) {
     const statusOpts = ['', 'To Quote', 'Verified', 'Awarded', 'Initial Quote', 'Quoted', 'Shortlisted', 'Failed'];
     const localOverseasOpts = ['Local', 'Overseas'];
-    const shipperOpts = ['小李 - AIR', '小李 - SEA', 'Tiger - Sea', 'Tiger - AIR', '东莞 - SEA', 'WORLD ASIA', 'A5 汇荣', 'Kalinda - AIR', 'David - DPS', 'Kalinda - SEA', 'Local Singapore', 'Local China', '霸王车', '义乌', 'SF', 'DHL', '恒瀚', 'Easy Parcel', 'Local Destination', 'UPS', 'FedEx', '宇涵 - Air', '宇涵 - Sea' ];
+    const shipperOpts = ['小李 - AIR', '小李 - SEA', 'Tiger - Sea', 'Tiger - AIR', '东莞 - SEA', 'WORLD ASIA', 'A5 汇荣', 'Kalinda - AIR',  'Kalinda - SEA', 'David - DPS', 'Local Singapore', 'Local China', '霸王车', '义乌', 'SF', 'DHL', '恒瀚', 'Easy Parcel', 'Local Destination', 'UPS', 'FedEx', '宇涵 - Air', '宇涵 - Sea' ];
     const newSubitem = {
         id: crypto.randomUUID(),
         name: '',
