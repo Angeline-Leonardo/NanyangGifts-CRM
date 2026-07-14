@@ -84,6 +84,8 @@ type Subitems = {
     manpower: string | null;
     ls: string | null;
     os: string | null;
+    currency: string | null;
+    c_sgd: string | null;
     tc: string | null;
     uc: string | null;
     tc_sgd: string | null;
@@ -273,6 +275,8 @@ function mapSubitems(row: Subitems): Subitem {
         manpower: row.manpower ?? '',
         ls: row.ls ?? '',
         os: row.os ?? '',
+        currency: row.currency ?? '',
+        cSgd: row.c_sgd ?? '',
         tc: row.tc ?? '',
         uc: row.uc ?? '',
         tcSgd: row.tc_sgd ?? '',
@@ -591,6 +595,8 @@ export async function createSubitemRow(clientId: string) {
             manpower: '',
             ls: '',
             os: '',
+            currency: '',
+            c_sgd: '',
             tc: '',
             uc: '',
             tc_sgd: '',
@@ -668,6 +674,8 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         ...(updates.manpower !== undefined ? { manpower: updates.manpower } : {}),
         ...(updates.ls !== undefined ? { ls: updates.ls } : {}),
         ...(updates.os !== undefined ? { os: updates.os } : {}),
+        ...(updates.currency !== undefined ? { currency: updates.currency } : {}),
+        ...(updates.cSgd !== undefined ? { c_sgd: updates.cSgd } : {}),
         ...(updates.tc !== undefined ? { tc: updates.tc } : {}),
         ...(updates.uc !== undefined ? { uc: updates.uc } : {}),
         ...(updates.tcSgd !== undefined ? { tc_sgd: updates.tcSgd } : {}),

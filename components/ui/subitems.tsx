@@ -26,7 +26,7 @@ const SUBITEM_STATUS_COLORS: Record<string, string> = {
 const LOCALOVERSEAS_COLORS: Record<string, string> = {
     'Local': '#a856a6',
     'Overseas': '#8b81da',
-}
+};
 
 const SHIPPER_COLORS: Record<string, string> = {
     '': '#eeeded',
@@ -53,7 +53,20 @@ const SHIPPER_COLORS: Record<string, string> = {
     'FedEx': '#95e8ff',
     '宇涵 - Air': '#43adcb',
     '宇涵 - Sea': '#2f9179',
-}
+};
+
+const CURRENCY_COLORS: Record<string, string> = {
+    'MYR': '#b37ed2',
+    'SGD': '#5fc1cc',
+    'RMB': '#e375a1'
+
+};
+
+const CURRENCY_RATES: Record<string, number> = {
+    RMB: 0.2,
+    SGD: 1,
+    MYR: 0.333
+};
 
 export function SubitemsTable({
     clientId,
@@ -113,6 +126,8 @@ export function SubitemsTable({
         { key: 'manpower', label: 'Manpower', w: 70 },
         { key: 'ls', label: 'LS', w: 50 },
         { key: 'os', label: 'OS', w: 50 },
+        { key: 'currency', label: 'Currency', w: 70 },
+        { key: 'cSgd', label: 'C-SGD', w: 70 },
         { key: 'tc', label: 'T.C', w: 70 },
         { key: 'uc', label: 'U.C', w: 60 },
         { key: 'tcSgd', label: 'TC-SGD', w: 54 },
@@ -245,6 +260,10 @@ export function SubitemsTable({
                             const uc = qty > 0 ? tc / qty : null;
 
                             const price = parseNumber(sub.up) * qty;
+                            
+                            const cost = parseNumber(sub.cost);
+                            const currencyRate = CURRENCY_RATES[sub.currency ?? 'RMB'] ?? 0.2;
+                            const cSgd = cost * currencyRate;
 
                             return(
                             <React.Fragment key={sub.id}>
@@ -265,7 +284,7 @@ export function SubitemsTable({
                                     <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 300 }}>
                                         <div className="flex items-center gap-1">
                                             <FileText size={11} className="text-gray-400 flex-shrink-0" />
-                                            <EditableCell value={sub.name} onChange={v => onUpdateSubitem(sub.id, { name: v })} placeholder="Subitem name" />
+                                            <EditableCell value={sub.name} onChange={v => onUpdateSubitem(sub.id, { name: v })} placeholder="Subitem name" className="!text-left"/>
                                             {/* Delete subitem */}
                                             <div className="px-2 py-1" style={{ minWidth: 40 }}>
                                                 <button
@@ -345,14 +364,21 @@ export function SubitemsTable({
                                     <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 60 }}>
                                         <EditableCell value={sub.cost} onChange={v => onUpdateSubitem(sub.id, { cost: v })} type="number" />
                                     </td>
-                                    <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 50 }}>
-                                        <EditableCell value={sub.manpower} onChange={v => onUpdateSubitem(sub.id, { manpower: v })} type="number" />
+                                    <td className=" border-r border-gray-500 text-center" style={{ minWidth: 60 }}>
+                                        <EditableCell value={sub.manpower} onChange={v => onUpdateSubitem(sub.id, { manpower: v })} type="number" className="text-center" />
                                     </td>
-                                    <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 50 }}>
+                                    <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 60 }}>
                                         <EditableCell value={sub.ls} onChange={v => onUpdateSubitem(sub.id, { ls: v })} type="number" />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 50 }}>
                                         <EditableCell value={sub.os} onChange={v => onUpdateSubitem(sub.id, { os: v })} type="number" />
+                                    </td>
+                                    <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 80 }}>
+                                        <StatusBadge value={sub.currency ?? 'RMB'} onChange={v => onUpdateSubitem(sub.id, { currency: v })} options={currencyOpts} colorMap={CURRENCY_COLORS} small />
+                                    </td>
+                                    <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 70 }}>
+                                        <div className="px-2 py-1 text-xs text-gray-800"> {cSgd.toFixed(2)}
+                                        </div>
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500 text-center" style={{ minWidth: 70 }}>
                                         <div className="px-2 py-1 text-xs text-gray-800"> {tc.toFixed(2)}

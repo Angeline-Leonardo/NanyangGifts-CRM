@@ -74,6 +74,8 @@ export interface Subitem {
   manpower: string;
   ls: string;
   os: string;
+  currency: string;
+  cSgd: string;
   tc: string;
   uc: string;
   tcSgd: string;
