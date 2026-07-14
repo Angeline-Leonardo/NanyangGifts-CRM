@@ -21,12 +21,37 @@ const SUBITEM_STATUS_COLORS: Record<string, string> = {
     'Failed': '#ac2865',
     '': 'transparent',
 };
+
 const LOCALOVERSEAS_COLORS: Record<string, string> = {
     'Local': '#a856a6',
     'Overseas': '#8b81da',
 }
 
-
+const SHIPPER_COLORS: Record<string, string> = {
+    '小李 - AIR': '#fff123',
+    '小李 - SEA': '#fff123',
+    'Tiger - Sea': '#fff123',
+    'Tiger - AIR': '#fff123',
+    '东莞 - SEA': '#fff123',
+    'WORLD ASIA': '#fff123',
+    'A5 汇荣': '#fff123',
+    'Kalinda - AIR': '#fff123',
+    'David - DPS': '#fff123',
+    'Kalinda - SEA': '#fff123',
+    'Local Singapore': '#fff123',
+    'Local China': '#fff123',
+    '霸王车': '#fff123',
+    '义乌': '#fff123',
+    'SF': '#fff123',
+    'DHL': '#fff123',
+    '恒瀚': '#fff123',
+    'Easy Parcel': '#fff123',
+    'Local Destination': '#fff123',
+    'UPS': '#fff123',
+    'FedEx': '#fff123',
+    '宇涵 - Air': '#fff123',
+    '宇涵 - Sea': '#fff123',
+}
 
 export function SubitemsTable({
     clientId,
@@ -51,6 +76,7 @@ export function SubitemsTable({
 }) {
     const statusOpts = ['', 'To Quote', 'Verified', 'Awarded', 'Initial Quote', 'Quoted', 'Shortlisted', 'Failed'];
     const localOverseasOpts = ['Local', 'Overseas'];
+    const shipperOpts = ['小李 - AIR', '小李 - SEA', 'Tiger - Sea', 'Tiger - AIR', '东莞 - SEA', 'WORLD ASIA', 'A5 汇荣', 'Kalinda - AIR', 'David - DPS', 'Kalinda - SEA', 'Local Singapore', 'Local China', '霸王车', '义乌', 'SF', 'DHL', '恒瀚', 'Easy Parcel', 'Local Destination', 'UPS', 'FedEx', '宇涵 - Air', '宇涵 - Sea' ];
     const newSubitem = {
         id: crypto.randomUUID(),
         name: '',
@@ -294,8 +320,8 @@ export function SubitemsTable({
                                         multiline
                                         />
                                     </td>
-                                    <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 120 }}>
-                                        <EditableCell value={sub.shipper} onChange={v => onUpdateSubitem(sub.id, { shipper: v })} />
+                                    <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 80 }}>
+                                        <StatusBadge value={sub.shipper} onChange={v => onUpdateSubitem(sub.id, { shipper: v })} options={shipperOpts} colorMap={SHIPPER_COLORS} small />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 120 }}>
                                         <EditableCell value={sub.supplier} onChange={v => onUpdateSubitem(sub.id, { supplier: v })} />

@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
-const MENU_WIDTH = 168;
+const MENU_WIDTH = 180;
 
 export function StatusBadge({
     value, onChange, options, colorMap, small = false,
@@ -50,14 +50,13 @@ export function StatusBadge({
     };
 
     const bg = colorMap[value] || '#e5e7eb';
-    const textColor = bg === '#FFCB00' || bg === '#ffffff';
 
 
     const menu = open && createPortal(
         <div
             ref={menuRef}
             style={menuStyle}
-            className="bg-white border font-semibold border-gray-200 rounded-lg shadow-2xl py-1 max-h-90 transition transform active:scale-95 duration-150"
+            className="bg-white border font-semibold border-gray-200 rounded-lg shadow-2xl py-1 max-h-96 transition transform active:scale-95 duration-150 overflow-y-auto"
         >
             {options.map(opt => (
                 <button

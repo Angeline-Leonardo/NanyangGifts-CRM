@@ -92,6 +92,8 @@ type Subitems = {
     num_of_cartons: string | null;
     cn_tracking: string | null;
     sg_tracking: string | null;
+    pl: string | null;
+    sl: string | null;
     owner: string | null;
     payment_status: string | null;
     total: string | null;
@@ -279,6 +281,8 @@ function mapSubitems(row: Subitems): Subitem {
         numOfCartons: row.num_of_cartons ?? '',
         cnTracking: row.cn_tracking ?? '',
         sgTracking: row.sg_tracking ?? '',
+        pl: row.pl ?? '',
+        sl: row.sl ?? '',
         owner: row.owner ?? '',
         paymentStatus: row.payment_status ?? '',
         total: row.total ?? '',
