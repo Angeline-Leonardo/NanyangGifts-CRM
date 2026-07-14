@@ -12,23 +12,22 @@ import { GenerateOcfModal } from './Generate-OCF-Modal';
 const CLIENT_HEADER_COLS = [
   { label: '', width: 60 },
   { label: 'Client', width: 220 },
-  { label: 'People', width: 90 },
-  { label: 'Reply Status', width: 90 },
+  { label: 'People', width: 60 },
+  { label: 'Reply Status', width: 80 },
   { label: 'Follow Up', width: 100 },
-  { label: 'Status', width: 115 },
-  { label: 'Channel', width: 90 },
+  { label: 'Status', width: 80 },
+  { label: 'Channel', width: 80 },
   { label: 'Importance', width: 80 },
-  { label: 'Company', width: 170 },
-  { label: 'Email', width: 180 },
-  { label: 'Phone', width: 120 },
-  { label: 'Requirements', width: 160 },
-  { label: 'Qty', width: 60 },
-  { label: 'NBD', width: 100 },
-  { label: 'Total Price', width: 90 },
+  { label: 'Company', width: 80 },
+  { label: 'Email', width: 80 },
+  { label: 'Phone', width: 80 },
+  { label: 'Requirements', width: 90 },
+  { label: 'NBD', width: 80 },
+  { label: 'Total Price', width: 80 },
   { label: 'Company Address', width: 115 },
   { label: 'Billing Address', width: 115 },
   { label: 'Date Created', width: 90 },
-  { label: '', width: 60 },
+  { label: '', width: 340 },
 ];
 
 const TOTAL_MIN_WIDTH = CLIENT_HEADER_COLS.reduce((s, c) => s + c.width, 0);
@@ -372,29 +371,29 @@ const addClient = useCallback(async () => {
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 bg-white flex-shrink-0">
+      <div className="flex items-center gap-2 px-2 py-1 border-b border-gray-200 bg-white flex-shrink-0">
         <button
           onClick={addClient}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
+          className="flex items-center gap-1 px-2 py-1 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-[10px] font-medium transition-colors transition transform active:scale-95 duration-150"
         >
-          <Plus size={13} />
+          <Plus size={12} />
           Add Client
         </button>
 
         <button
           onClick={toggleExpandAll}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
+          className="flex items-center gap-1 px-2 py-1 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-[10px] font-medium transition-colors transition transform active:scale-95 duration-150"
         >
-          {allExpanded ? <ChevronsUp size={14} /> : <ChevronsDown size={14} />}
+          {allExpanded ? <ChevronsUp size={12} /> : <ChevronsDown size={12} />}
           {allExpanded ? 'Collapse All' : 'Expand All'}
         </button>
 
         <div ref={filterRef} className="relative">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-xs font-medium transition-colors transition transform active:scale-95 duration-150"
+            className="flex items-center gap-1 px-2 py-1 bg-[#7BCBD5] hover:bg-[#61a5ad] text-white rounded-md text-[10px] font-medium transition-colors transition transform active:scale-95 duration-150"
           >
-            <Filter size={13} />
+            <Filter size={12} />
             {filterStatus === 'All' ? 'Filter by Status' : filterStatus}
             <ChevronDown size={11} />
           </button>
@@ -403,7 +402,7 @@ const addClient = useCallback(async () => {
             <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 min-w-44 py-1 max-h-80 overflow-y-auto">
               <button
                 onClick={() => { setFilterStatus('All'); setShowFilter(false); }}
-                className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
+                className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-[10px] hover:bg-gray-50"
               >
                 <span className="w-2.5 h-2.5 rounded-sm bg-gray-300" />
                 All Clients
@@ -416,7 +415,7 @@ const addClient = useCallback(async () => {
                 <button
                   key={st}
                   onClick={() => { setFilterStatus(st); setShowFilter(false); }}
-                  className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50"
+                  className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-[10px] hover:bg-gray-50"
                 >
                   <span className="w-2.5 h-2.5 rounded-sm" style={{ background: STATUS_COLORS[st] }} />
                   <span className="flex-1">{st}</span>
@@ -436,7 +435,7 @@ const addClient = useCallback(async () => {
               <button
                 key={st}
                 onClick={() => setFilterStatus(filterStatus === st ? 'All' : st)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap flex-shrink-0 transition-opacity transition transform active:scale-95 duration-150"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap flex-shrink-0 transition-opacity transition transform active:scale-95 duration-150"
                 style={{
                   background: STATUS_COLORS[st],
                   color: '#ffffff',
@@ -454,10 +453,10 @@ const addClient = useCallback(async () => {
 
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-md px-3 py-1.5">
-            <span className="text-xs text-red-600 font-medium">{selectedIds.size} selected</span>
+            <span className="text-[10px] text-red-600 font-medium">{selectedIds.size} selected</span>
             <button
               onClick={deleteSelected}
-              className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-semibold transition-colors"
+              className="flex items-center gap-1 text-[10px] text-red-600 hover:text-red-800 font-semibold transition-colors"
             >
               <Trash2 size={12} />
               Delete
@@ -497,7 +496,7 @@ const addClient = useCallback(async () => {
             {CLIENT_HEADER_COLS.slice(1).map((col, i) => (
               <div
                 key={i}
-                className="flex items-center px-2 py-1.5 border-r border-gray-200 last:border-r-0 text-xs font-semibold text-gray-500 whitespace-nowrap flex-shrink-0"
+                className="flex items-center px-2 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-nowrap flex-shrink-0"
                 style={{ minWidth: col.width, width: col.width }}
               >
                 {col.label}

@@ -224,11 +224,11 @@ export function ClientRow({
     return (
         <div className="mb-3">
             <div
-                className={`flex items-stretch border-b border-gray-100 hover:bg-gray-50 group transition-colors ${isSelected ? "bg-blue-50" : ""
+                className={`flex items-stretch border-b border-gray-500 hover:bg-gray-50 group transition-colors ${isSelected ? "bg-blue-50" : ""
                     }`}
             >
                 <div
-                    className="flex items-center px-2 gap-1.5 flex-shrink-0 border-r border-gray-200"
+                    className="flex items-center px-2 gap-1.5 flex-shrink-0 border-r border-gray-500"
                     style={{ minWidth: 60, width: 60 }}
                 >
                     <input
@@ -250,7 +250,7 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center gap-1.5 px-1 py-2 border-r border-gray-200 flex-shrink-0"
+                    className="flex items-center gap-1.5 px-1 py-2 border-r border-gray-500 flex-shrink-0"
                     style={{ height: 30, minWidth: 220, width: 100 }}
                 >
                     <EditableCell
@@ -339,10 +339,6 @@ export function ClientRow({
                                                                 </a>
                                                                 ) : null}
                                                             </p>
-
-                                                            
-        
-
                                                             <p className="mt-1 text-xs text-gray-500">
                                                                 {new Date(entry.createdAt).toLocaleString()}
                                                             </p>
@@ -378,7 +374,6 @@ export function ClientRow({
                     {showEstimateSuccess && (
                         <div className={`mt-1 text-[11px] text-teal-500 transition-opacity duration-500 ${fadeEstimateSuccess ? "opacity-0" : "opacity-100"}`}>Successfully generated!</div>
                     )}
-
                     <Tooltip.Provider>
                         <Tooltip.Root>
                             <Tooltip.Trigger asChild>
@@ -391,14 +386,11 @@ export function ClientRow({
                                 <Tooltip.Content className="TooltipContent">Generate Order Confirmation Form<Tooltip.Arrow className="TooltipArrow" /></Tooltip.Content>
                             </Tooltip.Portal>
                         </Tooltip.Root>
-
                     </Tooltip.Provider>
-
                 </div>
-
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 flex-shrink-0"
-                    style={{ minWidth: 90, width: 90 }}
+                    className="flex-row px-3 border-r border-gray-500 flex-shrink-0"
+                    style={{ minWidth: 60, width: 60 }}
                 >
                     <AssigneeMultiSelect
                         profiles={profiles}
@@ -408,8 +400,8 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150"
-                    style={{ minWidth: 90, width: 90 }}
+                    className="flex items-center px-2 border-r border-gray-500 transition transform active:scale-95 duration-150"
+                    style={{ minWidth: 80, width: 80 }}
                 >
                     <StatusBadge
                         value={client.replyStatus}
@@ -420,7 +412,7 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150"
+                    className="flex items-center px-2 border-r border-gray-500 transition transform active:scale-95 duration-150"
                     style={{ minWidth: 100, width: 100 }}
                 >
                     <input
@@ -432,8 +424,8 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150"
-                    style={{ minWidth: 115, width: 115 }}
+                    className="flex items-center px-2 border-r border-gray-500 flex-shrink-0 transition transform active:scale-95 duration-150"
+                    style={{ minWidth: 80, width: 80 }}
                 >
                     <StatusBadge
                         value={client.status}
@@ -550,8 +542,8 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150"
-                    style={{ minWidth: 90, width: 90 }}
+                    className="flex items-center px-2 border-r border-gray-500 flex-shrink-0 transition transform active:scale-95 duration-150"
+                    style={{ minWidth: 80, width: 80 }}
                 >
                     <StatusBadge
                         value={client.channel}
@@ -563,7 +555,7 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 flex-shrink-0 transition transform active:scale-95 duration-150"
+                    className="flex items-center px-2 border-r border-gray-500 flex-shrink-0 transition transform active:scale-95 duration-150"
                     style={{ minWidth: 80, width: 80 }}
                 >
                     <StatusBadge
@@ -575,33 +567,28 @@ export function ClientRow({
                     />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 170, width: 170 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 80, width: 80 }}>
                     <EditableCell value={client.company} onChange={(v) => onUpdate({ company: v })} placeholder="Company" />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 180, width: 180 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 80, width: 80 }}>
                     <EditableCell value={client.email} onChange={(v) => onUpdate({ email: v })} placeholder="Email" />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 120, width: 120 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 80, width: 80 }}>
                     <EditableCell value={client.phone} onChange={(v) => onUpdate({ phone: v })} placeholder="Phone" />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 160, width: 160 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 90, width: 90 }}>
                     <EditableCell
                         value={client.requirements}
                         onChange={(v) => onUpdate({ requirements: v })}
                         placeholder="Requirements"
                     />
                 </div>
-
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 60, width: 60 }}>
-                    <EditableCell value={client.qty} onChange={(v) => onUpdate({ qty: v })} type="number" />
-                </div>
-
                 <div
-                    className="flex items-center px-2 border-r border-gray-200 transition transform active:scale-95 duration-150"
-                    style={{ minWidth: 100, width: 100 }}
+                    className="flex items-center px-2 border-r border-gray-500 transition transform active:scale-95 duration-150"
+                    style={{ minWidth: 80, width: 80 }}
                 >
                     <input
                         type="date"
@@ -611,25 +598,25 @@ export function ClientRow({
                     />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 90, width: 90 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 80, width: 80 }}>
                     <EditableCell value={client.totalPrice} onChange={(v) => onUpdate({ totalPrice: v })} />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 115, width: 115 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 115, width: 115 }}>
                     <EditableCell
                         value={client.companyAddress}
                         onChange={(v) => onUpdate({ companyAddress: v })}
                     />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 115, width: 115 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 115, width: 115 }}>
                     <EditableCell
                         value={client.billingAddress}
                         onChange={(v) => onUpdate({ billingAddress: v })}
                     />
                 </div>
 
-                <div className="flex items-center px-2 border-r border-gray-200" style={{ minWidth: 120, width: 120 }}>
+                <div className="flex items-center px-2 border-r border-gray-500" style={{ minWidth: 90, width: 90 }}>
                     <EditableCell value={client.dateCreated} onChange={(v) => onUpdate({ dateCreated: v })} />
                 </div>
 

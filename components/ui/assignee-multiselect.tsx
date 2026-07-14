@@ -54,11 +54,11 @@ export function AssigneeMultiSelect({ profiles, selectedIds, onChange }: Props) 
                 className="min-h-[28px] w-full rounded-md px-1 py-1 text-left hover:bg-gray-50"
             >
                 {selectedProfiles.length > 0 ? (
-                    <div className="flex gap-0.5 flex-wrap">
+                    <div className="flex w-10 h-6 rounded-full">
                         {selectedProfiles.map((p, i) => (
                             <div
                                 key={p.id}
-                                className="w-6 h-6 rounded-sm flex items-center justify-center text-white text-xs font-bold"
+                                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bol"
                                 style={{ background: ['#8babeb', '#b0fff1', '#ba9ef7', '#f776aa'][i % 4] }}
                                 title={getLabel(p)}
                             >
@@ -68,7 +68,7 @@ export function AssigneeMultiSelect({ profiles, selectedIds, onChange }: Props) 
                     </div>
                 ) : (
                     <div className="w-6 h-6 rounded-sm border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-blue-400">
-                        <Plus size={9} className="text-gray-400" />
+                        <Plus size={9} className="text-gray-500" />
                     </div>
                 )}
             </button>
