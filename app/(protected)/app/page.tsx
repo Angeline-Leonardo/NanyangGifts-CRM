@@ -18,6 +18,7 @@ export default function Page() {
   const [user, setUser] = useState<User | null>(null);
   const [activePanel, setActivePanel] = useState<SidePanel>('crm');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [expandedClientIds, setExpandedClientIds] = useState<string[]>([]);
 
   const reloadClients = useCallback(async () => {
     try {
@@ -53,6 +54,8 @@ export default function Page() {
         return (
           <CRMBoard
             clients={clients}
+            expandedIds={expandedClientIds}
+            setExpandedIds={setExpandedClientIds}
             setClients = {setClients}
             reloadClients={reloadClients}
             search={search}

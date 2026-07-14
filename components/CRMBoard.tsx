@@ -48,6 +48,8 @@ const GROUP_ORDER: ClientStatus[] = [
 
 interface CRMBoardProps {
   clients: Client[];
+  expandedIds: string[],
+  setExpandedIds: React.Dispatch<React.SetStateAction<string[]>>;
   setClients: React.Dispatch<React.SetStateAction<Client[]>>;
   reloadClients: () => Promise<void>;
   search?: string;
@@ -65,15 +67,13 @@ export async function fetchAllSubitemAssignees(): Promise<SubitemAssigneeMap> {
   }, {} as SubitemAssigneeMap)
 }
 
-export function CRMBoard({ clients, setClients, reloadClients, search = '' }: CRMBoardProps) {
+export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, reloadClients, search = '' }: CRMBoardProps) {
 
   const [filterStatus, setFilterStatus] = useState<ClientStatus | 'All'>('All');
   const [showFilter, setShowFilter] = useState(false);
 
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    () => new Set(clients.filter((c) => c.expanded).map((c) => c.id))
-  );
-  const allExpanded = expandedIds.size === clients.length && clients.length > 0;
+  const expandedIdSet = React.useMemo(() => new Set(expandedIds), [expandedIds]);
+  const allExpanded = clients.length > 0 && clients.every((c) => expandedIdSet.has(c.id));
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -169,14 +169,14 @@ export function CRMBoard({ clients, setClients, reloadClients, search = '' }: CR
   const allFilteredSelected =
     filteredClients.length > 0 && filteredClients.every((c) => selectedIds.has(c.id));
 
-  // --- Expand / collapse ---
+  // Expand / collapse all clients
   const toggleExpandAll = useCallback(() => {
     if (allExpanded) {
-      setExpandedIds(new Set());
+      setExpandedIds([]);
     } else {
-      setExpandedIds(new Set(clients.map((c) => c.id)));
+      setExpandedIds(clients.map((c) => c.id));
     }
-  }, [allExpanded, clients]);
+  }, [allExpanded, clients, setExpandedIds]);
 
   const toggleGroup = useCallback((groupStatus: string) => {
     setCollapsedGroups((prev) => ({ ...prev, [groupStatus]: !prev[groupStatus] }));
@@ -268,45 +268,45 @@ export function CRMBoard({ clients, setClients, reloadClients, search = '' }: CR
     [clients]
   );
 
-const addClient = useCallback(async () => {
-  try {
-    const createdClient = await createClientRow(currentUserId ?? null);
+  const addClient = useCallback(async () => {
+    try {
+      const createdClient = await createClientRow(currentUserId ?? null);
 
-    const newClient: Client = {
-      id: createdClient.id,
-      name: createdClient.name ?? '',
-      people: createdClient.people ?? '',
-      replyStatus: createdClient.reply_status ?? '',
-      followUp: createdClient.follow_up ?? '',
-      status: (createdClient.status as ClientStatus) ?? 'New Lead',
-      channel: createdClient.channel ?? '',
-      importance: createdClient.importance ?? '',
-      company: createdClient.company ?? '',
-      email: createdClient.email ?? '',
-      phone: createdClient.phone ?? '',
-      requirements: createdClient.requirements ?? '',
-      qty: createdClient.qty ?? '',
-      nbd: createdClient.nbd ?? '',
-      totalPrice: createdClient.total_price ?? '',
-      companyAddress: createdClient.company_address ?? '',
-      billingAddress: createdClient.billing_address ?? '',
-      dateCreated: createdClient.date_created ?? '',
-      expanded: createdClient.expanded ?? true,
-      color: createdClient.color ?? '#7BCBD5',
-      subitems: [],
-      activityLog: [],
-    };
+      const newClient: Client = {
+        id: createdClient.id,
+        name: createdClient.name ?? '',
+        people: createdClient.people ?? '',
+        replyStatus: createdClient.reply_status ?? '',
+        followUp: createdClient.follow_up ?? '',
+        status: (createdClient.status as ClientStatus) ?? 'New Lead',
+        channel: createdClient.channel ?? '',
+        importance: createdClient.importance ?? '',
+        company: createdClient.company ?? '',
+        email: createdClient.email ?? '',
+        phone: createdClient.phone ?? '',
+        requirements: createdClient.requirements ?? '',
+        qty: createdClient.qty ?? '',
+        nbd: createdClient.nbd ?? '',
+        totalPrice: createdClient.total_price ?? '',
+        companyAddress: createdClient.company_address ?? '',
+        billingAddress: createdClient.billing_address ?? '',
+        dateCreated: createdClient.date_created ?? '',
+        expanded: createdClient.expanded ?? true,
+        color: createdClient.color ?? '#7BCBD5',
+        subitems: [],
+        activityLog: [],
+      };
 
-    setClients((prev) => [newClient, ...prev]);
-    setExpandedIds((prev) => new Set(prev).add(newClient.id));
+      setClients((prev) => [newClient, ...prev]);
+      setExpandedIds((prev) => [...prev, newClient.id]);
 
-    fetchClientAssigneeMap()
-      .then((assigneeMap) => setClientAssignees(assigneeMap))
-      .catch((error) => console.error('Failed to refresh client assignees', error));
-  } catch (error: any) {
-    console.error('Failed to add client', error);
-  }
-}, [currentUserId, setClients]);
+      fetchClientAssigneeMap()
+        .then((assigneeMap) => setClientAssignees(assigneeMap))
+        .catch((error) => console.error('Failed to refresh client assignees', error));
+    } catch (error: any) {
+      console.error('Failed to add client', error);
+    }
+  }, [currentUserId, setClients]);
 
   const deleteClient = useCallback(
     async (clientId: string) => {
@@ -525,13 +525,13 @@ const addClient = useCallback(async () => {
                   <ClientRow
                     key={client.id}
                     client={client}
-                    isExpanded={expandedIds.has(client.id)}
+                    isExpanded={expandedIdSet.has(client.id)}
                     onToggleExpand={() =>
-                      setExpandedIds((prev) => {
-                        const next = new Set(prev);
-                        next.has(client.id) ? next.delete(client.id) : next.add(client.id);
-                        return next;
-                      })
+                      setExpandedIds((prev) =>
+                        prev.includes(client.id)
+                          ? prev.filter((id) => id !== client.id)
+                          : [...prev, client.id]
+                      )
                     }
                     onOpenOcfModal={handleOpenOcfModal}
                     isSelected={selectedIds.has(client.id)}
@@ -558,7 +558,7 @@ const addClient = useCallback(async () => {
                 onClose={handleCloseOcfModal}
                 onCreated={({ internalUrl }) => {
                   window.location.href = internalUrl;
-                }}/>
+                }} />
             </React.Fragment>
           ))}
         </div>
