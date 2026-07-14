@@ -288,7 +288,11 @@ export function SubitemsTable({
                                     />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 120 }}>
-                                        <EditableCell value={sub.remarks} onChange={v => onUpdateSubitem(sub.id, { remarks: v })} />
+                                        <EditableCell
+                                        value={sub.remarks}
+                                        onChange={v => onUpdateSubitem(sub.id, { remarks: v })}
+                                        multiline
+                                        />
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-500" style={{ minWidth: 120 }}>
                                         <EditableCell value={sub.shipper} onChange={v => onUpdateSubitem(sub.id, { shipper: v })} />

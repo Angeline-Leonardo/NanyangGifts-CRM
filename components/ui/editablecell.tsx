@@ -61,6 +61,7 @@ export function EditableCell({
                 onChange={(e) => setLocal(e.target.value)}
                 onBlur={save}
                 onKeyDown={(e) => {
+                    if (e.key === 'Enter') save();
                     if (e.key === 'Escape') {
                         setLocal(value);
                         setEditing(false);
