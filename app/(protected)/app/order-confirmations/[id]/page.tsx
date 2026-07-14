@@ -18,7 +18,6 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
         client_token,
         status,
         generated_at,
-        estimated_delivery_date,
         estimated_delivery_notes,
         same_address_for_all_items,
         remarks_for_delivery,

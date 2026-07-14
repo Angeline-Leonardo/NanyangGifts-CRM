@@ -19,7 +19,6 @@ type Ocf = {
     client_token: string | null;
     status: string | null;
     generated_at: string | null;
-    estimated_delivery_date: string | null;
     estimated_delivery_notes: string | null;
     remarks_for_delivery: string | null;
     same_address_for_all_items: boolean | null;
@@ -43,7 +42,6 @@ type Ocf = {
 };
 
 export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
-    const [deliveryDate, setDeliveryDate] = useState(ocf.estimated_delivery_date ?? "");
     const [deliveryNotes, setDeliveryNotes] = useState(ocf.estimated_delivery_notes ?? "");
     const clientUrl = useMemo(() => {
         if (!ocf.client_token) return "";
@@ -201,21 +199,15 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                         </tr>
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Estimated Delivery Date:
+                                Estimated Delivery:
                             </td>
                             <td className="px-3 py-2">
                                 <div className="flex flex-col gap-2">
                                     <input
-                                        type="date"
-                                        value={deliveryDate}
-                                        onChange={(e) => setDeliveryDate(e.target.value)}
-                                        className="w-full max-w-xs rounded border border-gray-300 px-3 py-2"
-                                    />
-                                    <input
                                         type="text"
                                         value={deliveryNotes}
                                         onChange={(e) => setDeliveryNotes(e.target.value)}
-                                        placeholder="Additional delivery info, e.g. air freight"
+                                        placeholder="Additional delivery info, e.g. Production Lead Time: 2 days, etc."
                                         className="w-full rounded border border-gray-300 px-3 py-2"
                                     />
                                 </div>

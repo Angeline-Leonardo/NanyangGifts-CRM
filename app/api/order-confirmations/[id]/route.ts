@@ -31,7 +31,6 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         salesperson_name,
         salesperson_phone,
         salesperson_email,
-        estimated_delivery_date,
         estimated_delivery_notes,
         important_notes,
         status,
@@ -109,7 +108,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             salesperson_name,
             salesperson_phone,
             salesperson_email,
-            estimated_delivery_date,
             estimated_delivery_notes,
             important_notes,
         } = body ?? {};
@@ -152,13 +150,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             updates.salesperson_email = salesperson_email;
         }
 
-        if (
-            estimated_delivery_date === null ||
-            typeof estimated_delivery_date === "string"
-        ) {
-            updates.estimated_delivery_date = estimated_delivery_date;
-        }
-
         if (typeof important_notes === "string") {
             updates.important_notes = important_notes;
         }
@@ -188,7 +179,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         salesperson_name,
         salesperson_phone,
         salesperson_email,
-        estimated_delivery_date,
         important_notes,
         estimated_delivery_notes,
         status,

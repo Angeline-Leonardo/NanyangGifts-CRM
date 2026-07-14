@@ -227,18 +227,6 @@ export function GenerateOcfModal({
                             <div className="mb-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div>
                                     <label className="mb-1 block text-xs font-medium text-gray-700">
-                                        Estimated delivery date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={estimatedDeliveryDate}
-                                        onChange={(e) => setEstimatedDeliveryDate(e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="mb-1 block text-xs font-medium text-gray-700">
                                         Important notes
                                     </label>
                                     <textarea
@@ -254,9 +242,9 @@ export function GenerateOcfModal({
                                     <textarea
                                         value={estimatedDeliveryNotes}
                                         onChange={(e) => setEstimatedDeliveryNotes(e.target.value)}
-                                        rows={4}
+                                        rows={7}
                                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
-                                        placeholder="E.g. Estimated 21 days delivery upon confirmation via air freight"
+                                        placeholder="E.g. Production lead time: 2 days"
                                     />
                                 </div>
                                 

@@ -19,7 +19,6 @@ type Ocf = {
     client_token: string;
     status: string | null;
     generated_at: string | null;
-    estimated_delivery_date: string | null;
     estimated_delivery_notes: string | null;
     important_notes: string | null;
     client_name_snapshot: string | null;
@@ -215,15 +214,10 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
 
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Estimated Delivery Date:
+                                Estimated Delivery:
                             </td>
                             <td className="px-3 py-2">
                                 <div className="space-y-2">
-                                    <input
-                                        value={ocf.estimated_delivery_date || ""}
-                                        disabled
-                                        className="w-full max-w-xs rounded border border-gray-300 bg-gray-100 px-3 py-2 text-gray-700"
-                                    />
                                     <input
                                         value={ocf.estimated_delivery_notes || ""}
                                         disabled

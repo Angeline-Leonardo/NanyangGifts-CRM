@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 
 type CreateOcfBody = {
     clientId: string;
-    estimatedDeliveryDate?: string | null;
     importantNotes?: string | null;
     estimatedDeliveryNotes?: string | null;
     itemUploads: Array<{
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = (await req.json()) as CreateOcfBody;
-        const { clientId, estimatedDeliveryDate, importantNotes, estimatedDeliveryNotes, itemUploads } = body;
+        const { clientId, importantNotes, estimatedDeliveryNotes, itemUploads } = body;
 
         if (!clientId) {
             return NextResponse.json({ error: "Missing clientId" }, { status: 400 });
@@ -119,7 +118,6 @@ export async function POST(req: NextRequest) {
                 salesperson_name: defaultSalesperson?.full_name ?? "",
                 salesperson_email: defaultSalesperson?.email ?? "",
                 salesperson_contact_number: defaultSalesperson?.contact_number ?? "",
-                estimated_delivery_date: estimatedDeliveryDate ?? null,
                 estimated_delivery_notes: estimatedDeliveryNotes ?? null,
                 important_notes: importantNotes ?? "",
                 status: "draft",

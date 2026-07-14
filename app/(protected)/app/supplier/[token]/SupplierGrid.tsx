@@ -38,7 +38,7 @@ export default function SupplierGrid({ rows }: { rows: SupplierRow[] }) {
                             <th className="sticky top-0 z-20 border border-slate-400 bg-[#4588ed] px-3 py-2 text-center font-serif whitespace-nowrap">
                                 单号
                                 <br />
-                                Tracking ID
+                                CN Tracking #
                             </th>
                             <th className="sticky top-0 z-20 border border-slate-400 bg-[#4588ed] px-3 py-2 text-center font-serif whitespace-nowrap">
                                 箱子
