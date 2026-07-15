@@ -230,7 +230,7 @@ export function ClientRow({
                     }`}
             >
                 <div
-                    className="flex items-center px-1 gap-1.5 flex-shrink-0 border-r border-gray-500"
+                    className="flex items-center px-1 gap-1.5 flex-shrink-0"
                     style={{ minWidth: colWidth.selectCheckbox, width: colWidth.selectCheckbox }}
                 >
                     <input
@@ -252,7 +252,7 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="flex items-center gap-1 px-3 py-2 border-r border-gray-500 flex-shrink-0"
+                    className="flex items-center  py-2 border-r border-gray-500 flex-shrink"
                     style={{ height: 30, minWidth: colWidth.client, width: colWidth.client }}
                 >
                     <EditableCell

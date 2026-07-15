@@ -199,7 +199,7 @@ export function SubitemsTable({
                 <table className="border-collapse table-fixed w-full">
                     <thead>
                         <tr className="bg-gray-50 border-b border-r border-gray-500">
-                            <th className="w-8 px-2 py-1 border-r border-gray-200" />
+                            <th className="w-6" />
                             {cols.map(col => (
                                 <th key={col.key}
                                     style={{ minWidth: col.w, width: col.w }}
@@ -267,7 +267,7 @@ export function SubitemsTable({
                             return(
                             <React.Fragment key={sub.id}>
                                 <tr className="border-b border-gray-500 hover:bg-blue-50/30 group">
-                                    <td className="px-2 py-1 border-r border-gray-200 text-center">
+                                    <td className="px-1 py-1 border-gray-200 text-center">
                                         <input
                                             type="checkbox"
                                             checked={selectedSubitemIds.includes(sub.id)}

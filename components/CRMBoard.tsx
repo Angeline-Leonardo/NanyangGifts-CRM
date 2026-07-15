@@ -532,7 +532,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
             {headerCols.slice(1).map((col, i) => (
               <div
                 key={col.key}
-                className="relative flex items-center px-2 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-nowrap flex-shrink-0"
+                className="relative flex items-center px-2 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-prewrap flex-shrink-0"
                 style={{ minWidth: col.width, width: col.width }}
               >
                 {col.label}
