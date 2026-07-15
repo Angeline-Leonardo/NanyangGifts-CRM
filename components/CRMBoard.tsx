@@ -11,8 +11,8 @@ import { fetchClientAssigneeMap } from '@/lib/assignments';
 import { GenerateOcfModal } from './Generate-OCF-Modal';
 
 const CLIENT_HEADER_COLS = [
-  { key: 'selectCheckbox', label: '', width: 60, minWidth: 10 },
-  { key: 'client', label: 'Client', width: 250, minWidth: 10 },
+  { key: 'selectCheckbox', label: '', width: 60, minWidth: 0 },
+  { key: 'client', label: 'Client', width: 250, minWidth: 0 },
   { key: 'people', label: 'People', width: 60, minWidth: 10 },
   { key: 'replyStatus', label: 'Reply Status', width: 80, minWidth: 10 },
   { key: 'followUp', label: 'Follow Up', width: 100, minWidth: 10 },
@@ -509,15 +509,15 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto text-gray-500 font-semibold">
+      <div className="box-border flex overflow-hidden min-w-0 text-gray-500 font-semibold">
         <div style={{ minWidth: totalMinWidth }}>
           {/* Header */}
           <div
-            className="flex items-center flex-shrink-0 border-b border-gray-200 animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10"
+            className="box-border flex items-center min-w-0 flex-shrink-0 border-r border-gray-500 overflow-hidden animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10"
             style={{ minWidth: totalMinWidth }}
           >
             <div
-              className="flex items-center px-2 gap-1.5 flex-shrink-0 border-r border-gray-200"
+              className="box-border flex overflow-hidden min-w-0 items-center px-2.5 flex-shrink-0"
               style={{ minWidth: colWidth.selectCheckbox, width: colWidth.selectCheckbox }}
             >
               <input
@@ -532,7 +532,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
             {headerCols.slice(1).map((col, i) => (
               <div
                 key={col.key}
-                className="relative flex items-center px-2 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-prewrap flex-shrink-0"
+                className="relative box-border flex min-w-0 overflow-hidden items-center px-0 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-nowrap flex-shrink-0"
                 style={{ minWidth: col.width, width: col.width }}
               >
                 {col.label}
