@@ -28,7 +28,7 @@ const CLIENT_HEADER_COLS = [
   { key: 'companyAddress', label: 'Company Address', width: 115, minWidth: 7 },
   { key: 'billingAddress', label: 'Billing Address', width: 115, minWidth: 7 },
   { key: 'dateCreated', label: 'Date Created', width: 90, minWidth: 7 },
-  { key: 'empty', label: '', width: 560, minWidth: 7 },
+  { key: 'empty', label: '', width: 510, minWidth: 7 },
 ];
 
 
@@ -509,15 +509,15 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
       </div>
 
       {/* Table */}
-      <div className="box-border flex overflow-x min-w-0 text-gray-500 font-semibold">
+      <div className=" flex overflow-x min-w-0 text-gray-500 font-semibold">
         <div style={{ minWidth: totalMinWidth }}>
           {/* Header */}
           <div
-            className="box-border flex items-center justify-center w-full min-w-0 flex-shrink-0 border-r border-gray-500 overflow-hidden animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10"
+            className=" flex items-center justify-center w-full min-w-0 flex-shrink-0 border-r border-[#D0D4E4] overflow-hidden animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10"
             style={{ minWidth: totalMinWidth }}
           >
             <div
-              className="box-border flex overflow-hidden min-w-0 items-center px-2.5 flex-shrink-0"
+              className=" border-[#D0D4E4] flex overflow-hidden min-w-0 items-center px-2.5 flex-shrink-0"
               style={{ minWidth: colWidth.selectCheckbox, width: colWidth.selectCheckbox }}
             >
               <input
@@ -532,7 +532,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
             {headerCols.slice(1).map((col, i) => (
               <div
                 key={col.key}
-                className="relative box-border flex min-w-0 overflow-hidden items-center px-1 py-1.5 border-r border-gray-500 last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-nowrap flex-shrink"
+                className="relative flex min-w-0 overflow-hidden items-center px-1 py-1.5 border-r border-[#D0D4E4] last:border-r-0 text-[11px] font-semibold text-gray-500 whitespace-nowrap flex-shrink"
                 style={{ minWidth: col.width, width: col.width }}
               >
                 {col.label}

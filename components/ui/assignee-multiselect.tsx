@@ -72,7 +72,7 @@ export function AssigneeMultiSelect({ profiles, selectedIds, onChange }: Props) 
             <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}
-                className="min-h-[28px] w-full rounded-md py-1 !text-center hover:bg-gray-50"
+                className="min-h-[25px] w-full rounded-md !text-center hover:bg-gray-50"
             >
                 {selectedProfiles.length > 0 ? (
                     <div className="flex w-full h-6 items-center justify-center -space-x-2 rounded-full">
