@@ -575,7 +575,7 @@ export function ClientRow({
                 </div>
 
                 <div className="flex-1 min-w-0 items-center py-1 border-r border-[#D0D4E4] overflow-hidden whitespace-nowrap text-ellipsis" style={{ height: 32, minWidth: colWidth.email, width: colWidth.email }}>
-                    <EditableCell value={client.email} onChange={(v) => onUpdate({ email: v })} placeholder="" />
+                    <EditableCell className="!justify-start px-1" value={client.email} onChange={(v) => onUpdate({ email: v })} placeholder="" />
                 </div>
 
                 <div className="flex-1 min-w-0 py-1 items-center border-r border-[#D0D4E4] overflow-hidden whitespace-nowrap text-ellipsis" style={{ height: 32, minWidth: colWidth.phone, width: colWidth.phone }}>
