@@ -331,20 +331,41 @@ console.log('first client group fields', clients[0]?.groupId, clients[0]?.groupI
   );
 
 
-  const updateClient = useCallback(
-    async (clientId: string, updates: Partial<Client>) => {
-      setClients((prev) =>
-        prev.map((c) => (c.id === clientId ? { ...c, ...updates } : c))
-      );
-      try {
-        await updateClientRow(clientId, updates);
-      } catch (error: any) {
-        setClients(clients);
-        console.error('Failed to update client', error);
+  const STATUS_TO_GROUP_NAME: Partial<Record<ClientStatus, string>> = {
+  'Follow Up': 'Follow Up',
+  'Shortlisted': 'Shortlisted',
+};
+
+const updateClient = useCallback(
+  async (clientId: string, updates: Partial<Client>) => {
+    let nextUpdates = { ...updates };
+
+    if (updates.status) {
+      const targetGroupName = STATUS_TO_GROUP_NAME[updates.status];
+      if (targetGroupName) {
+        const matchingGroup = groups.find(
+          (group) => group.name.toLowerCase() === targetGroupName.toLowerCase()
+        );
+
+        if (matchingGroup) {
+          nextUpdates.groupId = matchingGroup.id;
+        }
       }
-    },
-    [clients]
-  );
+    }
+
+    setClients((prev) =>
+      prev.map((c) => (c.id === clientId ? { ...c, ...nextUpdates } : c))
+    );
+
+    try {
+      await updateClientRow(clientId, nextUpdates);
+    } catch (error: any) {
+      setClients(clients);
+      console.error('Failed to update client', error);
+    }
+  },
+  [clients, groups, setClients]
+);
 
   const updateSubitem = useCallback(
     async (_clientId: string, subitemId: string, updates: Partial<Subitem>) => {
