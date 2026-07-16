@@ -151,6 +151,7 @@ export interface Client {
   billingAddress: string;
   expanded: boolean;
   color: string;
+  groupId: string | null;
   subitems: Subitem[];
   activityLog?: ActivityEntry[];
   assignedProfileIds?: string[];
@@ -159,6 +160,12 @@ export type ClientAssigneeMap = Record<string, string[]>;
 
 export type SubitemAssigneeMap = Record<string, string[]>;
 
+export type CRMGroup = {
+  id: string;
+  name: string;
+  color?: string | null;
+  sort_order: number;
+}
 
 export interface Email {
   id: string;

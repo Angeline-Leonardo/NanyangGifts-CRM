@@ -138,6 +138,7 @@ type Clients = {
     company_address: string | null;
     billing_address: string | null;
     date_created: string | null;
+    group_id: string;
     expanded: boolean | null;
     color: string | null;
     activity_log?: ActivityLogRow[] | null;
@@ -330,6 +331,7 @@ function mapClients(row: Clients): Client {
         companyAddress: row.company_address ?? '',
         billingAddress: row.billing_address ?? '',
         dateCreated: row.date_created ?? '',
+        groupId: row.group_id ?? null,
         expanded: row.expanded ?? false,
         color: row.color ?? '#7BCBD5',
         activityLog: (row.activity_log ?? []).map(mapActivityEntry),
@@ -452,7 +454,7 @@ export async function fetchClientsWithSubitems() {
     );
 }
 
-export async function createClientRow(currentUserId?: string | null) {
+export async function createClientRow(currentUserId?: string | null, groupId?: string | null) {
     const { data, error } = await supabase
         .from('clients')
         .insert({
@@ -472,6 +474,7 @@ export async function createClientRow(currentUserId?: string | null) {
             company_address: '',
             billing_address: '',
             date_created: '',
+            group_id: groupId ?? null,
             expanded: true,
             color: '#7BCBD5',
             activity_log: [],
@@ -515,6 +518,7 @@ export async function updateClientRow(clientId: string, updates: Partial<Client>
         ...(updates.companyAddress !== undefined ? { company_address: updates.companyAddress } : {}),
         ...(updates.billingAddress !== undefined ? { billing_address: updates.billingAddress } : {}),
         ...(updates.dateCreated !== undefined ? { date_created: updates.dateCreated } : {}),
+        ...(updates.groupId !== undefined ? { group_id: updates.groupId } : {}),
         ...(updates.expanded !== undefined ? { expanded: updates.expanded } : {}),
         ...(updates.color !== undefined ? { color: updates.color } : {}),
         ...(updates.activityLog !== undefined ? { activity_log: updates.activityLog } : {}),
@@ -539,6 +543,7 @@ export async function updateClientRow(clientId: string, updates: Partial<Client>
                         key === 'companyAddress' ? 'company_address' :
                             key === 'billingAddress' ? 'billing_address' :
                                 key === 'dateCreated' ? 'date_created' :
+                                    key === 'groupId' ? 'group_id' :
                                     key
             ];
 

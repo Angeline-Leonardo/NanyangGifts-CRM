@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, Plus, Trash2, Filter, ChevronsDown, ChevronsUp, X } from 'lucide-react';
-import { Client, Subitem, ClientStatus, Profile, ClientAssigneeMap, SubitemAssigneeMap } from '../app/types';
+import { Client, Subitem, ClientStatus, Profile, ClientAssigneeMap, SubitemAssigneeMap, CRMGroup } from '../app/types';
 import { createClient as createSupabaseClient } from '@/lib/supabase/client';
 import { ClientRow, CLIENT_STATUSES, STATUS_COLORS } from './ui/clientrows';
 import { fetchProfiles, saveClientAssignees, saveSubitemAssignees } from '@/lib/assignments';
@@ -85,17 +85,29 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [ocfClient, setOcfClient] = useState<Client | null>(null);
   const [isOcfModalOpen, setIsOcfModalOpen] = useState(false);
   
-  // Add group
-  const [groupOrder, setGroupOrder] = useState<string[]>(DEFAULT_GROUP_ORDER);
-  const addGroup = useCallback(() => {
+  // Fetch group, add groups
+  const [groups, setGroups] = useState<CRMGroup[]>([]);
+  
+  async function fetchGroups(): Promise<CRMGroup[]> {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from('crm_groups')
+    .select('id, name, color, sort_order')
+    .order('sort_order', { ascending: true })
+    .order('name', { ascending: true });
+
+  if (error) throw error;
+  return data ?? [];
+}
+  const addGroup = useCallback(async () => {
   const name = window.prompt('Enter new group name');
   if (!name) return;
-
+  
   const trimmed = name.trim();
   if (!trimmed) return;
 
-  const exists = groupOrder.some(
-    (group) => group.toLowerCase() === trimmed.toLowerCase()
+  const exists = groups.some(
+    (group) => group.name.toLowerCase() === trimmed.toLowerCase()
   );
 
   if (exists) {
@@ -103,9 +115,32 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     return;
   }
 
-  setGroupOrder((prev) => [...prev, trimmed]);
-}, [groupOrder]);
+  try {
+    const supabase = createSupabaseClient();
+    const nextSort = groups.length
+      ? Math.max(...groups.map((g) => g.sort_order ?? 0)) + 1
+      : 0;
+
+    const { data, error } = await supabase
+      .from('crm_groups')
+      .insert({
+        name: trimmed,
+        color: '#7BCBD5',
+        sort_order: nextSort,
+        created_by: currentUserId,
+      })
+      .select('id, name, color, sort_order')
+      .single();
+
+    if (error) throw error;
+
+    setGroups((prev) => [...prev, data]);
+  } catch (error) {
+    console.error('Failed to add group', error);
+  }
+}, [groups, currentUserId]);
   
+
   const [headerCols, setHeaderCols] = useState(CLIENT_HEADER_COLS);
   
   const totalMinWidth = headerCols.reduce((sum, col) => sum + col.width, 0);
@@ -163,17 +198,20 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           { data: { user } },
           allClientAssigneeMap,
           allSubitemAssigneeMap,
+          groupsData
         ] = await Promise.all([
           fetchProfiles(),
           supabase.auth.getUser(),
           fetchClientAssigneeMap(),
           fetchAllSubitemAssignees(),
+          fetchGroups(),
         ]);
 
         setProfiles(profilesData);
         setCurrentUserId(user?.id ?? null);
         setClientAssignees(allClientAssigneeMap);
         setSubitemAssignees(allSubitemAssigneeMap);
+        setGroups(groupsData);
       } catch (error: any) {
         console.error('Failed to load assignments', error);
       }
@@ -215,9 +253,13 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     return matchesStatus && matchesSearch;
   });
 
-  const groupedClients = groupOrder.map((status) => ({
-    status,
-    clients: displayedClients.filter((c) => c.status === status),
+  console.log('clients', clients);
+console.log('groups', groups);
+console.log('first client group fields', clients[0]?.groupId, clients[0]?.groupId);
+
+  const groupedClients = groups.map((group) => ({
+    group,
+    clients: displayedClients.filter((c) => c.groupId === group.id),
   }));
 
   const filteredClients =
@@ -327,7 +369,8 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
 
   const addClient = useCallback(async () => {
     try {
-      const createdClient = await createClientRow(currentUserId ?? null);
+      const defaultGroupId = groups[0]?.id ?? null;
+      const createdClient = await createClientRow(currentUserId ?? null, defaultGroupId);
 
       const newClient: Client = {
         id: createdClient.id,
@@ -343,6 +386,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
         phone: createdClient.phone ?? '',
         requirements: createdClient.requirements ?? '',
         nbd: createdClient.nbd ?? '',
+        groupId: createdClient.group_id ?? defaultGroupId,
         totalPrice: createdClient.total_price ?? '',
         companyAddress: createdClient.company_address ?? '',
         billingAddress: createdClient.billing_address ?? '',
@@ -474,7 +518,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
 
               <div className="border-t border-gray-100 my-1" />
 
-              {groupOrder.map((st) => (
+              {CLIENT_STATUSES.map((st) => (
                 <button
                   key={st}
                   onClick={() => { setFilterStatus(st); setShowFilter(false); }}
@@ -491,7 +535,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
         </div>
 
         <div className="flex items-center gap-1">
-          {groupOrder.map((st) => {
+          {CLIENT_STATUSES.map((st) => {
             const count = clients.filter((c) => c.status === st).length;
             if (!count) return null;
             return (
@@ -575,23 +619,23 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           </div>
 
           {/* Grouped rows */}
-          {groupedClients.map((group) => (
-            <React.Fragment key={group.status}>
+          {groupedClients.map(({ group, clients: groupClients }) => (
+            <React.Fragment key={group.id}>
               <div className="flex items-center gap-2.5 px-2 py-0.4 text-sm bg-gray-50 border-y border-gray-100">
-                <button onClick={() => toggleGroup(group.status)} className="text-sm text-gray-500">
-                  {collapsedGroups[group.status] ? '▷' : '▼'}
+                <button onClick={() => toggleGroup(group.id)} className="text-sm text-gray-500">
+                  {collapsedGroups[group.id] ? '▷' : '▼'}
                 </button>
                 <div className="h-5 w-1 rounded bg-[#7BCBD5]" />
                 <div>
-                  <div className="font-semibold text-slate-700">{group.status}</div>
+                  <div className="font-semibold text-slate-700">{group.name}</div>
                   <div className="text-xs italic font-normal text-slate-500">
-                    {group.clients.length} {group.clients.length === 1 ? 'Client' : 'Clients' }
+                    {groupClients.length} {groupClients.length === 1 ? 'Client' : 'Clients' }
                   </div>
                 </div>
               </div>
 
-              {!collapsedGroups[group.status] &&
-                group.clients.map((client) => (
+              {!collapsedGroups[group.id] &&
+                groupClients.map((client) => (
                   <ClientRow
                     key={client.id}
                     client={client}
