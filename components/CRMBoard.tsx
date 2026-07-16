@@ -85,63 +85,63 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const filterRef = useRef<HTMLDivElement>(null);
   const [ocfClient, setOcfClient] = useState<Client | null>(null);
   const [isOcfModalOpen, setIsOcfModalOpen] = useState(false);
-  const [showAddGroupModal, setShowAddGroupModal ] = useState(false);
+  const [showAddGroupModal, setShowAddGroupModal] = useState(false);
   // Fetch group, add groups
   const [groups, setGroups] = useState<CRMGroup[]>([]);
-  
+
   async function fetchGroups(): Promise<CRMGroup[]> {
-  const supabase = createSupabaseClient();
-  const { data, error } = await supabase
-    .from('crm_groups')
-    .select('id, name, color, sort_order')
-    .order('sort_order', { ascending: true })
-    .order('name', { ascending: true });
-
-  if (error) throw error;
-  return data ?? [];
-}
-  const handleAddGroup = useCallback(async (name: string) => {
-  
-  const trimmed = name.trim();
-  if (!trimmed) return;
-
-  const exists = groups.some(
-    (group) => group.name.toLowerCase() === trimmed.toLowerCase()
-  );
-
-  if (exists) {
-    window.alert('Group already exists');
-    return;
-  }
-
-  try {
     const supabase = createSupabaseClient();
-    const nextSort = groups.length
-      ? Math.max(...groups.map((g) => g.sort_order ?? 0)) + 1
-      : 0;
-
     const { data, error } = await supabase
       .from('crm_groups')
-      .insert({
-        name: trimmed,
-        color: '#7BCBD5',
-        sort_order: nextSort,
-        created_by: currentUserId,
-      })
       .select('id, name, color, sort_order')
-      .single();
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true });
 
     if (error) throw error;
-
-    setGroups((prev) => [...prev, data]);
-  } catch (error) {
-    console.error('Failed to add group', error);
+    return data ?? [];
   }
-}, [groups, currentUserId]);
-  
+  const handleAddGroup = useCallback(async (name: string) => {
+
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const exists = groups.some(
+      (group) => group.name.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    if (exists) {
+      window.alert('Group already exists');
+      return;
+    }
+
+    try {
+      const supabase = createSupabaseClient();
+      const nextSort = groups.length
+        ? Math.max(...groups.map((g) => g.sort_order ?? 0)) + 1
+        : 0;
+
+      const { data, error } = await supabase
+        .from('crm_groups')
+        .insert({
+          name: trimmed,
+          color: '#7BCBD5',
+          sort_order: nextSort,
+          created_by: currentUserId,
+        })
+        .select('id, name, color, sort_order')
+        .single();
+
+      if (error) throw error;
+
+      setGroups((prev) => [...prev, data]);
+    } catch (error) {
+      console.error('Failed to add group', error);
+    }
+  }, [groups, currentUserId]);
+
 
   const [headerCols, setHeaderCols] = useState(CLIENT_HEADER_COLS);
-  
+
   const totalMinWidth = headerCols.reduce((sum, col) => sum + col.width, 0);
 
   const colWidth = React.useMemo(
@@ -253,8 +253,8 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   });
 
   console.log('clients', clients);
-console.log('groups', groups);
-console.log('first client group fields', clients[0]?.groupId, clients[0]?.groupId);
+  console.log('groups', groups);
+  console.log('first client group fields', clients[0]?.groupId, clients[0]?.groupId);
 
   const groupedClients = groups.map((group) => ({
     group,
@@ -330,42 +330,90 @@ console.log('first client group fields', clients[0]?.groupId, clients[0]?.groupI
     [currentUserId]
   );
 
+  // for dragging clients to move them to different groups
+  const [draggedClientId, setDraggedClientId] = useState<string | null>(null);
+  const [dragOverGroupId, setDragOverGroupId] = useState<string | null>(null);
 
-  const STATUS_TO_GROUP_NAME: Partial<Record<ClientStatus, string>> = {
-  'Follow Up': 'Follow Up',
-  'Shortlisted': 'Shortlisted',
-};
+  const handleDragStart = useCallback((clientId: string) => {
+    setDraggedClientId(clientId);
+  }, []);
 
-const updateClient = useCallback(
-  async (clientId: string, updates: Partial<Client>) => {
-    let nextUpdates = { ...updates };
+  const handleDragOver = useCallback((e: React.DragEvent, groupId: string) => {
+    e.preventDefault(); // required to allow drop
+    setDragOverGroupId(groupId);
+  }, []);
 
-    if (updates.status) {
-      const targetGroupName = STATUS_TO_GROUP_NAME[updates.status];
-      if (targetGroupName) {
-        const matchingGroup = groups.find(
-          (group) => group.name.toLowerCase() === targetGroupName.toLowerCase()
-        );
+  const handleDrop = useCallback(async (groupId: string) => {
+    if (!draggedClientId) return;
+    setDraggedClientId(null);
+    setDragOverGroupId(null);
 
-        if (matchingGroup) {
-          nextUpdates.groupId = matchingGroup.id;
-        }
-      }
+    const targetGroup = groups.find((g) => g.id === groupId);
+    const draggedClient = clients.find((c) => c.id === draggedClientId);
+    if (!targetGroup || !draggedClient) return;
+
+    // If the group name matches a valid ClientStatus, update status too
+    const matchingStatus = CLIENT_STATUSES.find(
+      (s) => s.toLowerCase() === targetGroup.name.toLowerCase()
+    );
+
+    const updates: Partial<Client> = { groupId };
+    if (matchingStatus) {
+      updates.status = matchingStatus;
     }
 
     setClients((prev) =>
-      prev.map((c) => (c.id === clientId ? { ...c, ...nextUpdates } : c))
+      prev.map((c) => c.id === draggedClientId ? { ...c, ...updates } : c)
     );
 
     try {
-      await updateClientRow(clientId, nextUpdates);
-    } catch (error: any) {
+      await updateClientRow(draggedClientId, updates);
+    } catch (err) {
       setClients(clients);
-      console.error('Failed to update client', error);
+      console.error('Failed to move client to group', err);
     }
-  },
-  [clients, groups, setClients]
-);
+  }, [draggedClientId, clients, groups, setClients]);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedClientId(null);
+    setDragOverGroupId(null);
+  }, []);
+
+  const STATUS_TO_GROUP_NAME: Partial<Record<ClientStatus, string>> = {
+    'Follow Up': 'Follow Up',
+    'Shortlisted': 'Shortlisted',
+  };
+
+  const updateClient = useCallback(
+    async (clientId: string, updates: Partial<Client>) => {
+      let nextUpdates = { ...updates };
+
+      if (updates.status) {
+        const targetGroupName = STATUS_TO_GROUP_NAME[updates.status];
+        if (targetGroupName) {
+          const matchingGroup = groups.find(
+            (group) => group.name.toLowerCase() === targetGroupName.toLowerCase()
+          );
+
+          if (matchingGroup) {
+            nextUpdates.groupId = matchingGroup.id;
+          }
+        }
+      }
+
+      setClients((prev) =>
+        prev.map((c) => (c.id === clientId ? { ...c, ...nextUpdates } : c))
+      );
+
+      try {
+        await updateClientRow(clientId, nextUpdates);
+      } catch (error: any) {
+        setClients(clients);
+        console.error('Failed to update client', error);
+      }
+    },
+    [clients, groups, setClients]
+  );
 
   const updateSubitem = useCallback(
     async (_clientId: string, subitemId: string, updates: Partial<Subitem>) => {
@@ -500,16 +548,16 @@ const updateClient = useCallback(
           Add Client
         </button>
         <button
-          onClick={() => {setShowAddGroupModal(true)}}
+          onClick={() => { setShowAddGroupModal(true) }}
           className="flex items-center gap-1 px-2 py-1 bg-[#a0e2eb] hover:bg-[#7BCBD5] text-white rounded-md text-[10px] font-medium transition-colors transition transform active:scale-95 duration-150"
         >
           <Plus size={12} />
           Add Group
         </button>
         <AddGroupModal
-        open={showAddGroupModal}
-        onClose={() => setShowAddGroupModal(false)}
-        onSubmit={handleAddGroup}
+          open={showAddGroupModal}
+          onClose={() => setShowAddGroupModal(false)}
+          onSubmit={handleAddGroup}
         />
 
         <button
@@ -646,7 +694,11 @@ const updateClient = useCallback(
           {/* Grouped rows */}
           {groupedClients.map(({ group, clients: groupClients }) => (
             <React.Fragment key={group.id}>
-              <div className="flex items-center gap-2.5 px-2 py-1 text-sm bg-gray-50 border-y border-gray-100">
+              <div key={group.id}
+                onDragOver={(e) => handleDragOver(e, group.id)}
+                onDrop={() => handleDrop(group.id)}
+                onDragLeave={() => setDragOverGroupId(null)}
+                className="flex items-center gap-2.5 px-2 py-1 text-sm bg-gray-50 border-y border-gray-100 transition-colors ${dragOverGroupId === group.id ? 'bg-[#e7fdff]' : ''}">
                 <button onClick={() => toggleGroup(group.id)} className="text-sm text-gray-500">
                   {collapsedGroups[group.id] ? '▷' : '▼'}
                 </button>
@@ -654,7 +706,7 @@ const updateClient = useCallback(
                 <div>
                   <div className="font-semibold text-slate-700">{group.name}</div>
                   <div className="text-xs italic font-normal text-slate-500">
-                    {groupClients.length} {groupClients.length === 1 ? 'Client' : 'Clients' }
+                    {groupClients.length} {groupClients.length === 1 ? 'Client' : 'Clients'}
                   </div>
                 </div>
               </div>
@@ -662,6 +714,9 @@ const updateClient = useCallback(
               {!collapsedGroups[group.id] &&
                 groupClients.map((client) => (
                   <ClientRow
+                    onDragStart={() => handleDragStart(client.id)}
+                    onDragEnd={handleDragEnd}
+                    isDragging={draggedClientId === client.id}
                     key={client.id}
                     client={client}
                     isExpanded={expandedIdSet.has(client.id)}

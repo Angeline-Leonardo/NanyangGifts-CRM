@@ -501,6 +501,12 @@ export async function updateClientRow(clientId: string, updates: Partial<Client>
 
     if (fetchError) throw fetchError;
 
+    const mapped = {
+        ...updates,
+        group_id: updates.groupId,
+    };
+    delete mapped.groupId;
+
     const payload = {
         ...(updates.name !== undefined ? { name: updates.name } : {}),
         ...(updates.people !== undefined ? { people: updates.people } : {}),

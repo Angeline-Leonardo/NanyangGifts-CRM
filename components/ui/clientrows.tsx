@@ -80,6 +80,9 @@ export type ClientRowProps = {
     subitemAssigneeMap: Record<string, string[]>;
     onChangeSubitemAssignees: (subitemId: string, ids: string[]) => void;
     colWidth: Record<string, number>;
+    onDragStart: () => void;
+    onDragEnd: () => void;
+    isDragging: boolean;
 };
 
 export function ClientRow({
@@ -99,7 +102,10 @@ export function ClientRow({
     onChangeClientAssignees,
     subitemAssigneeMap,
     onChangeSubitemAssignees,
-    colWidth
+    colWidth,
+    onDragStart,
+    onDragEnd,
+    isDragging,
 }: ClientRowProps) {
     const importanceOpts = ["High", "Medium", "Low"];
     const channelOpts = ["Forms", "Email", "Referral", "Whatsapp", "E-comm", "Direct"];
@@ -252,7 +258,10 @@ export function ClientRow({
                 </div>
 
                 <div
-                    className="box-border flex items-center min-w-0 px-1 border-r border-[#D0D4E4] overflow-hidden"
+                    draggable
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                    className=" `... ${isDragging ? 'opacity-40' : ''}` box-border flex items-center min-w-0 px-1 border-r border-[#D0D4E4] overflow-hidden"
                     style={{ height: 32, minWidth: colWidth.client, width: colWidth.client }}
                 >
 
