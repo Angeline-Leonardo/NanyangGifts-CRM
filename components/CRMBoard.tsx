@@ -28,7 +28,7 @@ const CLIENT_HEADER_COLS = [
   { key: 'companyAddress', label: 'Company Address', width: 115, minWidth: 7 },
   { key: 'billingAddress', label: 'Billing Address', width: 115, minWidth: 7 },
   { key: 'dateCreated', label: 'Date Created', width: 90, minWidth: 7 },
-  { key: 'empty', label: '', width: 510, minWidth: 7 },
+  { key: 'empty', label: '', width: 778, minWidth: 7 },
 ];
 
 

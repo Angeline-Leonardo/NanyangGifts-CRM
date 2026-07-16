@@ -7,7 +7,7 @@ import { StatusBadge } from './statusbadge';
 const TIMELINE_PROGRESS_COLORS: Record<string, string> = {
     'Done': '#00C875',
     'Started': '#24e2e8',
-    'Pending': '#bcbcf7',
+    'Pending': '#e3d4ff',
     'Overdue':'#d44858',
 };
 
@@ -18,7 +18,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -30,7 +30,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -42,7 +42,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -54,7 +54,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -66,7 +66,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -78,7 +78,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -90,7 +90,7 @@ export const DEFAULT_TIMELINE_ROWS = [
         person: '',
         remarks: '',
         numOfCartons: '',
-        subProgress: 'Not Started',
+        subProgress: 'Pending',
         timelineStart: '',
         timelineEnd: '',
         duration: '',
@@ -148,7 +148,7 @@ export function TimelineSection({ rows, onUpdate }: {
                                     </td>
                                     <td className="px-2 py-1 border-r border-gray-100">
                                         <StatusBadge
-                                            value={row.subProgress || 'Not Started'}
+                                            value={row.subProgress || 'Pending'}
                                             onChange={v => updateRow(row.id, 'subProgress', v)}
                                             options={progressOpts}
                                             colorMap={TIMELINE_PROGRESS_COLORS}

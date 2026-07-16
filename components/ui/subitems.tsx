@@ -790,7 +790,7 @@ const renderNameCell = (sub: Subitem) => (
                                 </tr>
 
                                 {sub.showTimeline && (
-                                    <ExpandedRow colSpan={cols.length + 1} tone="blue">
+                                    <ExpandedRow colSpan={0} tone="blue">
                                         <TimelineSection
                                             rows={sub.timelineRows?.length ? sub.timelineRows : DEFAULT_TIMELINE_ROWS}
                                             onUpdate={(rows) => onUpdateSubitem(sub.id, { timelineRows: rows })}
