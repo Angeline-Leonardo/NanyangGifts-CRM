@@ -602,8 +602,7 @@ const renderNameCell = (sub: Subitem) => (
                 return <EditableCell value={sub.qty} onChange={(v) => onUpdateSubitem(sub.id, { qty: v })} type="number" />;
 
             case "cost":
-                return <EditableCell value={sub.cost} onChange={(v) => onUpdateSubitem(sub.id, { cost: v })} type="number" />;
-
+                return<EditableCell className="" value={sub.cost} onChange={(v) => onUpdateSubitem(sub.id, { cost: v })} type="number" />;
             case "total":
                 return <div className="px-2 py-1 text-xs text-gray-800">{formatMoney(total)}</div>;
 

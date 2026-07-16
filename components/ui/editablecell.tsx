@@ -98,7 +98,7 @@ export function EditableCell({
         <div
             onClick={() => setEditing(true)}
             title={value}
-            className={`flex w-15 px-1 py-0.5 text-xs cursor-text hover:bg-blue-50 rounded min-h-[22px] items-left ${multiline ? 'whitespace-nowrap overflow-hidden text-ellipsis' : 'truncate'
+            className={`flex w-15 justify-center py-0.5 text-xs cursor-text hover:bg-blue-50 rounded min-h-[22px] items-center ${multiline ? 'whitespace-nowrap overflow-hidden text-ellipsis' : 'truncate'
                 } ${className}`}
         >
             {value || <span className="text-gray-300 select-none">{placeholder}</span>}
