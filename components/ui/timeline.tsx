@@ -151,7 +151,6 @@ export function TimelineSection({ rows, onUpdate }: {
                                             value={row.subProgress || 'Pending'}
                                             onChange={v => updateRow(row.id, 'subProgress', v)}
                                             options={progressOpts}
-                                            colorMap={TIMELINE_PROGRESS_COLORS}
                                             small
                                         />
                                     </td>

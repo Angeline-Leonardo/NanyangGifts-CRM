@@ -46,7 +46,7 @@ export function PaymentsSection({ subitem, onUpdate, onUpdateClientStatus }: { s
                             <td className="px-2 py-1 border-r border-gray-100"><EditableCell value={subitem.owner} onChange={v => onUpdate({ owner: v })} /></td>
                             <td className="px-2 py-1 border-r border-gray-100">
                                 <StatusBadge value={subitem.paymentStatus} onChange={v => onUpdate({ paymentStatus: v })}
-                                    options={paymentOpts} colorMap={PAYMENT_STATUS_COLORS} small />
+                                    options={paymentOpts}  small />
                             </td>
                             <td className="px-2 py-1 border-r border-gray-100"><EditableCell value={subitem.shipper} onChange={v => onUpdate({ shipper: v })} /></td>
                             <td className="px-2 py-1 border-r border-gray-100"><EditableCell value={subitem.supplier} onChange={v => onUpdate({ supplier: v })} /></td>
