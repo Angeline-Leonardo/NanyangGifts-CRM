@@ -428,7 +428,7 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.localOverseas || "Local"}
                         onChange={(v) => onUpdateSubitem(sub.id, { localOverseas: v })}
                         options={localOverseasOpts}
-                        colorMap={LOCALOVERSEAS_COLORS}
+                        
                         
                     /></div>
                 );
@@ -440,7 +440,7 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.status ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { status: v })}
                         options={statusOpts}
-                        colorMap={SUBITEM_STATUS_COLORS}
+                        
                         
                     />
                     </div>
@@ -475,7 +475,7 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.shipper ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { shipper: v })}
                         options={shipperOpts}
-                        colorMap={SHIPPER_COLORS}
+                        
                         small
                     />
                     </div>
@@ -509,7 +509,7 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.currency ?? "RMB"}
                         onChange={(v) => onUpdateSubitem(sub.id, { currency: v })}
                         options={currencyOpts}
-                        colorMap={CURRENCY_COLORS}
+                        
                         
                     />
                     </div>
@@ -574,7 +574,7 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.paymentStatus ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { paymentStatus: v })}
                         options={paymentOpts}
-                        colorMap={PAYMENT_STATUS_COLORS}
+                        
                         small
                     />
                     </div>
@@ -587,7 +587,6 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.shipper ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { shipper: v })}
                         options={shipperOpts}
-                        colorMap={SHIPPER_COLORS}
                         small
                     />
                     </div>
