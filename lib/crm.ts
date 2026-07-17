@@ -550,7 +550,7 @@ export async function updateClientRow(clientId: string, updates: Partial<Client>
                             key === 'billingAddress' ? 'billing_address' :
                                 key === 'dateCreated' ? 'date_created' :
                                     key === 'groupId' ? 'group_id' :
-                                    key
+                                        key
             ];
 
         if (isEqualForLog(oldValue, value)) continue;
@@ -648,6 +648,25 @@ export async function createSubitemRow(clientId: string) {
     });
 
     return data;
+}
+
+export async function fetchOptionsByGroupCode(code: string): Promise<{ value: string; color: string }[]> {
+    const supabase = createClient()
+    const { data: group } = await supabase
+        .from('option_groups')
+        .select('id')
+        .eq('code', code)
+        .single()
+
+    if (!group) return []
+
+    const { data } = await supabase
+        .from('option_values')
+        .select('value, color')
+        .eq('group_id', group.id)
+        .order('sort_order')
+
+    return data ?? []
 }
 
 export async function updateSubitemRow(subitemId: string, updates: Partial<Subitem>) {

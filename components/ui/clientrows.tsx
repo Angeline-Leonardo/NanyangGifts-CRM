@@ -12,55 +12,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 import { useGenerateEstimate } from '../hooks/use-generate-estimate-button';
 import { Tooltip } from "radix-ui";
 
-export const CLIENT_STATUSES: ClientStatus[] = [
-    "New Lead",
-    "Contacted",
-    "Quoted",
-    "Failed",
-    "Overdue",
-    "Follow Up",
-    "Shortlisted",
-    "Project Started",
-    "Project Done",
-    "Closed",
-    "Unqualified",
-];
-
-export const REPLY_STATUSES: ReplyStatus[] = ["Waiting...", "Replied"];
-
-export const REPLY_STATUS_COLORS: Record<string, string> = {
-    "Waiting...": "#b9f7e0",
-    "Replied": "#00cdb6",
-};
-
-export const STATUS_COLORS: Record<string, string> = {
-    "New Lead": "#7ae9f0",
-    "Contacted": "#5accf3",
-    "Quoted": "#67aaea",
-    "Failed": "#d4102d",
-    "Overdue": "#a13762",
-    "Follow Up": "#9D4393",
-    Shortlisted: "#a159cf",
-    "Project Started": "#e974d0",
-    "Project Done": "#8feebe",
-    "Closed": "#0D1821",
-    "Unqualified": "#8985ce",
-};
-
-export const IMPORTANCE_COLORS: Record<string, string> = {
-    "High": "#ff6f9c",
-    "Medium": "#ff99b6",
-    "Low": "#ffd0e4",
-};
-
-export const CHANNEL_COLORS: Record<string, string> = {
-    "Forms": "#82E1C2",
-    "Email": "#70b5f6",
-    "Referral": "#0085c8",
-    "Direct": "#1eadd1",
-    "Whatsapp": "#67e284",
-    "E-comm": "#1cdcbc",
-};
+type OptionEntry = { value: string; color: string };
 
 export type ClientRowProps = {
     client: Client;
@@ -83,6 +35,18 @@ export type ClientRowProps = {
     onDragStart: () => void;
     onDragEnd: () => void;
     isDragging: boolean;
+    replyStatusOptions: OptionEntry[];
+    statusOptions: OptionEntry[],
+    channelOptions: OptionEntry[];
+    importanceOptions: OptionEntry[],
+    onAddReplyStatus?: (name: string) => void | Promise<void>;
+    onDeleteReplyStatus?: (name: string) => void | Promise<void>;
+    onAddStatus?: (name:string) => void | Promise<void>;
+    onDeleteStatus?: (name: string) => void | Promise<void>;
+    onAddChannel?: (name: string) => void | Promise<void>;
+    onDeleteChannel?: (name: string) => void | Promise<void>;
+    onAddImportance?: (name: string) => void | Promise<void>;
+    onDeleteImportance?: (name: string) => void | Promise<void>;
 };
 
 export function ClientRow({
@@ -106,23 +70,34 @@ export function ClientRow({
     onDragStart,
     onDragEnd,
     isDragging,
+    replyStatusOptions,
+    statusOptions,
+    channelOptions,
+    importanceOptions,
+    onAddReplyStatus,
+    onDeleteReplyStatus,
+    onAddStatus,
+    onDeleteStatus,
+    onAddChannel,
+    onDeleteChannel,
+    onAddImportance,
+    onDeleteImportance,
+
 }: ClientRowProps) {
-    const importanceOpts = ["High", "Medium", "Low"];
-    const channelOpts = ["Forms", "Email", "Referral", "Whatsapp", "E-comm", "Direct"];
     const subitemCount = client.subitems.length;
     const [showCloseDialog, setShowCloseDialog] = useState(false);
     const [pendingStatus, setPendingStatus] = useState<ClientStatus | null>(null);
     const [closeFiles, setCloseFiles] = useState<File[]>([]);
     const [closeConfirmed, setCloseConfirmed] = useState(false);
     const [showActivityLog, setShowActivityLog] = useState(false);
+
+    // generating estimate
     const {
         handleGenerateEstimate,
         isGeneratingEstimate,
         estimateError,
         estimateSuccess,
     } = useGenerateEstimate();
-    
-    // for estimate success message
     const [showEstimateSuccess, setShowEstimateSuccess] = useState(false);
     const [fadeEstimateSuccess, setFadeEstimateSuccess] = useState(false);
 
@@ -148,7 +123,7 @@ export function ClientRow({
         };
     }, [estimateSuccess])
 
-    // for activity log text
+    // activity log text
     function displayLogValue(value: unknown) {
         if (value == null || value === '') return 'empty';
 
@@ -418,8 +393,10 @@ export function ClientRow({
                     <StatusBadge
                         value={client.replyStatus}
                         onChange={(v) => onUpdate({ replyStatus: v as ReplyStatus })}
-                        options={REPLY_STATUSES}
-                        colorMap={REPLY_STATUS_COLORS}
+                        options={replyStatusOptions}
+                        onAddOption={onAddReplyStatus}
+                        onDeleteOption={onDeleteReplyStatus}
+                        manageLabel="reply status"
                     />
                 </div>
 
@@ -454,8 +431,10 @@ export function ClientRow({
 
                             onUpdate({ status: nextStatus });
                         }}
-                        options={CLIENT_STATUSES}
-                        colorMap={STATUS_COLORS}
+                        options={statusOptions}
+                        onAddOption={onAddStatus}
+                        onDeleteOption={onDeleteStatus}
+                        manageLabel="status"
                     />
 
                     <AlertDialog open={showCloseDialog} onOpenChange={setShowCloseDialog}>
@@ -560,9 +539,10 @@ export function ClientRow({
                     <StatusBadge
                         value={client.channel}
                         onChange={(v) => onUpdate({ channel: v })}
-                        options={channelOpts}
-                        colorMap={CHANNEL_COLORS}
-                        small
+                        options={channelOptions}
+                        onAddOption={onAddChannel}
+                        onDeleteOption={onDeleteChannel}
+                        manageLabel="channel"
                     />
                 </div>
 
@@ -573,9 +553,10 @@ export function ClientRow({
                     <StatusBadge
                         value={client.importance}
                         onChange={(v) => onUpdate({ importance: v })}
-                        options={importanceOpts}
-                        colorMap={IMPORTANCE_COLORS}
-                        small
+                        options={importanceOptions}
+                        onAddOption={onAddImportance}
+                        onDeleteOption={onDeleteImportance}
+                        manageLabel="importance"
                     />
                 </div>
 
