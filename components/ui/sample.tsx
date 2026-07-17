@@ -58,13 +58,13 @@ export function SamplesSection({ subitem, onUpdate }: { subitem: Subitem; onUpda
                     <tbody>
                         <tr className="border-b border-gray-100 hover:bg-gray-50">
                             <td className="px-2 py-1 border-r border-gray-100">
-                                <StatusBadge value={subitem.sampleOrderStatus} onChange={v => onUpdate({ sampleOrderStatus: v })} options={sampleOrderStatusOpts} colorMap={SAMPLE_ORDER_STATUS_COLORS} small />
+                                <StatusBadge value={subitem.sampleOrderStatus} onChange={v => onUpdate({ sampleOrderStatus: v })} options={sampleOrderStatusOpts} small />
                             </td>
                             <td className="px-2 py-1 border-r border-gray-100">
-                                <StatusBadge value={subitem.sampleStatus} onChange={v => onUpdate({ sampleStatus: v })} options={sampleStatusOpts} colorMap={SAMPLE_STATUS_COLORS} small />
+                                <StatusBadge value={subitem.sampleStatus} onChange={v => onUpdate({ sampleStatus: v })} options={sampleStatusOpts} small />
                             </td>
                             <td className="px-2 py-1 border-r border-gray-100">
-                                <StatusBadge value={subitem.sampleType} onChange={v => onUpdate({ sampleType: v })} options={sampleTypeOpts} colorMap={SAMPLE_TYPE_COLORS} small />
+                                <StatusBadge value={subitem.sampleType} onChange={v => onUpdate({ sampleType: v })} options={sampleTypeOpts} small />
                             </td>
                             <td className="px-2 py-1 border-r border-gray-100">
                             </td>
