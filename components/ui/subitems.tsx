@@ -772,7 +772,7 @@ const renderNameCell = (sub: Subitem) => (
                     <tbody>
                         {subitems.map((sub) => (
                             <React.Fragment key={sub.id}>
-                                <tr className="group border-b border-[#D0D4E4] hover:bg-blue-50/30">
+                                <tr className="group border-b border-r border-[#D0D4E4] hover:bg-blue-50/30">
                                     <td className="border-r border-[#D0D4E4] px-2 py-1 text-center">
                                         <input
                                             type="checkbox"

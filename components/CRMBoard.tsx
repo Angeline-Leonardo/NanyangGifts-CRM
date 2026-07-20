@@ -750,6 +750,8 @@ const handleDeleteModeOfPayment = useCallback(
                   onDeleteChannel={handleDeleteChannel}
                   onAddImportance={handleAddImportance}
                   onDeleteImportance={handleDeleteImportance}
+                  onAddPaymentStatus={handleAddPaymentStatus}
+                  onDeletePaymentStatus={handleDeletePaymentStatus}
                   onAddModeOfPayment={handleAddModeOfPayment}
                   onDeleteModeOfPayment={handleDeleteModeOfPayment}
                 
