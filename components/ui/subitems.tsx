@@ -107,8 +107,10 @@ const PAYMENT_COLS: ColumnDef[] = [
     { key: "description", label: "Description", width: 120, minWidth: 7 },
     { key: "qty", label: "Qty", width: 55, minWidth: 7 },
     { key: "cost", label: "Cost", width: 60, minWidth: 7 },
-    { key: "total", label: "Total", width: 70, minWidth: 7 },
-    { key: "manpower", label: "Manpower", width: 80, minWidth: 7 },
+    { key: "totalUc", label: "Total UC", width: 70, minWidth: 7 },
+    { key: "manpowerSgd", label: "Manpower / 版费 / Printing (SGD)", width:  120, minWidth: 7 },
+    { key: "manpowerRmb", label: "Manpower (RMB)", width:  120, minWidth: 7 },
+    { key: "lsSgd", label: "LS (SGD)", width: 80, minWidth: 7 },
     { key: "lsRmb", label: "LS (RMB)", width: 80, minWidth: 7 },
     { key: "totalC", label: "Total Cost", width: 90, minWidth: 7 },
     { key: "modeOfPayment", label: "Mode of Payment", width: 140, minWidth: 7 },
@@ -151,14 +153,11 @@ const shipperOpts = [
     "宇涵 - Sea",
 ];
 const currencyOpts = ["MYR", "SGD", "RMB"];
-const paymentOpts = ["Set", "Paid", "To Pay", "Partial", "Overdue"];
-const modeOpts = ["Set", "AliPay", "1688", "Bank Transfer", "PayPal", "Stripe", "Cash", "Cheque", "Wise"];
-
 type TableMode = "subitem" | "payment" | "timeline";
 
 type OptionEntry = { value: string; color: string };
 
-type SUbitemProps = {
+type SubitemProps = {
     clientId: string;
     subitems: Subitem[];
     clientColor: string;
@@ -234,7 +233,7 @@ export function SubitemsTable({
     onAddModeOfPayment,
     onDeleteModeOfPayment,
 
-}: SUbitemProps) {
+}: SubitemProps) {
     const [tableMode, setTableMode] = useState<TableMode | null>(null);
     const [subitemCols, setSubitemCols] = useState<ColumnDef[]>([...SUBITEM_COLS]);
     const [paymentCols, setPaymentCols] = useState<ColumnDef[]>([...PAYMENT_COLS]);
@@ -523,19 +522,19 @@ const renderNameCell = (sub: Subitem) => (
                 );
 
             case "cSgd":
-                return <div className="px-2 py-1 text-xs text-gray-800">{formatMoney(cSgd)}</div>;
+                return <div className="flex justify-center text-xs text-gray-800">{formatMoney(cSgd)}</div>;
 
             case "tc":
-                return <div className="px-2 py-1 text-xs text-gray-800">{formatMoney(tc)}</div>;
+                return <div className="flex justify-center text-xs text-gray-800">{formatMoney(tc)}</div>;
 
             case "uc":
-                return <div className="px-2 py-1 text-xs text-gray-800">{formatMoney(uc)}</div>;
+                return <div className="flex justify-center text-xs text-gray-800">{formatMoney(uc)}</div>;
 
             case "tcSgd":
                 return <EditableCell value={sub.tcSgd} onChange={(v) => onUpdateSubitem(sub.id, { tcSgd: v })} type="number" />;
 
             case "price":
-                return <div className="px-2 py-1 text-xs text-gray-800">{formatMoney(price)}</div>;
+                return <div className="flex justify-center text-xs text-gray-800">{formatMoney(price)}</div>;
 
             case "up":
                 return <EditableCell value={sub.up} onChange={(v) => onUpdateSubitem(sub.id, { up: v })} type="number" />;
@@ -562,6 +561,7 @@ const renderNameCell = (sub: Subitem) => (
         const cost = parseNumber(sub.cost);
         const total = cost * qty;
         const manpower = parseNumber(sub.manpower);
+        const manpowerRmb = parseNumber(sub.manpower) * 5;
         const lsRmb = parseNumber(sub.ls);
         const totalC = total + manpower + lsRmb;
         const paymentAmount = parseNumber(sub.paymentAmount);
@@ -617,8 +617,11 @@ const renderNameCell = (sub: Subitem) => (
 
             case "manpower":
                 return <EditableCell value={sub.manpower} onChange={(v) => onUpdateSubitem(sub.id, { manpower: v })} type="number" />;
-
-            case "lsRmb":
+            
+            case "manpowerRmb":
+                return <EditableCell value={sub.manpower} onChange={(v) => onUpdateSubitem(sub.id, { manpower: v })} type="number" />;
+            
+                case "lsRmb":
                 return <EditableCell value={sub.ls} onChange={(v) => onUpdateSubitem(sub.id, { ls: v })} type="number" />;
 
             case "totalC":
@@ -745,7 +748,7 @@ const renderNameCell = (sub: Subitem) => (
                     </colgroup>
 
                     <thead>
-                        <tr className="border-b border-r border-[#D0D4E4] bg-gray-50">
+                        <tr className="border-b border-t border-r border-[#D0D4E4] bg-gray-50">
                             <th className="w-11 px-2 py-1 text-center">
                                 
                             </th>
