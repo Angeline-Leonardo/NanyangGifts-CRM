@@ -5,7 +5,6 @@ import type { Profile, Subitem } from "../../app/types";
 import { Calendar, CreditCard, FileText, Package, Plus, Trash2 } from "lucide-react";
 import { StatusBadge } from "./statusbadge";
 import { EditableCell } from "./editablecell";
-import { PaymentsSection } from "./payments";
 import { SamplesSection } from "./sample";
 import { AssigneeMultiSelect } from "./assignee-multiselect";
 import { TimelineSection, DEFAULT_TIMELINE_ROWS } from "./timeline";
@@ -122,13 +121,6 @@ const PAYMENT_COLS: ColumnDef[] = [
     { key: "paymentRemarks", label: "Remarks", width: 120, minWidth: 7 },
 ]
 
-const PAYMENT_STATUS_COLORS: Record<string, string> = {
-    Paid: "#2fd48f",
-    "To Pay": "#60d4e6",
-    Partial: "#8b81da",
-    Overdue: "#ac2865",
-    "Set": "#eeeded",
-};
 
 const statusOpts = ["", "To Quote", "Verified", "Awarded", "Initial Quote", "Quoted", "Shortlisted", "Failed"];
 const localOverseasOpts = ["Local", "Overseas"];
@@ -164,7 +156,9 @@ const modeOpts = ["Set", "AliPay", "1688", "Bank Transfer", "PayPal", "Stripe", 
 
 type TableMode = "subitem" | "payment" | "timeline";
 
-type Props = {
+type OptionEntry = { value: string; color: string };
+
+type SUbitemProps = {
     clientId: string;
     subitems: Subitem[];
     clientColor: string;
@@ -174,6 +168,13 @@ type Props = {
     profiles: Profile[];
     subitemAssigneeMap: Record<string, string[]>;
     onChangeSubitemAssignees: (subitemId: string, ids: string[]) => void;
+
+    paymentStatusOptions: OptionEntry[];
+    modeOfPaymentOptions: OptionEntry[];
+    onAddPaymentStatus?: (name: string) => void | Promise<void>;
+    onDeletePaymentStatus?: (name: string) => void | Promise<void>;
+    onAddModeOfPayment?: (name: string) => void | Promise<void>;
+    onDeleteModeOfPayment?: (name: string) => void | Promise<void>;
 };
 
 function parseNumber(value: string | number | undefined | null) {
@@ -226,13 +227,19 @@ export function SubitemsTable({
     profiles,
     subitemAssigneeMap,
     onChangeSubitemAssignees,
-}: Props) {
+    paymentStatusOptions,
+    modeOfPaymentOptions,
+    onAddPaymentStatus,
+    onDeletePaymentStatus,
+    onAddModeOfPayment,
+    onDeleteModeOfPayment,
+
+}: SUbitemProps) {
     const [tableMode, setTableMode] = useState<TableMode | null>(null);
     const [subitemCols, setSubitemCols] = useState<ColumnDef[]>([...SUBITEM_COLS]);
     const [paymentCols, setPaymentCols] = useState<ColumnDef[]>([...PAYMENT_COLS]);
     const [selectedSubitemIds, setSelectedSubitemIds] = useState<string[]>([]);
     const [selectionBox, setSelectionBox] = useState({ x: 0, y: 0, visible: false });
-
     const cols = tableMode === "payment" ? paymentCols : subitemCols;
 
     const totalTableWidth = useMemo(() => {
@@ -573,8 +580,10 @@ const renderNameCell = (sub: Subitem) => (
                     <StatusBadge
                         value={sub.paymentStatus ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { paymentStatus: v })}
-                        options={paymentOpts}
-                        
+                        options={paymentStatusOptions}
+                        onAddOption={onAddPaymentStatus}
+                        onDeleteOption={onDeletePaymentStatus}
+                        manageLabel="payment status"
                         small
                     />
                     </div>
@@ -617,17 +626,17 @@ const renderNameCell = (sub: Subitem) => (
 
             case "modeOfPayment":
                 return (
-                    <select
-                        value={sub.modeOfPayment ?? ""}
-                        onChange={(e) => onUpdateSubitem(sub.id, { modeOfPayment: e.target.value })}
-                        className="w-full cursor-pointer bg-transparent text-xs outline-none"
-                    >
-                        {modeOpts.map((o) => (
-                            <option key={o} value={o}>
-                                {o || "–"}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="flex items-center">
+                        <StatusBadge
+                            value={sub.modeOfPayment ?? ""}
+                            onChange={(v) => onUpdateSubitem(sub.id, { modeOfPayment: v })}
+                            options={modeOfPaymentOptions}
+                            onAddOption={onAddModeOfPayment}
+                            onDeleteOption={onDeleteModeOfPayment}
+                            manageLabel="mode of payment"
+                            small
+                        />
+                    </div>
                 );
 
             case "orderNumber":
@@ -789,20 +798,10 @@ const renderNameCell = (sub: Subitem) => (
                                 </tr>
 
                                 {sub.showTimeline && (
-                                    <ExpandedRow colSpan={0} tone="blue">
+                                    <ExpandedRow colSpan={1} tone="blue">
                                         <TimelineSection
                                             rows={sub.timelineRows?.length ? sub.timelineRows : DEFAULT_TIMELINE_ROWS}
                                             onUpdate={(rows) => onUpdateSubitem(sub.id, { timelineRows: rows })}
-                                        />
-                                    </ExpandedRow>
-                                )}
-
-                                {sub.showPayments && (
-                                    <ExpandedRow colSpan={cols.length + 1} tone="green">
-                                        <PaymentsSection
-                                            subitem={sub}
-                                            onUpdate={(u) => onUpdateSubitem(sub.id, u)}
-                                            onUpdateClientStatus={() => { }}
                                         />
                                     </ExpandedRow>
                                 )}

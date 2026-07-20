@@ -70,13 +70,12 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [isOcfModalOpen, setIsOcfModalOpen] = useState(false);
   const [showAddGroupModal, setShowAddGroupModal] = useState(false);
 
-  // Bug fix: were string[], now OptionEntry[] so colors are available
   const [replyStatusEntries, setReplyStatusEntries] = useState<OptionEntry[]>([]);
   const [clientStatusEntries, setClientStatusEntries] = useState<OptionEntry[]>([]);
   const [channelEntries, setChannelEntries] = useState<OptionEntry[]>([]);
   const [importanceEntries, setImportanceEntries] = useState<OptionEntry[]>([]);
-
-  // Derived string[] — ClientRow props unchanged
+  const [paymentStatusEntries, setPaymentStatusEntries] = useState<OptionEntry[]>([]);
+  const [modeOfPaymentEntries, setModeOfPaymentEntries] = useState<OptionEntry[]>([]);
   const replyStatuses = replyStatusEntries.map((e) => e.value);
   const clientStatuses = clientStatusEntries.map((e) => e.value);
   const channelOptions = channelEntries.map((e) => e.value);
@@ -96,7 +95,6 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     [headerCols]
   );
 
-  // Bug fix: fetchOptions was defined inside useEffect, moved out so handlers can use it
   const fetchOptions = useCallback(async (code: string): Promise<OptionEntry[]> => {
     const supabase = createSupabaseClient();
     const { data: group } = await supabase
@@ -121,7 +119,6 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     const loadAssignments = async () => {
       try {
         const supabase = createSupabaseClient();
-        // Bug fix: was Promise.all({...}) — objects are not valid, must be an array
         const [
           profilesData,
           { data: { user } },
@@ -132,6 +129,8 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           statusOpts,
           channelOpts,
           importanceOpts,
+          paymentStatusOpts,
+          modeOfPaymentOpts,
         ] = await Promise.all([
           fetchProfiles(),
           supabase.auth.getUser(),
@@ -142,6 +141,8 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           fetchOptions('client_status'),
           fetchOptions('channel'),
           fetchOptions('importance'),
+          fetchOptions('payment_status'),
+          fetchOptions('mode_of_payment'),
         ]);
 
         setProfiles(profilesData);
@@ -153,6 +154,9 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
         setClientStatusEntries(statusOpts);
         setChannelEntries(channelOpts);
         setImportanceEntries(importanceOpts);
+        setPaymentStatusEntries(paymentStatusOpts);
+        setModeOfPaymentEntries(modeOfPaymentOpts);
+
       } catch (error: any) {
         console.error('Failed to load assignments', error);
       }
@@ -170,7 +174,111 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   }, [showFilter]);
 
   // --- Option handlers ---
-  // Bug fix: handlers were calling setReplyStatuses/setClientStatuses/etc (old string[] setters that no longer exist)
+
+  const getOptionGroupId = useCallback(async (code: string) => {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from('option_groups')
+    .select('id')
+    .eq('code', code)
+    .single();
+
+  if (error) {
+    console.error(`Failed to fetch option group id for ${code}`, error);
+    return null;
+  }
+
+  return data?.id ?? null;
+}, []);
+
+const insertOptionValue = useCallback(
+  async (
+    code: string,
+    name: string,
+    currentEntries: OptionEntry[],
+    setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
+  ) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const groupId = await getOptionGroupId(code);
+    if (!groupId) return;
+
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase
+      .from('option_values')
+      .insert({
+        group_id: groupId,
+        value: trimmed,
+        color: '#d1d5db',
+        sort_order: currentEntries.length,
+      })
+      .select('value, color')
+      .single();
+
+    if (error) {
+      console.error(`Failed to insert option into ${code}`, error);
+      return;
+    }
+
+    setEntries((prev) => [...prev, data]);
+  },
+  [getOptionGroupId]
+);
+
+const deleteOptionValue = useCallback(
+  async (
+    code: string,
+    name: string,
+    setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
+  ) => {
+    const groupId = await getOptionGroupId(code);
+    if (!groupId) return;
+
+    const supabase = createSupabaseClient();
+    const { error } = await supabase
+      .from('option_values')
+      .delete()
+      .eq('group_id', groupId)
+      .eq('value', name);
+
+    if (error) {
+      console.error(`Failed to delete option from ${code}`, error);
+      return;
+    }
+
+    setEntries((prev) => prev.filter((e) => e.value !== name));
+  },
+  [getOptionGroupId]
+);
+
+const handleAddPaymentStatus = useCallback(
+  async (name: string) => {
+    await insertOptionValue('payment_status', name, paymentStatusEntries, setPaymentStatusEntries);
+  },
+  [insertOptionValue, paymentStatusEntries]
+);
+
+const handleDeletePaymentStatus = useCallback(
+  async (name: string) => {
+    await deleteOptionValue('payment_status', name, setPaymentStatusEntries);
+  },
+  [deleteOptionValue]
+);
+
+const handleAddModeOfPayment = useCallback(
+  async (name: string) => {
+    await insertOptionValue('mode_of_payment', name, modeOfPaymentEntries, setModeOfPaymentEntries);
+  },
+  [insertOptionValue, modeOfPaymentEntries]
+);
+
+const handleDeleteModeOfPayment = useCallback(
+  async (name: string) => {
+    await deleteOptionValue('mode_of_payment', name, setModeOfPaymentEntries);
+  },
+  [deleteOptionValue]
+);
   const handleAddReplyStatus = useCallback(async (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -406,7 +514,6 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     catch (error: any) { console.error('Failed to save subitem assignees', error); }
   }, [currentUserId]);
 
-  // --- CRUD ---
   const STATUS_TO_GROUP_NAME: Partial<Record<ClientStatus, string>> = {
     'Follow Up': 'Follow Up',
     'Shortlisted': 'Shortlisted',
@@ -633,6 +740,8 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
                   statusOptions={clientStatusEntries}
                   channelOptions={channelEntries}
                   importanceOptions={importanceEntries}
+                  paymentStatusOptions={paymentStatusEntries}
+                  modeOfPaymentOptions={modeOfPaymentEntries}
                   onAddReplyStatus={handleAddReplyStatus}
                   onDeleteReplyStatus={handleDeleteReplyStatus}
                   onAddStatus={handleAddStatus}
@@ -641,6 +750,9 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
                   onDeleteChannel={handleDeleteChannel}
                   onAddImportance={handleAddImportance}
                   onDeleteImportance={handleDeleteImportance}
+                  onAddModeOfPayment={handleAddModeOfPayment}
+                  onDeleteModeOfPayment={handleDeleteModeOfPayment}
+                
                 />
               ))}
 

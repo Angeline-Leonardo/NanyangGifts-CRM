@@ -10,7 +10,6 @@ export type BadgeOption = {
     color?: string;
 };
 
-// Accepts either string[] or BadgeOption[] — no changes needed in callers
 function normalizeOptions(options: (string | BadgeOption)[]): BadgeOption[] {
     return options.map((o) => (typeof o === 'string' ? { value: o } : o));
 }
@@ -82,7 +81,7 @@ export function StatusBadge({
             <div
                 ref={menuRef}
                 style={menuStyle}
-                className="bg-white border border-gray-200 rounded-xl shadow-2xl py-1 max-h-80 overflow-y-auto"
+                className="bg-white border border-gray-200 rounded-xl shadow-2xl py-1 max-h-100 overflow-y-auto"
             >
                 {options.map((opt) => {
                     const allowDelete = canDeleteOption ? canDeleteOption(opt.value) : true;

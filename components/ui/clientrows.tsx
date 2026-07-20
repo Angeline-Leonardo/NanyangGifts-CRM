@@ -36,9 +36,9 @@ export type ClientRowProps = {
     onDragEnd: () => void;
     isDragging: boolean;
     replyStatusOptions: OptionEntry[];
-    statusOptions: OptionEntry[],
+    statusOptions: OptionEntry[];
     channelOptions: OptionEntry[];
-    importanceOptions: OptionEntry[],
+    importanceOptions: OptionEntry[];
     onAddReplyStatus?: (name: string) => void | Promise<void>;
     onDeleteReplyStatus?: (name: string) => void | Promise<void>;
     onAddStatus?: (name:string) => void | Promise<void>;
@@ -47,6 +47,14 @@ export type ClientRowProps = {
     onDeleteChannel?: (name: string) => void | Promise<void>;
     onAddImportance?: (name: string) => void | Promise<void>;
     onDeleteImportance?: (name: string) => void | Promise<void>;
+    paymentStatusOptions: OptionEntry[];
+    modeOfPaymentOptions: OptionEntry[];
+    onAddPaymentStatus?: (name: string) => void | Promise<void>;
+    onDeletePaymentStatus?: (name: string) => void | Promise<void>;
+    onAddModeOfPayment?: (name: string) => void | Promise<void>;
+    onDeleteModeOfPayment?: (name: string) => void | Promise<void>;
+
+
 };
 
 export function ClientRow({
@@ -82,6 +90,13 @@ export function ClientRow({
     onDeleteChannel,
     onAddImportance,
     onDeleteImportance,
+    paymentStatusOptions,
+    modeOfPaymentOptions,
+    onAddPaymentStatus,
+    onDeletePaymentStatus,
+    onAddModeOfPayment,
+    onDeleteModeOfPayment,
+
 
 }: ClientRowProps) {
     const subitemCount = client.subitems.length;
@@ -631,6 +646,14 @@ export function ClientRow({
                     profiles={profiles}
                     subitemAssigneeMap={subitemAssigneeMap}
                     onChangeSubitemAssignees={onChangeSubitemAssignees}
+                    paymentStatusOptions={paymentStatusOptions}
+                    modeOfPaymentOptions={modeOfPaymentOptions}
+                    onAddPaymentStatus={onAddPaymentStatus}
+                    onDeletePaymentStatus={onDeletePaymentStatus}
+                    onAddModeOfPayment={onAddModeOfPayment}
+                    onDeleteModeOfPayment={onDeleteModeOfPayment}
+
+
                 />
             )}
         </div>
