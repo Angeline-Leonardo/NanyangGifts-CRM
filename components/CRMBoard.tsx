@@ -79,6 +79,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [shipperEntries, setShipperEntries] = useState<OptionEntry[]>([]);
   const [localOverseasEntries, setLocalOverseasEntries] = useState<OptionEntry[]>([]);
   const [subitemStatusEntries, setSubitemStatusEntries] = useState<OptionEntry[]>([]);
+  const [currencyEntries, setCurrencyEntries] = useState<OptionEntry[]>([]);
   
   const replyStatuses = replyStatusEntries.map((e) => e.value);
   const clientStatuses = clientStatusEntries.map((e) => e.value);
@@ -138,6 +139,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           shipperOpts,
           localOverseasOpts,
           subitemStatusOpts,
+          currencyOpts,
         ] = await Promise.all([
           fetchProfiles(),
           supabase.auth.getUser(),
@@ -153,6 +155,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
           fetchOptions('shipper'),
           fetchOptions('local_overseas'),
           fetchOptions('subitem_status'),
+          fetchOptions('currency'),
         ]);
 
         setProfiles(profilesData);
@@ -169,6 +172,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
         setShipperEntries(shipperOpts);
         setLocalOverseasEntries(localOverseasOpts);
         setSubitemStatusEntries(subitemStatusOpts);
+        setCurrencyEntries(currencyOpts);
 
       } catch (error: any) {
         console.error('Failed to load assignments', error);
@@ -289,6 +293,20 @@ const handleAddLocalOverseas = useCallback(
 const handleDeleteLocalOverseas = useCallback(
   async (name: string) => {
     await deleteOptionValue('local_overseas', name, setLocalOverseasEntries);
+  },
+  [deleteOptionValue]
+);
+
+const handleAddCurrency = useCallback(
+  async (name: string) => {
+    await insertOptionValue('currency', name, currencyEntries, setCurrencyEntries);
+  },
+  [insertOptionValue, currencyEntries]
+);
+
+const handleDeleteCurrency = useCallback(
+  async (name: string) => {
+    await deleteOptionValue('currency', name, setCurrencyEntries);
   },
   [deleteOptionValue]
 );
@@ -800,6 +818,9 @@ const handleDeleteModeOfPayment = useCallback(
                   shipperOptions={shipperEntries}
                   localOverseasOptions={localOverseasEntries}
                   subitemStatusOptions={subitemStatusEntries}
+                  currencyOptions={currencyEntries}
+                  onAddCurrency={handleAddCurrency}
+                  onDeleteCurrency={handleDeleteCurrency}
                   onAddSubitemStatus={handleAddSubitemStatus}
                   onDeleteSubitemStatus={handleDeleteSubitemStatus}
                   onAddLocalOverseas={handleAddLocalOverseas}

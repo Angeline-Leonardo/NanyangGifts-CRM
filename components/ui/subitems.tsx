@@ -80,11 +80,6 @@ const PAYMENT_COLS: ColumnDef[] = [
     { key: "paymentRemarks", label: "Remarks", width: 120, minWidth: 7 },
 ]
 
-
-const statusOpts = ["", "To Quote", "Verified", "Awarded", "Initial Quote", "Quoted", "Shortlisted", "Failed"];
-
-
-const currencyOpts = ["MYR", "SGD", "RMB"];
 type TableMode = "subitem" | "payment" | "timeline";
 
 type OptionEntry = { value: string; color: string };
@@ -104,6 +99,9 @@ type SubitemProps = {
     shipperOptions: OptionEntry[];
     localOverseasOptions: OptionEntry[];
     subitemStatusOptions: OptionEntry[];
+    currencyOptions: OptionEntry[];
+    onAddCurrency?: (name: string) => void | Promise<void>;
+    onDeleteCurrency?: (name: string) => void | Promise<void>;
     onAddSubitemStatus?: (name: string) => void | Promise<void>;
     onDeleteSubitemStatus?: (name: string) => void | Promise<void>;
     onAddShipper?: (name: string) => void | Promise<void>;
@@ -171,6 +169,9 @@ export function SubitemsTable({
     shipperOptions,
     localOverseasOptions,
     subitemStatusOptions,
+    currencyOptions,
+    onAddCurrency,
+    onDeleteCurrency,
     onAddSubitemStatus,
     onDeleteSubitemStatus,
     onAddLocalOverseas,
@@ -435,7 +436,9 @@ const renderNameCell = (sub: Subitem) => (
                         value={sub.shipper ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { shipper: v })}
                         options={shipperOptions}
-                        
+                        onAddOption={onAddShipper}
+                        onDeleteOption={onDeleteShipper}
+                        manageLabel="shipper"
                         small
                     />
                     </div>
@@ -466,11 +469,13 @@ const renderNameCell = (sub: Subitem) => (
                 return (
                     <div className="flex items-center">
                     <StatusBadge
-                        value={sub.currency ?? "RMB"}
+                        value={sub.currency ?? ""}
                         onChange={(v) => onUpdateSubitem(sub.id, { currency: v })}
-                        options={currencyOpts}
-                        
-                        
+                        options={currencyOptions}
+                        onAddOption={onAddCurrency}
+                        onDeleteOption={onDeleteCurrency}
+                        manageLabel="currency"
+                        small
                     />
                     </div>
                 );

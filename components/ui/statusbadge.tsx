@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Plus, Trash2 } from 'lucide-react';
 
-const MENU_WIDTH = 220;
+const MENU_WIDTH = 250;
 
 export type BadgeOption = {
     value: string;
@@ -62,7 +62,7 @@ export function StatusBadge({
         const menuHeight = Math.min(options.length * 34 + (onAddOption ? 40 : 0) + 2, 320);
 
         const left =
-            spaceRight >= MENU_WIDTH + 8
+            spaceRight >= MENU_WIDTH + 50
                 ? rect.right + 4
                 : Math.max(8, rect.left - MENU_WIDTH - 4);
 
@@ -81,7 +81,7 @@ export function StatusBadge({
             <div
                 ref={menuRef}
                 style={menuStyle}
-                className="bg-white border border-gray-200 rounded-xl shadow-2xl py-1 max-h-80 overflow-y-auto"
+                className="bg-white border border-gray-200 rounded-xl shadow-2xl py-1 max-h-80 overflow-y-auto overflow-x-hidden"
             >
                 {options.map((opt) => {
                     const allowDelete = canDeleteOption ? canDeleteOption(opt.value) : true;
@@ -120,13 +120,13 @@ export function StatusBadge({
                 })}
 
                 {onAddOption && (
-                    <div className="mt-1 border-t border-gray-100 pt-2 pb-1">
+                    <div className="mt-1 border-t border-gray-100 pt-2 pr-2 pl-1">
                         <div className="flex items-center gap-2">
                             <input
                                 value={newOption}
                                 onChange={(e) => setNewOption(e.target.value)}
                                 placeholder={`Add ${manageLabel}`}
-                                className="flex-1 rounded-lg border border-gray-200 px-2 py-1.5 text-xs text-gray-700 outline-none focus:border-[#7BCBD5] focus:ring-4 focus:ring-[#7BCBD5]/15"
+                                className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-700 outline-none focus:border-[#7BCBD5] focus:ring-4 focus:ring-[#7BCBD5]/15"
                             />
                             <button
                                 onMouseDown={(e) => e.preventDefault()}
@@ -136,7 +136,7 @@ export function StatusBadge({
                                     await onAddOption(trimmed);
                                     setNewOption('');
                                 }}
-                                className="inline-flex items-center rounded-lg bg-[#7BCBD5] px-1 py-1 text-[10px] font-semibold text-white hover:bg-[#6bc0ca]"
+                                className="inline-flex items-center rounded-lg bg-[#7BCBD5] px-2 py-1 text-[10px] font-semibold text-white hover:bg-[#6bc0ca]"
                             >
                                 <Plus size={10} />
                                 Add
