@@ -21,7 +21,6 @@ const SUBITEM_LOG_IGNORE_FIELDS = new Set<keyof Subitem>([
     'showTimeline',
     'showPayments',
     'showSample',
-    'timelineRows'
 ]);
 
 export type RoundRobinQueueRow = {
@@ -730,6 +729,7 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         ...(updates.paymentRemarks !== undefined ? { payment_remarks: updates.paymentRemarks } : {}),
         ...(updates.timelineRows !== undefined ? { timeline_rows: updates.timelineRows } : {}),
         ...(updates.showTimeline !== undefined ? { show_timeline: updates.showTimeline } : {}),
+        ...(updates.timelineRows !== undefined ? { timeline_rows: updates.timelineRows } : {}),
         ...(updates.showPayments !== undefined ? { show_payments: updates.showPayments } : {}),
         ...(updates.showSample !== undefined ? { show_sample: updates.showSample } : {}),
         ...(updates.sampleRows !== undefined ? { sample_rows: updates.sampleRows } : {}),
@@ -745,11 +745,6 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         .select('id, timeline_rows')
         .single();
 
-    console.log('updateSubitemRow subitemId:', subitemId);
-    console.log('updateSubitemRow payload:', payload);
-    console.log('updateSubitemRow result:', data);
-    console.log('updateSubitemRow error:', error);
-
     if (error) throw error;
 
     for (const [key, value] of Object.entries(updates) as [keyof Subitem, unknown][]) {
@@ -757,6 +752,7 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
 
         const oldValue =
             existing[
+            key === 'status' ? 'status' :
             key === 'localOverseas' ? 'local_overseas' :
                 key === 'tcSgd' ? 'tc_sgd' :
                     key === 'numOfCartons' ? 'num_of_cartons' :

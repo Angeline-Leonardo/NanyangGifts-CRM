@@ -55,7 +55,9 @@ export async function fetchAllSubitemAssignees(): Promise<SubitemAssigneeMap> {
 export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, reloadClients, search = '' }: CRMBoardProps) {
   const [filterStatus, setFilterStatus] = useState<string | 'All'>('All');
   const [showFilter, setShowFilter] = useState(false);
-
+  const [filterSubprogress, setFilterSubprogress] = useState<string>('All');
+  const [showSubprogressFilter, setShowSubprogressFilter] = useState(false);
+  const subprogressFilterRef = useRef<HTMLDivElement>(null);
   const expandedIdSet = React.useMemo(() => new Set(expandedIds), [expandedIds]);
   const allExpanded = clients.length > 0 && clients.every((c) => expandedIdSet.has(c.id));
 
@@ -81,12 +83,14 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [subitemStatusEntries, setSubitemStatusEntries] = useState<OptionEntry[]>([]);
   const [currencyEntries, setCurrencyEntries] = useState<OptionEntry[]>([]);
   const [subitemSubprogressEntries, setSubitemSubprogressEntries] = useState<OptionEntry[]>([]);
-  
+
   const replyStatuses = replyStatusEntries.map((e) => e.value);
   const clientStatuses = clientStatusEntries.map((e) => e.value);
   const channelOptions = channelEntries.map((e) => e.value);
   const importanceOptions = importanceEntries.map((e) => e.value);
+  const subprogressOptions = subitemSubprogressEntries.map((e) => e.value);
   const statusColors = Object.fromEntries(clientStatusEntries.map((e) => [e.value, e.color]));
+  const subProgressColors = Object.fromEntries(subitemSubprogressEntries.map((e) => [e.value, e.color]));
 
   const [groups, setGroups] = useState<CRMGroup[]>([]);
   const [groupToDelete, setGroupToDelete] = useState<CRMGroup | null>(null);
@@ -191,186 +195,200 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
     const handler = (e: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) setShowFilter(false);
     };
+
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showFilter]);
 
+  useEffect(() => {
+    if (!showSubprogressFilter) return;
+
+    const handler = (e: MouseEvent) => {
+      if (subprogressFilterRef.current && !subprogressFilterRef.current.contains(e.target as Node)) {
+        setShowSubprogressFilter(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showSubprogressFilter]);
+
   // --- Option handlers ---
 
   const getOptionGroupId = useCallback(async (code: string) => {
-  const supabase = createSupabaseClient();
-  const { data, error } = await supabase
-    .from('option_groups')
-    .select('id')
-    .eq('code', code)
-    .single();
-
-  if (error) {
-    console.error(`Failed to fetch option group id for ${code}`, error);
-    return null;
-  }
-
-  return data?.id ?? null;
-}, []);
-
-const insertOptionValue = useCallback(
-  async (
-    code: string,
-    name: string,
-    currentEntries: OptionEntry[],
-    setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
-  ) => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-
-    const groupId = await getOptionGroupId(code);
-    if (!groupId) return;
-
     const supabase = createSupabaseClient();
     const { data, error } = await supabase
-      .from('option_values')
-      .insert({
-        group_id: groupId,
-        value: trimmed,
-        color: '#d1d5db',
-        sort_order: currentEntries.length,
-      })
-      .select('value, color')
+      .from('option_groups')
+      .select('id')
+      .eq('code', code)
       .single();
 
     if (error) {
-      console.error(`Failed to insert option into ${code}`, error);
-      return;
+      console.error(`Failed to fetch option group id for ${code}`, error);
+      return null;
     }
 
-    setEntries((prev) => [...prev, data]);
-  },
-  [getOptionGroupId]
-);
+    return data?.id ?? null;
+  }, []);
 
-const deleteOptionValue = useCallback(
-  async (
-    code: string,
-    name: string,
-    setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
-  ) => {
-    const groupId = await getOptionGroupId(code);
-    if (!groupId) return;
+  const insertOptionValue = useCallback(
+    async (
+      code: string,
+      name: string,
+      currentEntries: OptionEntry[],
+      setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
+    ) => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
 
-    const supabase = createSupabaseClient();
-    const { error } = await supabase
-      .from('option_values')
-      .delete()
-      .eq('group_id', groupId)
-      .eq('value', name);
+      const groupId = await getOptionGroupId(code);
+      if (!groupId) return;
 
-    if (error) {
-      console.error(`Failed to delete option from ${code}`, error);
-      return;
-    }
+      const supabase = createSupabaseClient();
+      const { data, error } = await supabase
+        .from('option_values')
+        .insert({
+          group_id: groupId,
+          value: trimmed,
+          color: '#d1d5db',
+          sort_order: currentEntries.length,
+        })
+        .select('value, color')
+        .single();
 
-    setEntries((prev) => prev.filter((e) => e.value !== name));
-  },
-  [getOptionGroupId]
-);
+      if (error) {
+        console.error(`Failed to insert option into ${code}`, error);
+        return;
+      }
 
-const handleAddShipper = useCallback(
-  async (name: string) => {
-    await insertOptionValue('shipper', name, shipperEntries, setShipperEntries);
-  },
-  [insertOptionValue, shipperEntries]
-);
+      setEntries((prev) => [...prev, data]);
+    },
+    [getOptionGroupId]
+  );
 
-const handleDeleteShipper = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('shipper', name, setShipperEntries);
-  },
-  [deleteOptionValue]
-);
+  const deleteOptionValue = useCallback(
+    async (
+      code: string,
+      name: string,
+      setEntries: React.Dispatch<React.SetStateAction<OptionEntry[]>>
+    ) => {
+      const groupId = await getOptionGroupId(code);
+      if (!groupId) return;
 
-const handleAddLocalOverseas = useCallback(
-  async (name: string) => {
-    await insertOptionValue('local_overseas', name, localOverseasEntries, setLocalOverseasEntries);
-  },
-  [insertOptionValue, shipperEntries]
-);
+      const supabase = createSupabaseClient();
+      const { error } = await supabase
+        .from('option_values')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('value', name);
 
-const handleDeleteLocalOverseas = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('local_overseas', name, setLocalOverseasEntries);
-  },
-  [deleteOptionValue]
-);
+      if (error) {
+        console.error(`Failed to delete option from ${code}`, error);
+        return;
+      }
 
-const handleAddCurrency = useCallback(
-  async (name: string) => {
-    await insertOptionValue('currency', name, currencyEntries, setCurrencyEntries);
-  },
-  [insertOptionValue, currencyEntries]
-);
+      setEntries((prev) => prev.filter((e) => e.value !== name));
+    },
+    [getOptionGroupId]
+  );
 
-const handleDeleteCurrency = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('currency', name, setCurrencyEntries);
-  },
-  [deleteOptionValue]
-);
+  const handleAddShipper = useCallback(
+    async (name: string) => {
+      await insertOptionValue('shipper', name, shipperEntries, setShipperEntries);
+    },
+    [insertOptionValue, shipperEntries]
+  );
 
-const handleAddSubitemSubprogress = useCallback(
-  async (name: string) => {
-    await insertOptionValue('subitem_subprogress', name, subitemSubprogressEntries, setSubitemSubprogressEntries);
-  },
-  [insertOptionValue, subitemSubprogressEntries]
-);
+  const handleDeleteShipper = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('shipper', name, setShipperEntries);
+    },
+    [deleteOptionValue]
+  );
 
-const handleDeleteSubitemSubprogress = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('subitem_subprogress', name, setSubitemSubprogressEntries);
-  },
-  [deleteOptionValue]
-);
+  const handleAddLocalOverseas = useCallback(
+    async (name: string) => {
+      await insertOptionValue('local_overseas', name, localOverseasEntries, setLocalOverseasEntries);
+    },
+    [insertOptionValue, shipperEntries]
+  );
 
-const handleAddSubitemStatus = useCallback(
-  async (name: string) => {
-    await insertOptionValue('subitem_status', name, subitemStatusEntries, setSubitemStatusEntries);
-  },
-  [insertOptionValue, subitemStatusEntries]
-);
+  const handleDeleteLocalOverseas = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('local_overseas', name, setLocalOverseasEntries);
+    },
+    [deleteOptionValue]
+  );
 
-const handleDeleteSubitemStatus = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('subitem_status', name, setSubitemStatusEntries);
-  },
-  [deleteOptionValue]
-);
+  const handleAddCurrency = useCallback(
+    async (name: string) => {
+      await insertOptionValue('currency', name, currencyEntries, setCurrencyEntries);
+    },
+    [insertOptionValue, currencyEntries]
+  );
 
-const handleAddPaymentStatus = useCallback(
-  async (name: string) => {
-    await insertOptionValue('payment_status', name, paymentStatusEntries, setPaymentStatusEntries);
-  },
-  [insertOptionValue, paymentStatusEntries]
-);
+  const handleDeleteCurrency = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('currency', name, setCurrencyEntries);
+    },
+    [deleteOptionValue]
+  );
 
-const handleDeletePaymentStatus = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('payment_status', name, setPaymentStatusEntries);
-  },
-  [deleteOptionValue]
-);
+  const handleAddSubitemSubprogress = useCallback(
+    async (name: string) => {
+      await insertOptionValue('subitem_subprogress', name, subitemSubprogressEntries, setSubitemSubprogressEntries);
+    },
+    [insertOptionValue, subitemSubprogressEntries]
+  );
 
-const handleAddModeOfPayment = useCallback(
-  async (name: string) => {
-    await insertOptionValue('mode_of_payment', name, modeOfPaymentEntries, setModeOfPaymentEntries);
-  },
-  [insertOptionValue, modeOfPaymentEntries]
-);
+  const handleDeleteSubitemSubprogress = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('subitem_subprogress', name, setSubitemSubprogressEntries);
+    },
+    [deleteOptionValue]
+  );
 
-const handleDeleteModeOfPayment = useCallback(
-  async (name: string) => {
-    await deleteOptionValue('mode_of_payment', name, setModeOfPaymentEntries);
-  },
-  [deleteOptionValue]
-);
+  const handleAddSubitemStatus = useCallback(
+    async (name: string) => {
+      await insertOptionValue('subitem_status', name, subitemStatusEntries, setSubitemStatusEntries);
+    },
+    [insertOptionValue, subitemStatusEntries]
+  );
+
+  const handleDeleteSubitemStatus = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('subitem_status', name, setSubitemStatusEntries);
+    },
+    [deleteOptionValue]
+  );
+
+  const handleAddPaymentStatus = useCallback(
+    async (name: string) => {
+      await insertOptionValue('payment_status', name, paymentStatusEntries, setPaymentStatusEntries);
+    },
+    [insertOptionValue, paymentStatusEntries]
+  );
+
+  const handleDeletePaymentStatus = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('payment_status', name, setPaymentStatusEntries);
+    },
+    [deleteOptionValue]
+  );
+
+  const handleAddModeOfPayment = useCallback(
+    async (name: string) => {
+      await insertOptionValue('mode_of_payment', name, modeOfPaymentEntries, setModeOfPaymentEntries);
+    },
+    [insertOptionValue, modeOfPaymentEntries]
+  );
+
+  const handleDeleteModeOfPayment = useCallback(
+    async (name: string) => {
+      await deleteOptionValue('mode_of_payment', name, setModeOfPaymentEntries);
+    },
+    [deleteOptionValue]
+  );
   const handleAddReplyStatus = useCallback(async (name: string) => {
     const trimmed = name.trim();
     if (!trimmed) return;
@@ -551,6 +569,15 @@ const handleDeleteModeOfPayment = useCallback(
   // --- Filtering ---
   const displayedClients = clients.filter((client) => {
     const matchesStatus = filterStatus === 'All' || client.status === filterStatus;
+
+    const matchesSubprogress =
+      filterSubprogress === 'All' ||
+      client.subitems.some((subitem) =>
+        (subitem.timelineRows ?? []).some(
+          (row) => (row.subProgress ?? '') === filterSubprogress
+        )
+      );
+
     const q = search.trim().toLowerCase();
     const clientAssignedProfiles = (clientAssignees[client.id] ?? [])
       .map((id) => profiles.find((p) => p.id === id)).filter(Boolean) as Profile[];
@@ -561,7 +588,7 @@ const handleDeleteModeOfPayment = useCallback(
         (p.full_name ?? '').toLowerCase().includes(q) || (p.email ?? '').toLowerCase().includes(q)
       ) ||
       client.subitems.some((s) => (s.name ?? '').toLowerCase().includes(q));
-    return matchesStatus && matchesSearch;
+    return matchesStatus && matchesSearch && matchesSubprogress;
   });
 
   const groupedClients = groups.map((group) => ({
@@ -723,6 +750,60 @@ const handleDeleteModeOfPayment = useCallback(
             </div>
           )}
         </div>
+        <div ref={subprogressFilterRef} className="relative">
+          <button
+            onClick={() => setShowSubprogressFilter(!showSubprogressFilter)}
+            className="flex items-center gap-1 px-2 py-1 bg-[#a0e2eb] hover:bg-[#7BCBD5] text-white rounded-md text-[10px] font-medium transition-colors transform active:scale-95 duration-150"
+          >
+            <Filter size={12} />
+            {filterSubprogress === 'All' ? 'Filter by Subitem' : filterSubprogress}
+            <ChevronDown size={11} />
+          </button>
+
+          {showSubprogressFilter && (
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-50 min-w-44 py-1 max-h-80 overflow-y-auto">
+              <button
+                onClick={() => {
+                  setFilterSubprogress('All');
+                  setShowSubprogressFilter(false);
+                }}
+                className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-[10px] hover:bg-gray-50"
+              >
+                <span className="w-2.5 h-2.5 rounded-sm bg-gray-300" />
+                <span className="flex-1">All Subprogress</span>
+                {filterSubprogress === 'All' && <span className="ml-auto text-blue-500">✓</span>}
+              </button>
+
+              <div className="border-t border-gray-100 my-1" />
+
+              {subprogressOptions.map((sp) => {
+                const count = clients.filter((client) =>
+                  client.subitems.some((subitem) =>
+                    (subitem.timelineRows ?? []).some(
+                      (row) => (row.subProgress ?? '') === sp
+                    )
+                  )
+                ).length;
+
+                return (
+                  <button
+                    key={sp}
+                    onClick={() => {
+                      setFilterSubprogress(sp);
+                      setShowSubprogressFilter(false);
+                    }}
+                    className="flex items-center font-semibold gap-2 w-full text-left px-3 py-1.5 text-[10px] hover:bg-gray-50"
+                  >
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#7BCBD5]" style={{ background: subProgressColors[sp] ?? '#9ca3af' }} />
+                    <span className="flex-1">{sp}</span>
+                    <span className="text-gray-400">{count}</span>
+                    {filterSubprogress === sp && <span className="text-blue-500 ml-1">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-1">
           {clientStatuses.map((st) => {
@@ -861,7 +942,7 @@ const handleDeleteModeOfPayment = useCallback(
                   onDeletePaymentStatus={handleDeletePaymentStatus}
                   onAddModeOfPayment={handleAddModeOfPayment}
                   onDeleteModeOfPayment={handleDeleteModeOfPayment}
-                
+
                 />
               ))}
 
