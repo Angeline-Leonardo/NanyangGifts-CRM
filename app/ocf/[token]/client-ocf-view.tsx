@@ -302,10 +302,11 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                             </td>
                             <td className="px-3 py-2">
                                 <div className="space-y-z">
-                                    <input
+                                    <textarea
                                         value={ocf.estimated_delivery_notes || ""}
                                         disabled
-                                        className="w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 text-gray-700"
+                                        rows={4}
+                                        className="w-full whitespace-prewrap rounded border border-gray-300 bg-gray-100 px-3 py-2 text-gray-700"
                                     />
                                 </div>
                             </td>

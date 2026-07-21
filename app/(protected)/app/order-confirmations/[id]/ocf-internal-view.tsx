@@ -255,13 +255,13 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                                 Estimated Delivery Notes:
                             </td>
                             <td className="px-3 py-2">
-                                <input
-                                    type="text"
-                                    value={deliveryNotes}
-                                    onChange={(e) => setDeliveryNotes(e.target.value)}
-                                    placeholder="Production lead time / shipping lead time"
-                                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:ring-offset-2"
-                                />
+                                <textarea
+                                            value={deliveryNotes ?? ""}
+                                            onChange={(e) => setDeliveryNotes(e.target.value)}
+                                            rows={4}
+                                            className="w-full min-w-0 rounded border border-gray-300 px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:ring-offset-2"
+                                            placeholder="Estimated delivery notes"
+                                        />
                             </td>
                         </tr>
 
