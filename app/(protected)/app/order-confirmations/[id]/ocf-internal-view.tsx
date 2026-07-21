@@ -9,9 +9,13 @@ type OcfItem = {
     id: string;
     qty: string | number | null;
     item_name: string | null;
+    remarks: string | null;
     image_path: string | null;
     image_url: string | null;
-    delivery_info?: string | null;
+    delivery_name?: string | null;
+    delivery_address?: string | null;
+    delivery_contact_number?: string | null;
+    delivery_remarks?: string | null;
     pl?: string | null;
     sl?: string | null;
 };
@@ -41,9 +45,21 @@ type Ocf = {
 };
 
 export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
+    const router = useRouter();
+
     const [deliveryNotes, setDeliveryNotes] = useState(ocf.estimated_delivery_notes ?? "");
+    const [items, setItems] = useState(
+        ocf.order_confirmation_items.map((item) => ({
+            ...item,
+            remarks: item.remarks ?? "",
+        }))
+    );
+    const [saving, setSaving] = useState(false);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
+    const [saveError, setSaveError] = useState<string | null>(null);
+
     const clientUrl = useMemo(() => {
-        if (!ocf.client_token) return "";
+        if (!ocf.client_token || typeof window === "undefined") return "";
         return `${window.location.origin}/ocf/${ocf.client_token}`;
     }, [ocf.client_token]);
 
@@ -52,7 +68,6 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
         await navigator.clipboard.writeText(clientUrl);
         alert("Client link copied");
     }
-    const router = useRouter();
 
     async function goBack() {
         if (window.history.length > 1) {
@@ -61,6 +76,55 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
         }
 
         router.push("/app");
+    }
+
+    function updateItemRemarks(itemId: string, value: string) {
+        setItems((prev) =>
+            prev.map((item) =>
+                item.id === itemId
+                    ? {
+                        ...item,
+                        remarks: value,
+                    }
+                    : item
+            )
+        );
+    }
+
+    async function saveInternalEdits() {
+        setSaving(true);
+        setSaveMessage(null);
+        setSaveError(null);
+
+        try {
+            const response = await fetch("/api/order-confirmations/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ocfId: ocf.id,
+                    estimatedDeliveryNotes: deliveryNotes,
+                    items: items.map((item) => ({
+                        id: item.id,
+                        remarks: item.remarks ?? "",
+                    })),
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result?.error || "Failed to save internal updates.");
+            }
+
+            setSaveMessage("Changes saved successfully.");
+            router.refresh();
+        } catch (err: any) {
+            setSaveError(err.message || "Failed to save internal updates.");
+        } finally {
+            setSaving(false);
+        }
     }
 
     return (
@@ -78,15 +142,9 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                             <span className="font-semibold">Date:</span>{" "}
                             {ocf.generated_at ? new Date(ocf.generated_at).toLocaleDateString() : "-"}
                         </p>
-                        <p>
-                            <span className="font-semibold">Contact Number:</span>{" "}
-                            {ocf.salesperson_contact_number || "-"}
-                        </p>
-                        <p>
-                            <span className="font-semibold">Email:</span> {ocf.salesperson_email || "-"}
-                        </p>
                     </div>
                 </div>
+
                 <div className="mb-4 bg-[#eef2ff] px-4 py-3">
                     <table className="w-full border-collapse text-sm">
                         <tbody>
@@ -106,33 +164,58 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                                 <td className="py-1 font-semibold text-black"></td>
                                 <td className="py-1 text-black"></td>
                                 <td className="py-1 font-semibold text-black">Email:</td>
-                                <td className="py-1 text-left text-black break-all">{ocf.salesperson_email || "-"}</td>
+                                <td className="py-1 text-left break-all text-black">{ocf.salesperson_email || "-"}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <table className="w-full border border-black text-sm">
+                <table className="w-full table-fixed border border-black text-sm">
                     <thead>
                         <tr className="bg-gray-100 text-left">
-                            <th className="border border-black px-2 py-2 font-semibold">Item Name</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Qty</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Remarks Per Item</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Delivery Info</th>
+                            <th className="w-[22%] border border-black px-2 py-2 font-semibold">Item Name</th>
+                            <th className="w-[10%] border border-black px-2 py-2 font-semibold">Qty</th>
+                            <th className="w-[18%] border border-black px-2 py-2 font-semibold">Remarks</th>
+                            <th className="w-[50%] border border-black px-2 py-2 font-semibold">Delivery Information</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {ocf.order_confirmation_items.length > 0 ? (
-                            ocf.order_confirmation_items.map((item) => (
+                        {items.length > 0 ? (
+                            items.map((item) => (
                                 <tr key={item.id} className="align-top">
-                                    <td className="border border-black px-2 py-3">{item.item_name || "-"}</td>
+                                    <td className="border border-black px-2 py-3 break-words">{item.item_name || "-"}</td>
                                     <td className="border border-black px-2 py-3">{item.qty || "-"}</td>
-                                    
+                                    <td className="border border-black px-2 py-3">
+                                        <textarea
+                                            value={item.remarks ?? ""}
+                                            onChange={(e) => updateItemRemarks(item.id, e.target.value)}
+                                            rows={4}
+                                            className="w-full min-w-0 rounded border border-gray-300 px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:ring-offset-2"
+                                            placeholder="Item remarks"
+                                        />
+                                    </td>
+                                    <td className="border border-black px-2 py-3">
+                                        <div className="space-y-2 text-sm text-gray-800">
+                                            <div>
+                                                <span className="font-semibold">Name:</span> {item.delivery_name || "-"}
+                                            </div>
+                                            <div className="whitespace-pre-wrap break-words">
+                                                <span className="font-semibold">Address:</span> {item.delivery_address || "-"}
+                                            </div>
+                                            <div>
+                                                <span className="font-semibold">Contact Number:</span>{" "}
+                                                {item.delivery_contact_number || "-"}
+                                            </div>
+                                            <div className="whitespace-pre-wrap break-words">
+                                                <span className="font-semibold">Remarks:</span> {item.delivery_remarks || "-"}
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className="border border-black px-3 py-4 text-center text-gray-500">
+                                <td colSpan={4} className="border border-black px-3 py-4 text-center text-gray-500">
                                     No awarded items found.
                                 </td>
                             </tr>
@@ -144,39 +227,49 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                     <tbody>
                         <tr className="border-b border-black">
                             <td className="w-56 border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Client's Company Name:
+                                Client&apos;s Company Name:
                             </td>
                             <td className="px-3 py-2">{ocf.company_snapshot || "-"}</td>
                         </tr>
+
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Recipient Name:
                             </td>
                             <td className="px-3 py-2">{ocf.recipient_name || "-"}</td>
                         </tr>
-                        
+
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Estimated Delivery:
+                                Same delivery information for all items?
                             </td>
                             <td className="px-3 py-2">
-                                <div className="flex flex-col gap-2">
-                                    <input
-                                        type="text"
-                                        value={deliveryNotes}
-                                        onChange={(e) => setDeliveryNotes(e.target.value)}
-                                        placeholder="Additional delivery info, e.g. Production Lead Time: 2 days, etc."
-                                        className="w-full rounded border border-gray-300 px-3 py-2"
-                                    />
-                                </div>
+                                {ocf.same_address_for_all_items ? "Yes" : "No"}
                             </td>
                         </tr>
+
+                        <tr className="border-b border-black">
+                            <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
+                                Estimated Delivery Notes:
+                            </td>
+                            <td className="px-3 py-2">
+                                <input
+                                    type="text"
+                                    value={deliveryNotes}
+                                    onChange={(e) => setDeliveryNotes(e.target.value)}
+                                    placeholder="Production lead time / shipping lead time"
+                                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:ring-offset-2"
+                                />
+                            </td>
+                        </tr>
+
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Restricted Area?
                             </td>
                             <td className="px-3 py-2 whitespace-pre-wrap">{ocf.restricted_area || "-"}</td>
                         </tr>
+
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Important Notes:
@@ -185,6 +278,7 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                         </tr>
                     </tbody>
                 </table>
+
                 {ocf.client_signature_url ? (
                     <div className="mt-3">
                         <p className="mb-2 font-semibold text-gray-800">Client Signature:</p>
@@ -200,7 +294,19 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                     </p>
                 )}
 
+                {saveError ? <p className="mt-4 text-sm text-red-600">{saveError}</p> : null}
+                {saveMessage ? <p className="mt-4 text-sm text-green-600">{saveMessage}</p> : null}
+
                 <div className="mt-6 flex flex-wrap gap-3">
+                    <button
+                        type="button"
+                        onClick={saveInternalEdits}
+                        disabled={saving}
+                        className="rounded bg-[#7BCBD5] px-4 py-2 text-sm font-medium text-white hover:bg-teal-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                        {saving ? "Saving..." : "Save Changes"}
+                    </button>
+
                     <button
                         type="button"
                         onClick={copyClientLink}
@@ -208,15 +314,15 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                     >
                         Copy Client Link
                     </button>
+
                     <button
                         type="button"
                         onClick={goBack}
-                        className="rounded bg-[#7BCBD5] px-4 py-2 text-sm font-medium text-white hover:bg-teal-400"
+                        className="rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                         Back
                     </button>
                 </div>
-
 
                 <div className="mt-6 border-t border-gray-200 pt-4 text-sm text-gray-700">
                     <p><span className="font-semibold">Signed at:</span> {ocf.client_signed_at ? new Date(ocf.client_signed_at).toLocaleString() : "-"}</p>
@@ -225,13 +331,14 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                     <p><span className="font-semibold">Locked at:</span> {ocf.locked_at ? new Date(ocf.locked_at).toLocaleString() : "-"}</p>
                 </div>
             </div>
+
             <div className="mt-10 break-before-page print:break-before-page">
                 {ocf.order_confirmation_items
                     .filter((item) => item.image_url)
                     .map((item) => (
                         <section key={item.id} className="mb-10">
                             <div className="relative mx-auto flex min-h-[85vh] w-full max-w-[1030px] items-center justify-center overflow-hidden rounded border border-gray-300 bg-white p-4 pt-12 print:min-h-[92vh]">
-                                <h1 className="absolute text-center top-4 text-base font-normal text-black">
+                                <h1 className="absolute top-4 text-center text-base font-normal text-black">
                                     {item.item_name || "Item image"}
                                 </h1>
 

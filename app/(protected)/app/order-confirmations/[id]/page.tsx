@@ -25,8 +25,6 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
         important_notes,
         client_name_snapshot,
         company_snapshot,
-        delivery_address,
-        client_contact_number,
         client_signature_path,
         recipient_name,
         salesperson_name,
@@ -40,14 +38,22 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
         id,
         qty,
         item_name,
-        remarks,
-        image_path
+        image_path,
+        delivery_name,
+        delivery_address,
+        delivery_contact_number,
+        delivery_remarks
         )
     `)
         .eq("id", id)
         .single();
 
-    if (error || !ocf) {
+     if (error) {
+        console.error("OCF fetch error:", error);
+        throw new Error(error.message);
+    }
+
+    if (!ocf) {
         notFound();
     }
 
