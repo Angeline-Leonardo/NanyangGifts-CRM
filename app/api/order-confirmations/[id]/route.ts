@@ -33,6 +33,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         salesperson_email,
         estimated_delivery_notes,
         important_notes,
+        delivery_info,
         status,
         client_token,
         client_signed_at,
@@ -60,6 +61,7 @@ export async function GET(_request: NextRequest, { params }: RouteContext) {
         qty,
         name,
         remarks,
+        delivery_info,
         image_path
         `)
             .eq("order_confirmation_id", id);
@@ -110,6 +112,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             salesperson_email,
             estimated_delivery_notes,
             important_notes,
+            delivery_info
         } = body ?? {};
 
         const { data: existing, error: existingError } = await supabase
@@ -157,6 +160,9 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         if (typeof estimated_delivery_notes === "string") {
             updates.estimated_delivery_notes = estimated_delivery_notes;
         }
+        if (typeof delivery_info === "string") {
+            updates.delivery_info = delivery_info;
+        }
 
         if (Object.keys(updates).length === 0) {
             return NextResponse.json(
@@ -181,6 +187,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
         salesperson_email,
         important_notes,
         estimated_delivery_notes,
+        delivery_info,
         status,
         client_token,
         client_signed_at,

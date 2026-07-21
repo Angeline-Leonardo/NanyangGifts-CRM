@@ -7,14 +7,14 @@ type Props = {
     clientToken: string;
     company: string;
     recipientName: string;
-    contactNumber: string;
-    remarksForDelivery: string;
     restrictedArea: string;
     sameAddressForAllItems: boolean;
     items: {
         id: string;
-        contact_number?: string | null;
-        delivery_address?: string | null;
+        delivery_name?: string | null;
+        delivery_address: string;
+        delivery_contact_number: string;
+        delivery_remarks: string;
     }[];
 };
 
@@ -25,8 +25,6 @@ export default function SignatureForm({
     clientToken,
     company,
     recipientName,
-    contactNumber,
-    remarksForDelivery,
     restrictedArea,
     sameAddressForAllItems,
     items,
@@ -223,8 +221,6 @@ export default function SignatureForm({
                     typedInitials: typedInitials.trim() || null,
                     company,
                     recipientName,
-                    contactNumber,
-                    remarksForDelivery,
                     restrictedArea,
                     sameAddressForAllItems,
                     items,

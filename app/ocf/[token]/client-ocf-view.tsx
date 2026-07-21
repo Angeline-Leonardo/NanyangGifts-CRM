@@ -12,8 +12,10 @@ type OcfItem = {
     remarks: string | null;
     image_path: string | null;
     image_url: string | null;
-    contact_number?: string | null;
+    delivery_name?: string | null;
     delivery_address?: string | null;
+    delivery_contact_number?: string | null;
+    delivery_remarks?: string | null;
     pl?: string | null;
     sl?: string | null;
 };
@@ -27,8 +29,6 @@ type Ocf = {
     important_notes: string | null;
     client_name_snapshot: string | null;
     company_snapshot: string | null;
-    delivery_address: string | null;
-    client_contact_number: string | null;
     recipient_name: string | null;
     salesperson_name: string | null;
     salesperson_email: string | null;
@@ -37,10 +37,16 @@ type Ocf = {
     client_submitted_at: string | null;
     client_ip: string | null;
     locked_at: string | null;
-    remarks_for_delivery: string | null;
     restricted_area: string | null;
     same_address_for_all_items: boolean | null;
     order_confirmation_items: OcfItem[];
+};
+
+type EditableItem = OcfItem & {
+    delivery_name: string;
+    delivery_address: string;
+    delivery_contact_number: string;
+    delivery_remarks: string;
 };
 
 export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
@@ -50,29 +56,33 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
         Boolean(ocf.locked_at);
 
     const [company, setCompany] = useState(ocf.company_snapshot ?? "");
-    const [deliveryAddress, setDeliveryAddress] = useState(ocf.delivery_address ?? "");
-    const [contactNumber, setContactNumber] = useState(ocf.client_contact_number ?? "");
     const [recipientName, setRecipientName] = useState(ocf.recipient_name ?? "");
-    const [remarksForDelivery, setRemarksForDelivery] = useState(ocf.remarks_for_delivery ?? "");
     const [restrictedArea, setRestrictedArea] = useState(ocf.restricted_area ?? "No");
     const [sameAddressForAllItems, setSameAddressForAllItems] = useState(
         Boolean(ocf.same_address_for_all_items)
     );
-    const [sharedAddress, setSharedAddress] = useState(ocf.delivery_address ?? "");
 
-    const [items, setItems] = useState(
+    const [items, setItems] = useState<EditableItem[]>(
         ocf.order_confirmation_items.map((item) => ({
             ...item,
-            contact_number: item.contact_number ?? ocf.client_contact_number ?? "",
+            delivery_name: item.delivery_name ?? "",
             delivery_address: item.delivery_address ?? "",
+            delivery_contact_number: item.delivery_contact_number ?? "",
+            delivery_remarks: item.delivery_remarks ?? "",
         }))
     );
 
-    function syncAllAddressesFromFirstRow(nextFirstAddress: string) {
+    function syncAllDeliveryFieldsFromFirstRow() {
+        const firstRow = items[0];
+        if (!firstRow) return;
+
         setItems((prev) =>
-            prev.map((row, index) => ({
+            prev.map((row) => ({
                 ...row,
-                delivery_address: index === 0 ? nextFirstAddress : nextFirstAddress,
+                delivery_name: firstRow.delivery_name,
+                delivery_address: firstRow.delivery_address,
+                delivery_contact_number: firstRow.delivery_contact_number,
+                delivery_remarks: firstRow.delivery_remarks,
             }))
         );
     }
@@ -81,9 +91,35 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
         setSameAddressForAllItems(checked);
 
         if (checked) {
-            const firstRowAddress = items[0]?.delivery_address ?? "";
-            syncAllAddressesFromFirstRow(firstRowAddress);
+            syncAllDeliveryFieldsFromFirstRow();
         }
+    }
+
+    function updateItemField(
+        index: number,
+        field: keyof Pick<
+            EditableItem,
+            "delivery_name" | "delivery_address" | "delivery_contact_number" | "delivery_remarks"
+        >,
+        value: string
+    ) {
+        setItems((prev) =>
+            prev.map((row, i) => {
+                if (sameAddressForAllItems) {
+                    return {
+                        ...row,
+                        [field]: value,
+                    };
+                }
+
+                return i === index
+                    ? {
+                        ...row,
+                        [field]: value,
+                    }
+                    : row;
+            })
+        );
     }
 
     return (
@@ -129,61 +165,88 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                     </table>
                 </div>
 
-                <table className="w-full border border-black text-sm">
+                <table className="w-full table-fixed border border-black text-sm">
                     <thead>
                         <tr className="bg-gray-100 text-left">
-                            <th className="border border-black px-2 py-2 font-semibold">Item Name</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Qty</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Contact Number</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Remarks Per Item</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Delivery Address</th>
+                            <th className="w-[22%] border border-black px-2 py-2 font-semibold">Item Name</th>
+                            <th className="w-[10%] border border-black px-2 py-2 font-semibold">Qty</th>
+                            <th className="w-[18%] border border-black px-2 py-2 font-semibold">Remarks</th>
+                            <th className="w-[50%] border border-black px-2 py-2 font-semibold">Delivery Information</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((item, index) => (
-                            <tr key={item.id} className="align-top">
-                                <td className="border border-black px-2 py-3">{item.item_name || "-"}</td>
-                                <td className="border border-black px-2 py-3">{item.qty || "-"}</td>
-                                <td className="border border-black px-2 py-3">
-                                    <input
-                                        value={item.contact_number ?? ""}
-                                        onChange={(e) =>
-                                            setItems((prev) =>
-                                                prev.map((row, i) =>
-                                                    i === index ? { ...row, contact_number: e.target.value } : row
-                                                )
-                                            )
-                                        }
-                                        disabled={isLocked}
-                                        className="w-full rounded border border-gray-300 px-2 py-1 disabled:bg-gray-100"
-                                    />
-                                </td>
-                                <td className="border border-black px-2 py-3">{item.remarks || "-"}</td>
-                                <td className="border border-black px-2 py-3">
-                                    <textarea
-                                        value={item.delivery_address ?? ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
+                        {items.map((item, index) => {
+                            const disableSharedRow = sameAddressForAllItems && index !== 0;
+                            const disabled = isLocked || disableSharedRow;
 
-                                            setItems((prev) =>
-                                                prev.map((row, i) => {
-                                                    if (sameAddressForAllItems) {
-                                                        return { ...row, delivery_address: value };
+                            return (
+                                <tr key={item.id} className="align-top">
+                                    <td className="border border-black px-2 py-3">{item.item_name || "-"}</td>
+                                    <td className="border border-black px-2 py-3">{item.qty || "-"}</td>
+                                    <td className="border border-black px-2 py-3">{item.remarks || "-"}</td>
+                                    <td className="border border-black px-2 py-3">
+                                        <div className="space-y-2">
+                                            <div>
+                                                <label className="mb-1 block text-xs font-medium text-gray-700">Name</label>
+                                                <input
+                                                    value={item.delivery_name}
+                                                    onChange={(e) => updateItemField(index, "delivery_name", e.target.value)}
+                                                    disabled={disabled}
+                                                    className="w-full rounded border border-gray-300 px-2 py-1.5 disabled:bg-gray-100"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="mb-1 block text-xs font-medium text-gray-700">Address</label>
+                                                <textarea
+                                                    value={item.delivery_address}
+                                                    onChange={(e) => updateItemField(index, "delivery_address", e.target.value)}
+                                                    disabled={disabled}
+                                                    rows={2}
+                                                    className="w-full rounded border border-gray-300 px-2 py-1.5 disabled:bg-gray-100"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="mb-1 block text-xs font-medium text-gray-700">
+                                                    Contact Number
+                                                </label>
+                                                <input
+                                                    value={item.delivery_contact_number}
+                                                    onChange={(e) =>
+                                                        updateItemField(index, "delivery_contact_number", e.target.value)
                                                     }
+                                                    disabled={disabled}
+                                                    className="w-full rounded border border-gray-300 px-2 py-1.5 disabled:bg-gray-100"
+                                                />
+                                            </div>
 
-                                                    return i === index ? { ...row, delivery_address: value } : row;
-                                                })
-                                            );
-                                        }}
-                                        disabled={isLocked || (sameAddressForAllItems && index !== 0)}
-                                        rows={3}
-                                        className="w-full rounded border border-gray-300 px-2 py-1 disabled:bg-gray-100"
-                                    />
-                                </td>
-                            </tr>
-                        ))}
+                                            <div>
+                                                <label className="mb-1 block text-xs font-medium text-gray-700">
+                                                    Delivery Remarks
+                                                </label>
+                                                <textarea
+                                                    value={item.delivery_remarks}
+                                                    onChange={(e) => updateItemField(index, "delivery_remarks", e.target.value)}
+                                                    disabled={disabled}
+                                                    rows={2}
+                                                    className="w-full rounded border border-gray-300 px-2 py-1.5 disabled:bg-gray-100"
+                                                />
+                                            </div>
+
+                                            {disableSharedRow ? (
+                                                <p className="text-xs text-gray-500">
+                                                    Using the same delivery information as the first item.
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
+
                 <div className="mt-3 rounded-md border border-gray-200 bg-gray-50 px-4 py-3">
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                         <input
@@ -193,10 +256,11 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                             disabled={isLocked || items.length === 0}
                             className="h-4 w-4"
                         />
-                        <span>All same address?</span>
+                        <span>All items use the same delivery information?</span>
                     </label>
                     <p className="mt-1 text-xs text-gray-500">
-                        If checked, the first item&apos;s delivery address will be applied to all items.
+                        If checked, the first item&apos;s name, address, contact number, and remarks will be applied
+                        to all items.
                     </p>
                 </div>
 
@@ -229,19 +293,6 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                                 />
                             </td>
                         </tr>
-                        <tr className="border-b border-black">
-                            <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Contact Number For Delivery:
-                            </td>
-                            <td className="px-3 py-2">
-                                <input
-                                    value={contactNumber}
-                                    onChange={(e) => setContactNumber(e.target.value)}
-                                    disabled={isLocked}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 disabled:bg-gray-100"
-                                />
-                            </td>
-                        </tr>
 
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
@@ -255,21 +306,6 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                                         className="w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 text-gray-700"
                                     />
                                 </div>
-                            </td>
-                        </tr>
-
-                        <tr className="border-b border-black">
-                            <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Remarks For Delivery:
-                            </td>
-                            <td className="px-3 py-2">
-                                <textarea
-                                    value={remarksForDelivery}
-                                    onChange={(e) => setRemarksForDelivery(e.target.value)}
-                                    disabled={isLocked}
-                                    rows={3}
-                                    className="w-full rounded border border-gray-300 px-3 py-2 disabled:bg-gray-100"
-                                />
                             </td>
                         </tr>
 
@@ -313,7 +349,9 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                                 <span className="font-semibold">Submitted at:</span>{" "}
                                 {ocf.client_submitted_at ? new Date(ocf.client_submitted_at).toLocaleString() : "-"}
                             </p>
-                            <p><span className="font-semibold">Client IP:</span> {ocf.client_ip || "-"}</p>
+                            <p>
+                                <span className="font-semibold">Client IP:</span> {ocf.client_ip || "-"}
+                            </p>
                         </div>
                     ) : (
                         <SignatureForm
@@ -322,21 +360,20 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                             company={company}
                             recipientName={recipientName}
                             items={items}
-                            contactNumber={contactNumber}
-                            remarksForDelivery={remarksForDelivery}
                             restrictedArea={restrictedArea}
                             sameAddressForAllItems={sameAddressForAllItems}
                         />
                     )}
                 </div>
             </div>
+
             <div className="mt-10 break-before-page print:break-before-page">
                 {ocf.order_confirmation_items
                     .filter((item) => item.image_url)
                     .map((item) => (
                         <section key={item.id} className="mb-10">
                             <div className="relative mx-auto flex min-h-[85vh] w-full max-w-[1030px] items-center justify-center overflow-hidden rounded border border-gray-300 bg-white p-4 pt-12 print:min-h-[92vh]">
-                                <h1 className="absolute text-center top-4 text-base font-normal text-black">
+                                <h1 className="absolute top-4 text-center text-base font-normal text-black">
                                     {item.item_name || "Item image"}
                                 </h1>
 

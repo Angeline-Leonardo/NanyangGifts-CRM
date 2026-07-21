@@ -21,8 +21,6 @@ export default async function OcfContent({ params }: Props) {
         important_notes,
         client_name_snapshot,
         company_snapshot,
-        delivery_address,
-        client_contact_number,
         recipient_name,
         salesperson_name,
         salesperson_email,
@@ -31,21 +29,29 @@ export default async function OcfContent({ params }: Props) {
         client_submitted_at,
         client_ip,
         locked_at,
-        remarks_for_delivery,
         restricted_area,
         same_address_for_all_items,
         order_confirmation_items (
         id,
         qty,
         item_name,
+        image_path,
         remarks,
-        image_path
+        delivery_name,
+        delivery_address,
+        delivery_contact_number,
+        delivery_remarks
         )
     `)
         .eq("client_token", token)
         .single();
 
-    if (error || !ocf) {
+    if (error) {
+        console.error("OCF fetch error:", error);
+        throw new Error(error.message);
+    }
+
+    if (!ocf) {
         notFound();
     }
 

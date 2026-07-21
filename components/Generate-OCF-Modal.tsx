@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Client, Subitem } from "@/app/types";
 
-type AwardedSubitem = Pick<Subitem, "id" | "name" | "qty" | "description" | "status">;
+type AwardedSubitem = Pick<Subitem, "id" | "name" | "qty" | "description" | "status" | "pl" | "sl">;
 
 type UploadRow = {
     subitemId: string;
@@ -23,7 +23,38 @@ type GenerateOcfModalProps = {
     onClose: () => void;
     onCreated?: (result: { ocfId: string; internalUrl: string; clientUrl: string }) => void;
 };
+function toLeadTimeNumber(value: string | number | null | undefined) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+}
 
+function buildEstimatedDeliveryNotes(subitems: Array<{
+    name?: string | null;
+    pl?: string | number | null;
+    sl?: string | number | null;
+}>) {
+    return subitems
+        .map((item) => {
+            const pl = toLeadTimeNumber(item.pl);
+            const sl = toLeadTimeNumber(item.sl);
+
+            const lines: string[] = [];
+
+            if (pl !== null) {
+                lines.push(`Estimated Production Lead Time: ${pl + 3} days`);
+            }
+
+            if (sl !== null) {
+                lines.push(`Estimated Shipping Lead Time: ${sl + 3} days`);
+            }
+
+            if (lines.length === 0) return null;
+
+            return `${item.name || "Item"}\n${lines.join("\n")}`;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+}
 export function GenerateOcfModal({
     open,
     client,
@@ -48,15 +79,17 @@ export function GenerateOcfModal({
             (s) => (s.status ?? "").toLowerCase() === "awarded"
         );
 
-        setAwardedSubitems(
-            awarded.map((s) => ({
-                id: s.id,
-                name: s.name,
-                qty: s.qty,
-                description: s.description,
-                status: s.status,
-            }))
-        );
+        const mappedAwarded = awarded.map((s) => ({
+            id: s.id,
+            name: s.name,
+            qty: s.qty,
+            description: s.description,
+            status: s.status,
+            pl: s.pl,
+            sl: s.sl,
+        }));
+
+        setAwardedSubitems(mappedAwarded);
 
         setRows(
             awarded.map((s) => ({
@@ -71,6 +104,9 @@ export function GenerateOcfModal({
             }))
         );
 
+        setImportantNotes("");
+        setEstimatedDeliveryDate("");
+        setEstimatedDeliveryNotes(buildEstimatedDeliveryNotes(mappedAwarded));
         setFormError(null);
         setCreating(false);
         setLoadingItems(false);
@@ -247,7 +283,7 @@ export function GenerateOcfModal({
                                         placeholder="E.g. Production lead time: 2 days"
                                     />
                                 </div>
-                                
+
                             </div>
 
                             <div className="space-y-3">

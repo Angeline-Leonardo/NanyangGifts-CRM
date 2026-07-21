@@ -9,11 +9,9 @@ type OcfItem = {
     id: string;
     qty: string | number | null;
     item_name: string | null;
-    remarks: string | null;
     image_path: string | null;
     image_url: string | null;
-    contact_number?: string | null;
-    delivery_address?: string | null;
+    delivery_info?: string | null;
     pl?: string | null;
     sl?: string | null;
 };
@@ -24,14 +22,11 @@ type Ocf = {
     status: string | null;
     generated_at: string | null;
     estimated_delivery_notes: string | null;
-    remarks_for_delivery: string | null;
     same_address_for_all_items: boolean | null;
     restricted_area: string | null;
     important_notes: string | null;
     client_name_snapshot: string | null;
     company_snapshot: string | null;
-    delivery_address: string | null;
-    client_contact_number: string | null;
     recipient_name: string | null;
     salesperson_name: string | null;
     salesperson_email: string | null;
@@ -122,9 +117,8 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                         <tr className="bg-gray-100 text-left">
                             <th className="border border-black px-2 py-2 font-semibold">Item Name</th>
                             <th className="border border-black px-2 py-2 font-semibold">Qty</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Contact Number</th>
                             <th className="border border-black px-2 py-2 font-semibold">Remarks Per Item</th>
-                            <th className="border border-black px-2 py-2 font-semibold">Delivery Address</th>
+                            <th className="border border-black px-2 py-2 font-semibold">Delivery Info</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,11 +127,7 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                                 <tr key={item.id} className="align-top">
                                     <td className="border border-black px-2 py-3">{item.item_name || "-"}</td>
                                     <td className="border border-black px-2 py-3">{item.qty || "-"}</td>
-                                    <td className="border border-black px-2 py-3">{item.contact_number || "-"}</td>
-                                    <td className="border border-black px-2 py-3">{item.remarks || "-"}</td>
-                                    <td className="border border-black px-2 py-3">
-                                        {item.delivery_address || ocf.delivery_address || "-"}
-                                    </td>
+                                    
                                 </tr>
                             ))
                         ) : (
@@ -167,12 +157,6 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                         
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Contact Number For Delivery:
-                            </td>
-                            <td className="px-3 py-2">{ocf.client_contact_number || "-"}</td>
-                        </tr>
-                        <tr className="border-b border-black">
-                            <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Estimated Delivery:
                             </td>
                             <td className="px-3 py-2">
@@ -186,12 +170,6 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                                     />
                                 </div>
                             </td>
-                        </tr>
-                        <tr className="border-b border-black">
-                            <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
-                                Remarks For Delivery:
-                            </td>
-                            <td className="px-3 py-2 whitespace-pre-wrap">{ocf.remarks_for_delivery || "-"}</td>
                         </tr>
                         <tr className="border-b border-black">
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">

@@ -33,11 +33,10 @@ export async function POST(request: NextRequest) {
             signatureDataUrl,
             company,
             recipientName,
-            deliveryAddress,
-            contactNumber,
             remarksForDelivery,
             restrictedArea,
             sameAddressForAllItems,
+            items,
         } = body ?? {};
 
         if (!ocfId || !clientToken || !signatureDataUrl) {
@@ -50,8 +49,6 @@ export async function POST(request: NextRequest) {
         if (
             typeof company !== "string" ||
             typeof recipientName !== "string" ||
-            typeof deliveryAddress !== "string" ||
-            typeof contactNumber !== "string" ||
             typeof remarksForDelivery !== "string" ||
             typeof restrictedArea !== "string" ||
             typeof sameAddressForAllItems !== "boolean"
@@ -59,7 +56,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 {
                     error:
-                        "company, recipientName, deliveryAddress, contactNumber, remarksForDelivery, restrictedArea, and sameAddressForAllItems are required",
+                        "company, recipientName, remarksForDelivery, restrictedArea, and sameAddressForAllItems are required",
                 },
                 { status: 400 }
             );
@@ -127,11 +124,10 @@ export async function POST(request: NextRequest) {
             .update({
                 company_snapshot: company.trim() || null,
                 recipient_name: recipientName.trim() || null,
-                delivery_address: deliveryAddress.trim() || null,
-                client_contact_number: contactNumber.trim() || null,
                 remarks_for_delivery: remarksForDelivery.trim() || null,
                 restricted_area: restrictedArea,
                 same_address_for_all_items: sameAddressForAllItems,
+                items: items,
                 client_signature_path: filePath,
                 client_signed_at: now,
                 client_submitted_at: now,
@@ -147,9 +143,9 @@ export async function POST(request: NextRequest) {
         company_snapshot,
         recipient_name,
         delivery_address,
-        client_contact_number,
         remarks_for_delivery,
         restricted_area,
+        items,
         same_address_for_all_items,
         client_signed_at,
         client_submitted_at,
