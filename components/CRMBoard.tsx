@@ -950,7 +950,7 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
                 open={isOcfModalOpen}
                 client={ocfClient}
                 onClose={handleCloseOcfModal}
-                onCreated={({ internalUrl }) => { window.location.href = internalUrl; }}
+                onCreated={({ internalUrl }) => { window.open(internalUrl, "_blank", "noopener,noreferrer"); }}
               />
             </React.Fragment>
           ))}
