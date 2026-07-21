@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import logo from "./nanyanggifts-gifts-and-merch.png";
+import { DEFAULT_IMPORTANT_NOTES } from "@/components/Important-Notes";
 
 type OcfItem = {
     id: string;
@@ -57,6 +58,7 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
     const [saving, setSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<string | null>(null);
     const [saveError, setSaveError] = useState<string | null>(null);
+    const importantNotes = ocf.important_notes?.trim() || DEFAULT_IMPORTANT_NOTES;
 
     const clientUrl = useMemo(() => {
         if (!ocf.client_token || typeof window === "undefined") return "";
@@ -274,7 +276,7 @@ export default function OcfInternalView({ ocf }: { ocf: Ocf }) {
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Important Notes:
                             </td>
-                            <td className="px-3 py-2 whitespace-pre-wrap">{ocf.important_notes || ""}</td>
+                            <td className="px-3 py-2 whitespace-pre-wrap">{importantNotes}</td>
                         </tr>
                     </tbody>
                 </table>

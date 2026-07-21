@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import SignatureForm from "./signature-form";
 import logo from "./nanyanggifts-gifts-and-merch.png";
+import { DEFAULT_IMPORTANT_NOTES } from "@/components/Important-Notes";
 
 type OcfItem = {
     id: string;
@@ -54,7 +55,8 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
         ocf.status === "submitted" ||
         ocf.status === "locked" ||
         Boolean(ocf.locked_at);
-
+    
+    const importantNotes = ocf.important_notes?.trim() || DEFAULT_IMPORTANT_NOTES;
     const [company, setCompany] = useState(ocf.company_snapshot ?? "");
     const [recipientName, setRecipientName] = useState(ocf.recipient_name ?? "");
     const [restrictedArea, setRestrictedArea] = useState(ocf.restricted_area ?? "No");
@@ -299,7 +301,7 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                                 Estimated Delivery:
                             </td>
                             <td className="px-3 py-2">
-                                <div className="space-y-2">
+                                <div className="space-y-z">
                                     <input
                                         value={ocf.estimated_delivery_notes || ""}
                                         disabled
@@ -332,7 +334,7 @@ export default function ClientOcfView({ ocf }: { ocf: Ocf }) {
                             <td className="border-r border-black bg-[#eef2ff] px-3 py-2 font-semibold">
                                 Important Notes:
                             </td>
-                            <td className="px-3 py-2 whitespace-pre-wrap">{ocf.important_notes || "-"}</td>
+                            <td className="px-3 py-2 whitespace-pre-wrap">{importantNotes}</td>
                         </tr>
                     </tbody>
                 </table>

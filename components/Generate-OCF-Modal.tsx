@@ -41,11 +41,11 @@ function buildEstimatedDeliveryNotes(subitems: Array<{
             const lines: string[] = [];
 
             if (pl !== null) {
-                lines.push(`Estimated Production Lead Time: ${pl + 3} days`);
+                lines.push(` Estimated Production Lead Time: ${pl + 3} days`);
             }
 
             if (sl !== null) {
-                lines.push(`Estimated Shipping Lead Time: ${sl + 3} days`);
+                lines.push(` Estimated Shipping Lead Time: ${sl + 3} days`);
             }
 
             if (lines.length === 0) return null;
