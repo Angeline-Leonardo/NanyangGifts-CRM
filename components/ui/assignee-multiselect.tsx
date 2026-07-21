@@ -78,16 +78,24 @@ export function AssigneeMultiSelect({ profiles, selectedIds, onChange }: Props) 
             >
                 {selectedProfiles.length > 0 ? (
                     <div className="flex w-full h-6 items-center justify-center -space-x-2 rounded-full">
-                        {selectedProfiles.map((p, i) => (
-                            <div
-                                key={p.id}
-                                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                                style={{ background: ['#76d8f8', '#ffb0d6', '#ba9ef7', '#76f7a1'][i % 4] }}
-                                title={getLabel(p)}
-                            >
-                                {initials(p)}
-                            </div>
-                        ))}
+                            {selectedProfiles.map((p, i) => (
+                                <div
+                                    key={p.id}
+                                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                                    style={{
+                                        background: [
+                                            'linear-gradient(150deg, #76d8f8, #753eff)',
+                                            'linear-gradient(150deg, #ffb0d6, #7bdeff)',
+                                            'linear-gradient(150deg, #ba9ef7, #5be669)',
+                                            'linear-gradient(150deg, #76f7a1, #db3cbb)'
+                                        ][i % 4]
+                                    }}
+                                    title={getLabel(p)}
+                                >
+
+                                    {initials(p)}
+                                </div>
+                            ))}
                     </div>
                 ) : (
                     <div className=" transition transform active:scale-95 duration-150 w-7 h-7 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center mx-auto hover:border-blue-400">
