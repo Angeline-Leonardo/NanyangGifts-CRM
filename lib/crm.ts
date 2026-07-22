@@ -21,6 +21,7 @@ const SUBITEM_LOG_IGNORE_FIELDS = new Set<keyof Subitem>([
     'showTimeline',
     'showPayments',
     'showSample',
+    'customFields'
 ]);
 
 export type RoundRobinQueueRow = {
@@ -401,8 +402,7 @@ export async function logOcfCreated(params: {
     return insertActivityLog({
         clientId: params.clientId,
         action: 'ocf_created',
-        title: params.title ?? 'generated an Order Confirmation Form',
-        description: params.description ?? '',
+        title: 'generated an Order Confirmation Form',
         link: `/order-confirmations/${params.ocfId}`,
         meta: { ocfId: params.ocfId },
     });

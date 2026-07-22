@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
             existing.status === "submitted"
         ) {
             return NextResponse.json(
-                { error: "This order confirmation is locked and can no longer be edited" },
+                { error: "This order confirmation form is locked and can no longer be edited" },
                 { status: 403 }
             );
         }
