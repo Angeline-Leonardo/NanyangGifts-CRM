@@ -14,8 +14,17 @@ import { fetchCustomColumns, addCustomColumn, deleteCustomColumn, type CustomCol
 
 
 type OptionEntry = { value: string; color: string };
+type HeaderCol = {
+  key: string;
+  label: string;
+  width: number;
+  minWidth: number;
+  customColumnId?: string;
+  isCustom?: boolean;
+  field_type?: 'text' | 'number' | 'date';
+};
 
-const CLIENT_HEADER_COLS = [
+const CLIENT_HEADER_COLS: HeaderCol[] = [
   { key: 'selectCheckbox', label: '', width: 60, minWidth: 7 },
   { key: 'client', label: 'Client', width: 250, minWidth: 7 },
   { key: 'people', label: 'People', width: 60, minWidth: 7 },
@@ -33,6 +42,7 @@ const CLIENT_HEADER_COLS = [
   { key: 'companyAddress', label: 'Company Address', width: 115, minWidth: 7 },
   { key: 'billingAddress', label: 'Billing Address', width: 115, minWidth: 7 },
   { key: 'dateCreated', label: 'Date Created', width: 90, minWidth: 7 },
+  { key: 'addClientCol', label: '', width: 44, minWidth: 44 },
   { key: 'empty', label: '', width: 800, minWidth: 7 },
 ];
 
@@ -99,10 +109,9 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
   const [draggedClientId, setDraggedClientId] = useState<string | null>(null);
   const [dragOverGroupId, setDragOverGroupId] = useState<string | null>(null);
-  
-  const [headerCols, setHeaderCols] = useState(CLIENT_HEADER_COLS);
-  
-  
+
+  const [headerCols, setHeaderCols] = useState<HeaderCol[]>(CLIENT_HEADER_COLS);
+
   // User custom columns
   const [customColumns, setCustomColumns] = useState<CustomColumn[]>([]);
   const [showAddColModal, setShowAddColModal] = useState<'client' | 'subitem' | null>(null);
@@ -113,27 +122,60 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const clientCustomCols = customColumns.filter((c) => c.target === 'client');
   const subitemCustomCols = customColumns.filter((c) => c.target === 'subitem');
 
-  const mergedHeaderCols = React.useMemo(() => {
-  const customClientHeaderCols = clientCustomCols.map((col) => ({
-    key: `custom:${col.id}`,
-    label: col.name,
-    width: 120,
-    minWidth: 80,
-    customColumnId: col.id,
-    isCustom: true,
-  }));
+  const mergedHeaderCols = React.useMemo<HeaderCol[]>(() => {
+    const customClientHeaderCols: HeaderCol[] = clientCustomCols.map((col) => ({
+      key: `custom:${col.id}`,
+      label: col.name,
+      width: 120,
+      minWidth: 80,
+      customColumnId: col.id,
+      isCustom: true,
+      field_type: col.field_type,
+    }));
 
-  return [
-    ...CLIENT_HEADER_COLS.slice(0, CLIENT_HEADER_COLS.length - 1),
-    ...customClientHeaderCols,
-    CLIENT_HEADER_COLS[CLIENT_HEADER_COLS.length - 1],
-  ];
-}, [clientCustomCols]);
+    const addClientColHeader = headerCols.find((c) => c.key === 'addClientCol');
+    const emptyHeader = headerCols.find((c) => c.key === 'empty');
+
+    return [
+      ...headerCols.filter((c) => c.key !== 'addClientCol' && c.key !== 'empty'),
+      ...customClientHeaderCols,
+      ...(addClientColHeader ? [addClientColHeader] : []),
+      ...(emptyHeader ? [emptyHeader] : []),
+    ];
+  }, [headerCols, clientCustomCols]);
 
   const totalMinWidth = mergedHeaderCols.reduce((sum, col) => sum + col.width, 0);
   const colWidth = React.useMemo(
     () => Object.fromEntries(mergedHeaderCols.map((c) => [c.key, c.width])),
     [mergedHeaderCols]
+  );
+
+  const updateClientCustomField = useCallback(
+    async (clientId: string, columnId: string, value: string) => {
+      const targetClient = clients.find((c) => c.id === clientId);
+      if (!targetClient) return;
+
+      const nextCustomFields = {
+        ...(targetClient.customFields ?? {}),
+        [columnId]: value,
+      };
+
+      setClients((prev) =>
+        prev.map((c) =>
+          c.id === clientId
+            ? { ...c, customFields: nextCustomFields }
+            : c
+        )
+      );
+
+      try {
+        await updateClientRow(clientId, { customFields: nextCustomFields });
+      } catch (error) {
+        console.error('Failed to update client custom field', error);
+        setClients(clients);
+      }
+    },
+    [clients, setClients]
   );
 
   const fetchOptions = useCallback(async (code: string): Promise<OptionEntry[]> => {
@@ -551,35 +593,49 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   // Custom col handlers
 
   const handleAddCustomColumn = useCallback(async () => {
-  const trimmed = newColName.trim();
-  if (!trimmed || !showAddColModal) return;
-  setIsAddingCol(true);
-  try {
-    const col = await addCustomColumn(
-      trimmed,
-      showAddColModal,
-      newColType,
-      customColumns.filter((c) => c.target === showAddColModal).length
-    );
-    setCustomColumns((prev) => [...prev, col]);
-    setNewColName('');
-    setNewColType('text');
-    setShowAddColModal(null);
-  } catch (e) {
-    console.error('Failed to add column', e);
-  } finally {
-    setIsAddingCol(false);
-  }
-}, [newColName, newColType, showAddColModal, customColumns]);
+    const trimmed = newColName.trim();
+    if (!trimmed || !showAddColModal) return;
+    setIsAddingCol(true);
+    try {
+      const col = await addCustomColumn(
+        trimmed,
+        showAddColModal,
+        newColType,
+        customColumns.filter((c) => c.target === showAddColModal).length
+      );
+      setCustomColumns((prev) => [...prev, col]);
+      setNewColName('');
+      setNewColType('text');
+      setShowAddColModal(null);
+    } catch (e) {
+      console.error('Failed to add column', e);
+    } finally {
+      setIsAddingCol(false);
+    }
+  }, [newColName, newColType, showAddColModal, customColumns]);
 
-const handleDeleteCustomColumn = useCallback(async (id: string) => {
-  try {
-    await deleteCustomColumn(id);
-    setCustomColumns((prev) => prev.filter((c) => c.id !== id));
-  } catch (e) {
-    console.error('Failed to delete column', e);
-  }
-}, []);
+  const handleDeleteCustomColumn = useCallback(async (id: string) => {
+    try {
+      await deleteCustomColumn(id);
+      setCustomColumns((prev) => prev.filter((c) => c.id !== id));
+
+      const updatedClients = clients.map((client) => {
+        const next = { ...(client.customFields ?? {}) };
+        delete next[id];
+        return { ...client, customFields: next };
+      });
+
+      setClients(updatedClients);
+
+      await Promise.all(
+        updatedClients.map((client) =>
+          updateClientRow(client.id, { customFields: client.customFields ?? {} })
+        )
+      );
+    } catch (e) {
+      console.error('Failed to delete column', e);
+    }
+  }, [clients, setClients]);
 
   // --- Resize ---
   const startResize = (key: string, startX: number) => {
@@ -742,7 +798,7 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
         groupId: createdClient.group_id ?? defaultGroupId, totalPrice: createdClient.total_price ?? '',
         companyAddress: createdClient.company_address ?? '', billingAddress: createdClient.billing_address ?? '',
         dateCreated: createdClient.date_created ?? '', expanded: createdClient.expanded ?? true,
-        color: createdClient.color ?? '#7BCBD5', subitems: [], activityLog: [],
+        color: createdClient.color ?? '#7BCBD5', subitems: [], activityLog: [], customFields: {}
       };
       setClients((prev) => [newClient, ...prev]);
       setExpandedIds((prev) => [...prev, newClient.id]);
@@ -904,44 +960,53 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
 
       <div className="flex min-w-0 text-gray-500 font-semibold">
         <div style={{ minWidth: totalMinWidth }}>
-          <div className="flex items-center justify-center w-full min-w-0 flex-shrink-0 border-r border-[#D0D4E4] overflow-hidden animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10" style={{ minWidth: totalMinWidth }}>
-            <div className="border-[#D0D4E4] flex overflow-hidden min-w-0 items-center px-2.5 flex-shrink-0" style={{ minWidth: colWidth.selectCheckbox, width: colWidth.selectCheckbox }}>
-              <input type="checkbox" checked={allFilteredSelected} onChange={toggleSelectAll} className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]" />
-            </div>
-            {mergedHeaderCols.slice(1).map((col) => (
-              <div key={col.key} className="relative flex min-w-0 overflow-hidden items-center justify-center px-1 py-1.5 border-r border-[#D0D4E4] last:border-r-0 text-[11px] font-semibold text-gray-600 whitespace-nowrap" style={{ minWidth: col.width, width: col.width }}>
-                {col.label}
-                <div onMouseDown={(e) => { e.preventDefault(); startResize(col.key, e.clientX); }} className="absolute top-0 right-0 h-full w-2 cursor-col-resize hover:bg-[#7BCBD5]/20" />
+          <div className="flex text-[11px] items-center justify-center w-full min-w-0 flex-shrink-0 border-r border-[#D0D4E4] overflow-hidden animated-background bg-gradient-to-r from-[#e7fdff] to-[#a3dfff] sticky top-0 z-10" style={{ minWidth: totalMinWidth }}>
+            {mergedHeaderCols.map((col) => (
+              <div
+                key={col.key}
+                className="relative flex justify-center items-center border-r border-[#D0D4E4] flex-shrink-0"
+                style={{ minWidth: col.width, width: col.width }}
+              >
+                {col.key === 'selectCheckbox' ? (
+                  <input
+                    type="checkbox"
+                    checked={allFilteredSelected}
+                    onChange={toggleSelectAll}
+                    className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]"
+                  />
+                ) : col.key === 'addClientCol' ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAddColModal('client')}
+                    className="mx-auto flex h-5 w-5 items-center justify-center rounded-md text-teal-500 hover:bg-teal-100 hover:text-teal-500"
+                    title="Add client column"
+                  >
+                    <Plus size={14} />
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="truncate">{col.label}</span>
+                    {col.isCustom && col.customColumnId ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCustomColumn(col.customColumnId!)}
+                        className="text-gray-400 hover:text-red-500 flex-shrink-0"
+                        title="Delete column"
+                      >
+                        <X size={12} />
+                      </button>
+                    ) : null}
+                  </div>
+                )}
+
+                <div
+                  onMouseDown={(e) => startResize(col.key, e.clientX)}
+                  className="absolute right-0 top-0 h-full w-1 cursor-col-resize"
+                />
               </div>
             ))}
           </div>
-          {clientCustomCols.map((col) => (
-  <div
-    key={col.id}
-    className="relative flex items-center justify-center gap-1 px-2 py-1.5 border-r border-[#D0D4E4] text-[11px] font-semibold text-gray-600 whitespace-nowrap bg-teal-50/40"
-    style={{ minWidth: 120, width: 120 }}
-  >
-    <span className="truncate">{col.name}</span>
-    <button
-      onClick={() => handleDeleteCustomColumn(col.id)}
-      className="text-gray-300 hover:text-red-400 flex-shrink-0"
-      title="Remove column"
-    >
-      ×
-    </button>
-  </div>
-))}
 
-{/* + Add client column button */}
-<div className="flex items-center px-2 border-r border-[#D0D4E4]" style={{ minWidth: 32, width: 32 }}>
-  <button
-    onClick={() => setShowAddColModal('client')}
-    className="text-gray-300 hover:text-[#7BCBD5] text-lg leading-none"
-    title="Add client column"
-  >
-    +
-  </button>
-</div>
 
           {groupedClients.map(({ group, clients: groupClients }) => (
             <React.Fragment key={group.id}>
@@ -1038,6 +1103,7 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
                   onAddModeOfPayment={handleAddModeOfPayment}
                   onDeleteModeOfPayment={handleDeleteModeOfPayment}
                   clientCustomCols={clientCustomCols}
+                  updateClientCustomField={updateClientCustomField}
                   subitemCustomCols={subitemCustomCols}
                   onDeleteCustomColumn={handleDeleteCustomColumn}
                   onRequestAddSubitemCol={() => setShowAddColModal('subitem')}
@@ -1057,54 +1123,54 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
         </div>
       </div>
       {showAddColModal && (
-  <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30">
-    <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white shadow-2xl p-5">
-      <h2 className="text-sm font-semibold text-gray-900 mb-4">
-        Add {showAddColModal} column
-      </h2>
-      <div className="space-y-3">
-        <div>
-          <label className="text-xs text-gray-500 font-medium">Column name</label>
-          <input
-            autoFocus
-            value={newColName}
-            onChange={(e) => setNewColName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustomColumn(); }}
-            placeholder="e.g. Contract Value"
-            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5] focus:ring-2 focus:ring-[#7BCBD5]/20"
-          />
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/30">
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white shadow-2xl p-5">
+            <h2 className="text-sm font-semibold text-gray-900 mb-4">
+              Add {showAddColModal} column
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-gray-500 font-medium">Column name</label>
+                <input
+                  autoFocus
+                  value={newColName}
+                  onChange={(e) => setNewColName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddCustomColumn(); }}
+                  placeholder="e.g. Contract Value"
+                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5] focus:ring-2 focus:ring-[#7BCBD5]/20"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 font-medium">Type</label>
+                <select
+                  value={newColType}
+                  onChange={(e) => setNewColType(e.target.value as 'text' | 'number' | 'date')}
+                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
+                >
+                  <option value="text">Text</option>
+                  <option value="number">Number</option>
+                  <option value="date">Date</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button
+                onClick={() => { setShowAddColModal(null); setNewColName(''); }}
+                className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddCustomColumn}
+                disabled={isAddingCol || !newColName.trim()}
+                className="rounded-xl bg-[#7BCBD5] px-4 py-2 text-sm font-medium text-white hover:bg-[#6bc0ca] disabled:opacity-50"
+              >
+                {isAddingCol ? 'Adding...' : 'Add Column'}
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="text-xs text-gray-500 font-medium">Type</label>
-          <select
-            value={newColType}
-            onChange={(e) => setNewColType(e.target.value as 'text' | 'number' | 'date')}
-            className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#7BCBD5]"
-          >
-            <option value="text">Text</option>
-            <option value="number">Number</option>
-            <option value="date">Date</option>
-          </select>
-        </div>
-      </div>
-      <div className="flex justify-end gap-2 mt-5">
-        <button
-          onClick={() => { setShowAddColModal(null); setNewColName(''); }}
-          className="rounded-xl border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleAddCustomColumn}
-          disabled={isAddingCol || !newColName.trim()}
-          className="rounded-xl bg-[#7BCBD5] px-4 py-2 text-sm font-medium text-white hover:bg-[#6bc0ca] disabled:opacity-50"
-        >
-          {isAddingCol ? 'Adding...' : 'Add Column'}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }

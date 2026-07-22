@@ -500,7 +500,7 @@ export async function createClientRow(currentUserId?: string | null, groupId?: s
     return data;
 }
 
-export async function updateClientRow(clientId: string, updates: Partial<Client>) {
+export async function updateClientRow(clientId: string, updates: Partial<Client> & {customFields?: Record<string, string>;}) {
     const { data: existing, error: fetchError } = await supabase
         .from('clients')
         .select('*')

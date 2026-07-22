@@ -74,6 +74,11 @@ export type ClientRowProps = {
     subitemCustomCols: CustomColumn[];
     onDeleteCustomColumn: (id: string) => void;
     onRequestAddSubitemCol: () => void;
+    updateClientCustomField: (
+        clientId: string,
+        columnId: string,
+        value: string
+    ) => void | Promise<void>;
 
 
 };
@@ -135,7 +140,8 @@ export function ClientRow({
     clientCustomCols,
     subitemCustomCols,
     onDeleteCustomColumn,
-    onRequestAddSubitemCol
+    onRequestAddSubitemCol,
+    updateClientCustomField
 
 
 }: ClientRowProps) {
@@ -663,7 +669,47 @@ export function ClientRow({
                 <div className="flex-1 min-w-0 py-1.5 border-r border-[#D0D4E4] overflow-hidden whitespace-nowrap text-ellipsis" style={{ height: 32, minWidth: colWidth.dateCreated, width: colWidth.dateCreated }}>
                     <EditableCell value={client.dateCreated} onChange={(v) => onUpdate({ dateCreated: v })} />
                 </div>
-
+                {/* custom cols */}
+                {clientCustomCols.map((col) => (
+                    <div
+                        key={col.id}
+                        className="flex-1 min-w-0 py-1.5 border-r border-[#D0D4E4] overflow-hidden whitespace-nowrap bg-teal-50/20"
+                        style={{
+                            height: 32,
+                            minWidth: colWidth[`custom:${col.id}`] ?? 120,
+                            width: colWidth[`custom:${col.id}`] ?? 120,
+                        }}
+                    >
+                        {col.field_type === "date" ? (
+                            <input
+                                type="date"
+                                value={String(client.customFields?.[col.id] ?? "")}
+                                onChange={(e) =>
+                                    updateClientCustomField(client.id, col.id, e.target.value)
+                                }
+                                className="text-xs border-none outline-none bg-transparent cursor-pointer w-full px-1"
+                            />
+                        ) : (
+                            <EditableCell
+                                value={String(client.customFields?.[col.id] ?? "")}
+                                onChange={(v) =>
+                                    updateClientCustomField(client.id, col.id, String(v))
+                                }
+                                type={col.field_type}
+                                placeholder="—"
+                            />
+                        )}
+                    </div>
+                ))}
+                <div
+                    className="flex-shrink-0 border-r border-[#D0D4E4]"
+                    style={{
+                        height: 32,
+                        minWidth: colWidth.addClientCol ?? 44,
+                        width: colWidth.addClientCol ?? 44,
+                    }}
+/>
+                {/* delete button */}
                 <div className="flex items-center flex-shrink-0" style={{ minWidth: colWidth.empty, width: colWidth.empty }}>
                     <button
                         onClick={onDelete}
@@ -673,37 +719,7 @@ export function ClientRow({
                         <Trash2 size={13} />
                     </button>
                 </div>
-                {clientCustomCols.map((col) => (
-                    <div
-                        key={col.id}
-                        className="flex-shrink-0 py-1 border-r border-[#D0D4E4] overflow-hidden bg-teal-50/20"
-                        style={{ height: 32, minWidth: 120, width: 120 }}
-                    >
-                        {col.field_type === 'date' ? (
-                            <input
-                                type="date"
-                                value={(client.customFields?.[col.id] ?? '')}
-                                onChange={(e) =>
-                                    onUpdate({
-                                        customFields: { ...(client.customFields ?? {}), [col.id]: e.target.value },
-                                    })
-                                }
-                                className="text-xs border-none outline-none bg-transparent cursor-pointer w-full px-1"
-                            />
-                        ) : (
-                            <EditableCell
-                                value={client.customFields?.[col.id] ?? ''}
-                                onChange={(v) =>
-                                    onUpdate({
-                                        customFields: { ...(client.customFields ?? {}), [col.id]: v },
-                                    })
-                                }
-                                type={col.field_type}
-                                placeholder="—"
-                            />
-                        )}
-                    </div>
-                ))}
+                
 
             </div>
 
