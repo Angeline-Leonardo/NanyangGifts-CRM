@@ -113,7 +113,7 @@ type SubitemProps = {
     onDeleteModeOfPayment?: (name: string) => void | Promise<void>;
     subitemCustomCols: CustomColumn[];
     onDeleteSubitemCustomCol: (id: string) => void;
-    onRequestAddSubitemCol: () => void; // triggers the add col modal in CRMBoard
+    onRequestAddSubitemCol: () => void;
 };
 
 function parseNumber(v: string | number | undefined | null) {

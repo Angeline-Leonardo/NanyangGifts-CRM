@@ -99,7 +99,9 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
   const [draggedClientId, setDraggedClientId] = useState<string | null>(null);
   const [dragOverGroupId, setDragOverGroupId] = useState<string | null>(null);
+  
   const [headerCols, setHeaderCols] = useState(CLIENT_HEADER_COLS);
+  
   
   // User custom columns
   const [customColumns, setCustomColumns] = useState<CustomColumn[]>([]);
@@ -111,10 +113,27 @@ export function CRMBoard({ clients, expandedIds, setExpandedIds, setClients, rel
   const clientCustomCols = customColumns.filter((c) => c.target === 'client');
   const subitemCustomCols = customColumns.filter((c) => c.target === 'subitem');
 
-  const totalMinWidth = headerCols.reduce((sum, col) => sum + col.width, 0);
+  const mergedHeaderCols = React.useMemo(() => {
+  const customClientHeaderCols = clientCustomCols.map((col) => ({
+    key: `custom:${col.id}`,
+    label: col.name,
+    width: 120,
+    minWidth: 80,
+    customColumnId: col.id,
+    isCustom: true,
+  }));
+
+  return [
+    ...CLIENT_HEADER_COLS.slice(0, CLIENT_HEADER_COLS.length - 1),
+    ...customClientHeaderCols,
+    CLIENT_HEADER_COLS[CLIENT_HEADER_COLS.length - 1],
+  ];
+}, [clientCustomCols]);
+
+  const totalMinWidth = mergedHeaderCols.reduce((sum, col) => sum + col.width, 0);
   const colWidth = React.useMemo(
-    () => Object.fromEntries(headerCols.map((c) => [c.key, c.width])),
-    [headerCols]
+    () => Object.fromEntries(mergedHeaderCols.map((c) => [c.key, c.width])),
+    [mergedHeaderCols]
   );
 
   const fetchOptions = useCallback(async (code: string): Promise<OptionEntry[]> => {
@@ -564,7 +583,7 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
 
   // --- Resize ---
   const startResize = (key: string, startX: number) => {
-    const startCol = headerCols.find((col) => col.key === key);
+    const startCol = mergedHeaderCols.find((col) => col.key === key);
     if (!startCol) return;
     const startWidth = startCol.width;
     const onMouseMove = (e: MouseEvent) => {
@@ -889,7 +908,7 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
             <div className="border-[#D0D4E4] flex overflow-hidden min-w-0 items-center px-2.5 flex-shrink-0" style={{ minWidth: colWidth.selectCheckbox, width: colWidth.selectCheckbox }}>
               <input type="checkbox" checked={allFilteredSelected} onChange={toggleSelectAll} className="w-3 h-3 rounded cursor-pointer accent-[#7BCBD5]" />
             </div>
-            {headerCols.slice(1).map((col) => (
+            {mergedHeaderCols.slice(1).map((col) => (
               <div key={col.key} className="relative flex min-w-0 overflow-hidden items-center justify-center px-1 py-1.5 border-r border-[#D0D4E4] last:border-r-0 text-[11px] font-semibold text-gray-600 whitespace-nowrap" style={{ minWidth: col.width, width: col.width }}>
                 {col.label}
                 <div onMouseDown={(e) => { e.preventDefault(); startResize(col.key, e.clientX); }} className="absolute top-0 right-0 h-full w-2 cursor-col-resize hover:bg-[#7BCBD5]/20" />
@@ -1021,7 +1040,7 @@ const handleDeleteCustomColumn = useCallback(async (id: string) => {
                   clientCustomCols={clientCustomCols}
                   subitemCustomCols={subitemCustomCols}
                   onDeleteCustomColumn={handleDeleteCustomColumn}
-                  onRequestAddSubitemCol={handleAddCustomColumn}
+                  onRequestAddSubitemCol={() => setShowAddColModal('subitem')}
 
 
                 />

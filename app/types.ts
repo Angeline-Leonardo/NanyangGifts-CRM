@@ -159,7 +159,7 @@ export interface Client {
   subitems: Subitem[];
   activityLog?: ActivityEntry[];
   assignedProfileIds?: string[];
-  customFields?: Record<string, string>
+  customFields?: Record<string, string>;
 }
 export type ClientAssigneeMap = Record<string, string[]>;
 

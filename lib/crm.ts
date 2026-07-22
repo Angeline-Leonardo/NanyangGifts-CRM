@@ -98,7 +98,7 @@ type Subitems = {
     sl: string | null;
     owner: string | null;
     payment_status: string | null;
-    total: string | null;
+    total_uc: string | null;
     ls_rmb: string | null;
     total_c: string | null;
     mode_of_payment: string | null;
@@ -117,6 +117,7 @@ type Subitems = {
     sample_order_status: string | null;
     sample_status: string | null;
     sample_type: string | null;
+    custom_fields?: Record<string, string>;
 };
 
 type Clients = {
@@ -143,6 +144,7 @@ type Clients = {
     color: string | null;
     activity_log?: ActivityLogRow[] | null;
     subitems?: Subitems[];
+    custom_fields?: Record<string, string>;
 };
 
 type ActivityLogRow = {
@@ -291,7 +293,7 @@ function mapSubitems(row: Subitems): Subitem {
         sl: row.sl ?? '',
         owner: row.owner ?? '',
         paymentStatus: row.payment_status ?? '',
-        totalUc: row.total ?? '',
+        totalUc: row.total_uc ?? '',
         lsRmb: row.ls_rmb ?? '',
         totalC: row.total_c ?? '',
         modeOfPayment: row.mode_of_payment ?? '',
@@ -310,7 +312,7 @@ function mapSubitems(row: Subitems): Subitem {
         sampleOrderStatus: row.sample_order_status ?? '',
         sampleStatus: row.sample_status ?? '',
         sampleType: row.sample_type ?? '',
-        customFields: (row as any).custom_fields ?? {},
+        customFields: row.custom_fields ?? {},
 
     };
 }
@@ -339,7 +341,7 @@ function mapClients(row: Clients): Client {
         color: row.color ?? '#7BCBD5',
         activityLog: (row.activity_log ?? []).map(mapActivityEntry),
         subitems: (row.subitems ?? []).map(mapSubitems),
-        customFields: (row as any).custom_fields ?? {},
+        customFields: row.custom_fields ?? {},
 
     };
 }
@@ -483,6 +485,7 @@ export async function createClientRow(currentUserId?: string | null, groupId?: s
             expanded: true,
             color: '#7BCBD5',
             activity_log: [],
+            custom_fields: {}
         })
         .select('*')
         .single();
@@ -641,6 +644,7 @@ export async function createSubitemRow(clientId: string) {
             sample_order_status: '',
             sample_status: '',
             sample_type: '',
+            custom_fields: {}
         })
         .select('*')
         .single();
@@ -736,7 +740,6 @@ export async function updateSubitemRow(subitemId: string, updates: Partial<Subit
         ...(updates.paymentRemarks !== undefined ? { payment_remarks: updates.paymentRemarks } : {}),
         ...(updates.timelineRows !== undefined ? { timeline_rows: updates.timelineRows } : {}),
         ...(updates.showTimeline !== undefined ? { show_timeline: updates.showTimeline } : {}),
-        ...(updates.timelineRows !== undefined ? { timeline_rows: updates.timelineRows } : {}),
         ...(updates.showPayments !== undefined ? { show_payments: updates.showPayments } : {}),
         ...(updates.showSample !== undefined ? { show_sample: updates.showSample } : {}),
         ...(updates.sampleRows !== undefined ? { sample_rows: updates.sampleRows } : {}),
