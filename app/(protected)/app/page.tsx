@@ -16,6 +16,7 @@ export default function Page() {
   const [clients, setClients] = useState<Client[]>([]);
   const [search, setSearch] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [activePanel, setActivePanel] = useState<SidePanel>('crm');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [expandedClientIds, setExpandedClientIds] = useState<string[]>([]);
@@ -30,22 +31,41 @@ export default function Page() {
     }
   }, []);
 
-  
-
   useEffect(() => {
     void reloadClients();
   }, [reloadClients]);
 
   useEffect(() => {
-    const loadUser = async () => {
+    const loadUserAndRole = async () => {
       const supabase = createSupabaseClient();
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       setUser(user ?? null);
+
+      if (!user) {
+        setCurrentUserRole(null);
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Failed to load profile role', error);
+        setCurrentUserRole(null);
+        return;
+      }
+
+      setCurrentUserRole(profile?.role ?? null);
     };
 
-    void loadUser();
+    void loadUserAndRole();
   }, []);
 
   const renderPanel = () => {
@@ -56,7 +76,7 @@ export default function Page() {
             clients={clients}
             expandedIds={expandedClientIds}
             setExpandedIds={setExpandedClientIds}
-            setClients = {setClients}
+            setClients={setClients}
             reloadClients={reloadClients}
             search={search}
           />
@@ -65,11 +85,9 @@ export default function Page() {
       case 'ganttchart':
         return (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            {
-              <div className="flex-1 min-h-[700px] width-[400px] overflow-auto">
-                <GanttChart clients={clients} />
-              </div>
-            }
+            <div className="flex-1 min-h-[700px] w-[400px] overflow-auto">
+              <GanttChart clients={clients} />
+            </div>
           </div>
         );
 
@@ -83,17 +101,16 @@ export default function Page() {
       case 'reports':
         return (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-              <ReportsPanel clients={clients} />
+            <ReportsPanel clients={clients} />
           </div>
         );
 
       case 'roundrobin':
         return (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-              <RoundRobinAdminPanel />
+            <RoundRobinAdminPanel />
           </div>
-
-        )
+        );
 
       default:
         return null;
@@ -118,6 +135,7 @@ export default function Page() {
           onMarkAllRead={() => { }}
           notifications={[]}
           user={user}
+          currentUserRole={currentUserRole}
         />
 
         <main className="min-h-0 flex-1">
