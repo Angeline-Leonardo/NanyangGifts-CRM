@@ -13,7 +13,7 @@ export type ClientStatus =
 
 export type ReplyStatus =
   | 'Waiting...'
-  | 'Replied'
+  | 'Replied';
 
 export type SubitemStatus =
   | 'To Quote'
@@ -32,10 +32,10 @@ export type SampleType = 'Product sample' | 'Pre-production sample';
 export type SampleOrderStatus = 'Pending'| 'To order'| 'Ordered'| 'Delivered'| 'Paid'| 'Shipped'| 'Failed';
 
 export type Profile = {
-  id: string
-  full_name: string | null
-  email: string | null
-  avatar_url?: string | null
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  avatar_url?: string | null;
 }
 
 export interface SampleRow {
@@ -87,7 +87,7 @@ export interface Subitem {
   sgTracking: string;
   pl: string;
   sl: string;
-  customFields?: Record<string, string>
+  customFields?: Record<string, string>;
   
   
   // Payment fields

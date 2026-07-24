@@ -71,7 +71,6 @@ export async function POST(req: NextRequest) {
             .select(`
         id,
         client_id,
-        shipper_id,
         name,
         qty,
         price,
@@ -97,10 +96,10 @@ export async function POST(req: NextRequest) {
         delivery_contact_number,
         delivery_address,
         order_confirmations!inner (
-          id,
-          client_submitted_at
+        id,
+        client_submitted_at
         )
-      `)
+    `)
             .in("subitem_id", subitemIdList);
 
         if (ocfItemsError) {
@@ -138,7 +137,6 @@ export async function POST(req: NextRequest) {
             return {
                 subitem_id: item.id,
                 client_id: item.client_id ?? null,
-                shipper_id: item.shipper_id ?? null,
                 order_confirmation_item_id: submittedOcfItem?.id ?? null,
                 pushed_by: user.id,
 
@@ -162,7 +160,7 @@ export async function POST(req: NextRequest) {
                 item_name: item.name ?? null,
                 delivery_info: buildDeliveryInfo(submittedOcfItem),
                 qty: item.qty ?? null,
-                unit_price: item.up ?? null,
+                up: item.up ?? null,
                 value: item.price ?? null,
                 sea_or_air: null,
                 tax_refund: null,

@@ -79,6 +79,8 @@ export type ClientRowProps = {
         columnId: string,
         value: string
     ) => void | Promise<void>;
+    currentUserRole?: string;
+    onPushToShipperView?: (subitemId: string) => void | Promise<void>;
 
 
 };
@@ -141,7 +143,9 @@ export function ClientRow({
     subitemCustomCols,
     onDeleteCustomColumn,
     onRequestAddSubitemCol,
-    updateClientCustomField
+    updateClientCustomField,
+    currentUserRole,
+    onPushToShipperView
 
 
 }: ClientRowProps) {
@@ -758,6 +762,8 @@ export function ClientRow({
                     subitemCustomCols={subitemCustomCols}
                     onDeleteSubitemCustomCol={onDeleteCustomColumn}
                     onRequestAddSubitemCol={onRequestAddSubitemCol}
+                    currentUserRole={currentUserRole}
+                    onPushToShipperView={onPushToShipperView}
 
 
                 />
