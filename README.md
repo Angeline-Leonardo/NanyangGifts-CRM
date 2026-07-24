@@ -19,7 +19,7 @@ A custom CRM and operations workspace built with Next.js, React, TypeScript, Sup
 - Custom client statuses such as New Lead, Contacted, Quoted, Follow Up, Shortlisted, Project Started, Project Done, Closed, and Unqualified were used as the core board workflow model during development.
 - Reply status tracking for outreach follow-up and reassignment flows.
 - Follow-up date handling for timing-sensitive pipeline management.
-- Option management for status-like fields, including work to migrate options and colors from hardcoded UI constants into database-backed configuration.
+- Option management for status fields
 
 ### Collaboration and assignments
 
@@ -42,8 +42,8 @@ A custom CRM and operations workspace built with Next.js, React, TypeScript, Sup
 ### External collaboration
 
 - Public client-facing OCF page accessible through a tokenized link rather than requiring standard app authentication.
-- Supplier-facing view planned and discussed as a table-based external workflow for selected subitem data.
-- Architecture explored for exposing only supplier-relevant fields while protecting internal operational data.
+- Shipper-facing site/view for Project Managers: a table-based external workflow for selected subitem data (when Project Manager clicks 'Push' button for selected subitem, shipper site syncs data.
+- Shipper site only shows relevant fields for specific shipper using token links to protect internal operational data.
 
 ## Tech Stack
 
