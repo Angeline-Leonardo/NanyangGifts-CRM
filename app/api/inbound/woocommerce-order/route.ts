@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
             reply_status: "",
             follow_up: "",
             status: "New Lead",
-            channel: body.source === "wpforms" ? "WPForms" : "WooCommerce",
+            channel: "E-comm",
             importance: "",
             company: companyName,
             email,
