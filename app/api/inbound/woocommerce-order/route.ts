@@ -5,12 +5,6 @@ import { createClient } from "@supabase/supabase-js";
 type IncomingSubitem = {
     name?: string;
     qty?: string | number | null;
-    remarks?: string | null;
-    description?: string | null;
-    supplier?: string | null;
-    shipper?: string | null;
-    up?: string | number | null;
-    cost?: string | number | null;
 };
 
 type IncomingPayload = {
@@ -47,46 +41,38 @@ function asNumberString(value: unknown, fallback = "") {
 }
 
 function normalizeSubitems(input: IncomingPayload["subitems"]) {
-  if (Array.isArray(input)) {
-    return input.map(normalizeItem);
-  }
+    if (Array.isArray(input)) {
+        return input.map(normalizeItem);
+    }
 
-  if (typeof input === "string" && input.trim()) {
-    // Try parsing once
-    try {
-      const parsed = JSON.parse(input);
-      if (Array.isArray(parsed)) return parsed.map(normalizeItem);
-      // Handle double-encoded: JSON.parse gave us another string
-      if (typeof parsed === "string") {
-        const parsedAgain = JSON.parse(parsed);
-        if (Array.isArray(parsedAgain)) return parsedAgain.map(normalizeItem);
-      }
-    } catch {}
+    if (typeof input === "string" && input.trim()) {
+        // Try parsing once
+        try {
+            const parsed = JSON.parse(input);
+            if (Array.isArray(parsed)) return parsed.map(normalizeItem);
+            
+            if (typeof parsed === "string") {
+                const parsedAgain = JSON.parse(parsed);
+                if (Array.isArray(parsedAgain)) return parsedAgain.map(normalizeItem);
+            }
+        } catch { }
 
-    // Fallback: newline-separated names
-    return input
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => ({
-        name: line.trim(), qty: "", remarks: "", description: "",
-        supplier: "", shipper: "", up: "", cost: "",
-      }));
-  }
+        return input
+            .split("\n")
+            .filter(Boolean)
+            .map((line) => ({
+                name: line.trim(), qty: ""
+            }));
+    }
 
-  return [];
+    return [];
 }
 
 function normalizeItem(item: IncomingSubitem) {
-  return {
-    name: asText(item?.name, "Untitled subitem"),
-    qty: asText(item?.qty, ""),
-    remarks: asText(item?.remarks, ""),
-    description: asText(item?.description, ""),
-    supplier: asText(item?.supplier, ""),
-    shipper: asText(item?.shipper, ""),
-    up: asNumberString(item?.up, ""),
-    cost: asNumberString(item?.cost, ""),
-  };
+    return {
+        name: asText(item?.name, "Untitled subitem"),
+        qty: asText(item?.qty, "")
+    };
 }
 
 function buildActivityLogEntry(payload: IncomingPayload) {
@@ -128,7 +114,7 @@ export async function POST(req: NextRequest) {
         const billingAddress = asText(body.billingAddress);
         const orderTotal = asNumberString(body.orderTotal, "");
         const subitems = normalizeSubitems(body.subitems);
-        const today = new Date().toISOString();
+        const today = new Date().toLocaleDateString('en-SG');
 
         if (!externalId) {
             return NextResponse.json({ error: "Missing externalId" }, { status: 400 });
@@ -225,18 +211,18 @@ export async function POST(req: NextRequest) {
                 people: "",
                 status: "",
                 qty: item.qty,
-                description: item.description,
-                remarks: item.remarks,
-                shipper: item.shipper,
-                supplier: item.supplier,
-                cost: item.cost,
+                description: "",
+                remarks: "",
+                shipper: "",
+                supplier: "",
+                cost: "",
                 ls: "",
                 os: "",
                 tc: "",
                 uc: "",
                 tc_sgd: "",
                 price: "",
-                up: item.up,
+                up: "",
                 owner: "",
                 payment_status: "",
                 manpower: "",
