@@ -638,11 +638,7 @@ export function ClientRow({
                 </div>
 
                 <div className="flex-1 min-w-0 py-1.5 border-r border-[#D0D4E4] overflow-hidden whitespace-nowrap text-ellipsis" style={{ height: 32, minWidth: colWidth.requirements, width: colWidth.requirements }}>
-                    <EditableCell
-                        value={client.requirements}
-                        onChange={(v) => onUpdate({ requirements: v })}
-                        placeholder=""
-                    />
+                    <EditableCell className="!justify-start" value={client.requirements} onChange={(v) => onUpdate({ requirements: v })} placeholder="" />
                 </div>
                 <div
                     className="flex items-center border-r border-[#D0D4E4] transition transform active:scale-95 duration-150" style={{ height: 32, minWidth: colWidth.nbd, width: colWidth.nbd }}>

@@ -46,7 +46,6 @@ function normalizeSubitems(input: IncomingPayload["subitems"]) {
     }
 
     if (typeof input === "string" && input.trim()) {
-        // Try parsing once
         try {
             const parsed = JSON.parse(input);
             if (Array.isArray(parsed)) return parsed.map(normalizeItem);
