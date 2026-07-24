@@ -312,7 +312,7 @@ export function SubitemsTable({
                 value={sub.name}
                 onChange={(v) => onUpdateSubitem(sub.id, { name: v })}
                 placeholder="Subitem name"
-                className="!text-left"
+                className="!justify-start"
             />
 
             <div className="ml-auto flex items-center gap-1 shrink-0">

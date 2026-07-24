@@ -47,37 +47,46 @@ function asNumberString(value: unknown, fallback = "") {
 }
 
 function normalizeSubitems(input: IncomingPayload["subitems"]) {
-    if (Array.isArray(input)) {
-        return input.map((item) => ({
-            name: asText(item?.name, "Untitled subitem"),
-            qty: asText(item?.qty, ""),
-            remarks: asText(item?.remarks, ""),
-            description: asText(item?.description, ""),
-            supplier: asText(item?.supplier, ""),
-            shipper: asText(item?.shipper, ""),
-            up: asNumberString(item?.up, ""),
-            cost: asNumberString(item?.cost, ""),
-        }));
-    }
+  if (Array.isArray(input)) {
+    return input.map(normalizeItem);
+  }
 
-    if (typeof input === "string" && input.trim()) {
-        return input
-            .split("\n")
-            .map((line) => line.trim())
-            .filter(Boolean)
-            .map((line) => ({
-                name: line,
-                qty: "",
-                remarks: "",
-                description: "",
-                supplier: "",
-                shipper: "",
-                up: "",
-                cost: "",
-            }));
-    }
+  if (typeof input === "string" && input.trim()) {
+    // Try parsing once
+    try {
+      const parsed = JSON.parse(input);
+      if (Array.isArray(parsed)) return parsed.map(normalizeItem);
+      // Handle double-encoded: JSON.parse gave us another string
+      if (typeof parsed === "string") {
+        const parsedAgain = JSON.parse(parsed);
+        if (Array.isArray(parsedAgain)) return parsedAgain.map(normalizeItem);
+      }
+    } catch {}
 
-    return [];
+    // Fallback: newline-separated names
+    return input
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => ({
+        name: line.trim(), qty: "", remarks: "", description: "",
+        supplier: "", shipper: "", up: "", cost: "",
+      }));
+  }
+
+  return [];
+}
+
+function normalizeItem(item: IncomingSubitem) {
+  return {
+    name: asText(item?.name, "Untitled subitem"),
+    qty: asText(item?.qty, ""),
+    remarks: asText(item?.remarks, ""),
+    description: asText(item?.description, ""),
+    supplier: asText(item?.supplier, ""),
+    shipper: asText(item?.shipper, ""),
+    up: asNumberString(item?.up, ""),
+    cost: asNumberString(item?.cost, ""),
+  };
 }
 
 function buildActivityLogEntry(payload: IncomingPayload) {
